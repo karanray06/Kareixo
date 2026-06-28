@@ -24,8 +24,23 @@ function produceDiff(original: string, modified: string): string {
   return `${removed}\n${added}`;
 }
 
+// Extract text content from a UIMessage (ai@7 uses parts array, not content string)
+function getMessageText(msg: any): string {
+  // ai@7 UIMessage format: { parts: [{ type: 'text', text: '...' }, ...] }
+  if (msg.parts && Array.isArray(msg.parts)) {
+    return msg.parts
+      .filter((p: any) => p.type === "text")
+      .map((p: any) => p.text || "")
+      .join("");
+  }
+  // Fallback for legacy format
+  if (typeof msg.content === "string") return msg.content;
+  return "";
+}
+
 // Extract a code block from LLM response (first fenced block or raw text)
 function extractCode(text: string): string | null {
+  if (!text) return null;
   const fenced = text.match(/```(?:\w+)?\n([\s\S]*?)```/);
   if (fenced) return fenced[1].trimEnd();
   // If the whole response looks like code (no prose), return it
@@ -50,56 +65,50 @@ export default function AgentPanel({
   const [providerInfo, setProviderInfo] = useState<{ provider: string; model: string } | null>(null);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [latency, setLatency] = useState<string | null>(null);
+  const [localInput, setLocalInput] = useState("");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const { messages, input, setInput, append, status, data } = useChat({
+  // ai@7 useChat: returns sendMessage, messages, status, error — NOT input/setInput/append
+  const { messages, sendMessage, status, error, setMessages } = useChat({
     api: "/api/chat",
     body: {
       taskType: "code",
       forceProvider: forceModel === "auto" ? undefined : forceModel,
     },
-    onResponse(response: any) {
-      // Read provider headers from the streaming response
-      const provider = response.headers.get("X-Kareixo-Provider");
-      const model = response.headers.get("X-Kareixo-Model");
-      if (provider && model) {
-        setProviderInfo({ provider, model });
+    onFinish({ message }: any) {
+      // Extract code from the model's response
+      const text = getMessageText(message);
+      const code = extractCode(text);
+      if (code) {
+        setProposedCode(code);
+        setPhase("checking");
+        const diff = produceDiff(currentContent, code);
+        checkSecurity(diff).then((result) => {
+          setSecurityResult(result);
+          setPhase("ready");
+        });
+      } else {
+        // Pure text response (explanation)
+        setPhase("idle");
       }
       if (startTime) {
         setLatency(((Date.now() - startTime) / 1000).toFixed(1) + "s");
       }
     },
-    async onFinish(message: any) {
-      // Extract code from the model's response
-      const code = extractCode(message.content);
-      if (code) {
-        setProposedCode(code);
-        setPhase("checking");
-        const diff = produceDiff(currentContent, code);
-        const result = await checkSecurity(diff);
-        setSecurityResult(result);
-        setPhase("ready");
-      } else {
-        // Pure text response (explanation) — show as idle so user can continue chat
-        setPhase("idle");
-      }
-    },
-    onError: (err: Error) => {
+    onError(err: Error) {
       setPhase("idle");
-      // Append a system error message to the chat
-      append({
-        role: "assistant",
-        content: `**Error:** ${err.message || "Failed to reach AI providers. Please check your API keys."}`,
-      });
+      setErrorMsg(err.message || "Failed to reach AI providers. Please check your API keys.");
     },
-  } as any) as any;
+  } as any);
 
   // Derive the last assistant text message for ThinkingStep
-  const lastAssistantMessage = [...messages].reverse().find((m) => m.role === "assistant");
+  const lastAssistantMessage = [...messages].reverse().find((m: any) => m.role === "assistant");
+  const lastAssistantText = lastAssistantMessage ? getMessageText(lastAssistantMessage) : "";
 
   const handleSubmit = async () => {
     try {
-      const trimmed = input?.trim() || "";
+      const trimmed = localInput.trim();
       if (!trimmed || status === "streaming" || status === "submitted") return;
 
       setStartTime(Date.now());
@@ -108,21 +117,18 @@ export default function AgentPanel({
       setSecurityResult(null);
       setProviderInfo(null);
       setLatency(null);
-      
-      // Temporarily store the old input in case of failure
-      const oldInput = input;
-      setInput("");
+      setErrorMsg(null);
+      setLocalInput("");
 
-      // Build system context: include current file content
-      await append({
-        role: "user",
-        content: explainMode
-          ? `Explain clearly (no code changes needed): ${trimmed}\n\nCurrent file (${currentFile}):\n\`\`\`\n${currentContent}\n\`\`\``
-          : `You are a coding assistant. The user is editing \`${currentFile}\`. Return ONLY the complete updated file content inside a single fenced code block. Do not include any prose outside the code block unless asked to explain.\n\nUser request: ${trimmed}\n\nCurrent file content:\n\`\`\`\n${currentContent}\n\`\`\``,
-      });
+      const prompt = explainMode
+        ? `Explain clearly (no code changes needed): ${trimmed}\n\nCurrent file (${currentFile}):\n\`\`\`\n${currentContent}\n\`\`\``
+        : `You are a coding assistant. The user is editing \`${currentFile}\`. Return ONLY the complete updated file content inside a single fenced code block. Do not include any prose outside the code block unless asked to explain.\n\nUser request: ${trimmed}\n\nCurrent file content:\n\`\`\`\n${currentContent}\n\`\`\``;
+
+      // ai@7 sendMessage API: { text: string }
+      await sendMessage({ text: prompt });
     } catch (e: any) {
       console.error("AgentPanel handleSubmit error:", e);
-      window.alert("Submit error: " + (e.message || String(e)));
+      setErrorMsg("Submit error: " + (e.message || String(e)));
       setPhase("idle");
     }
   };
@@ -183,7 +189,7 @@ export default function AgentPanel({
       {/* Message History */}
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
 
-        {phase === "idle" && messages.length === 0 && (
+        {phase === "idle" && messages.length === 0 && !errorMsg && (
           <div className="text-center mt-10">
             <div className="w-12 h-12 rounded-full bg-graphite-800 border border-graphite-700 mx-auto mb-3 flex items-center justify-center">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-cyan-400">
@@ -201,31 +207,31 @@ export default function AgentPanel({
 
         {/* Chat messages */}
         {messages.map((msg: any, i: number) => {
+          const text = getMessageText(msg);
           if (msg.role === "user") {
+            // Strip the injected context from display
+            const displayText = text.split("\n\nCurrent file")[0].replace(/^You are a coding assistant[\s\S]*?User request: /, "");
             return (
               <div key={msg.id} className="flex gap-3">
                 <div className="w-8 h-8 rounded bg-graphite-800 border border-graphite-700 shrink-0 flex items-center justify-center text-sm font-bold text-graphite-300 mt-1">
                   U
                 </div>
                 <div className="flex-1 bg-graphite-800 rounded-lg p-3 text-sm text-graphite-100 whitespace-pre-wrap">
-                  {/* Strip the injected context from display */}
-                  {msg.content.split("\n\nCurrent file")[0].replace(/^You are a coding assistant[\s\S]*?User request: /, "")}
+                  {displayText}
                 </div>
               </div>
             );
           }
 
-          // For assistant messages: render them if they are the FINAL text response in "idle" phase,
-          // or if they are explicitly marked as Error
-          const isError = msg.content.startsWith("**Error:**");
+          // For assistant messages: render them if they are pure text (no code) in idle phase
           const isLastMessage = i === messages.length - 1;
-          const hasCode = !!extractCode(msg.content);
+          const hasCode = !!extractCode(text);
           
-          if ((phase === "idle" || isError) && !hasCode && msg.role === "assistant" && isLastMessage) {
+          if (phase === "idle" && !hasCode && msg.role === "assistant" && isLastMessage && text) {
             return (
               <div key={msg.id} className="ml-11 space-y-4">
-                <div className={`p-3 rounded-lg text-sm whitespace-pre-wrap ${isError ? "bg-red-950/50 text-red-400 border border-red-900/50" : "bg-graphite-800 text-graphite-300"}`}>
-                  {msg.content}
+                <div className="p-3 rounded-lg text-sm whitespace-pre-wrap bg-graphite-800 text-graphite-300">
+                  {text}
                 </div>
               </div>
             );
@@ -233,12 +239,21 @@ export default function AgentPanel({
           return null;
         })}
 
+        {/* Error message */}
+        {errorMsg && (
+          <div className="ml-11 space-y-4">
+            <div className="p-3 rounded-lg text-sm whitespace-pre-wrap bg-red-950/50 text-red-400 border border-red-900/50">
+              <strong>Error:</strong> {errorMsg}
+            </div>
+          </div>
+        )}
+
         {/* Agent Response Flow */}
         {(phase === "thinking" || isStreaming) && (
           <div className="ml-11 space-y-4 relative">
             <div className="absolute left-[-23px] top-4 bottom-4 w-px bg-graphite-700 -z-10" />
             <ThinkingStep
-              content={lastAssistantMessage?.content || ""}
+              content={lastAssistantText || ""}
               isStreaming={true}
             />
           </div>
@@ -255,7 +270,7 @@ export default function AgentPanel({
             <div className="absolute left-[-23px] top-4 bottom-4 w-px bg-graphite-700 -z-10" />
 
             <ThinkingStep
-              content={lastAssistantMessage?.content?.replace(/```[\s\S]*?```/g, "[code block]")?.trim() || "Code generated."}
+              content={lastAssistantText?.replace(/```[\s\S]*?```/g, "[code block]")?.trim() || "Code generated."}
               isStreaming={false}
             />
 
@@ -320,8 +335,8 @@ export default function AgentPanel({
         <div className="relative">
           <textarea
             ref={inputRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
+            value={localInput}
+            onChange={(e) => setLocalInput(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
@@ -334,7 +349,7 @@ export default function AgentPanel({
           />
           <button
             onClick={handleSubmit}
-            disabled={isStreaming || phase === "checking" || !input?.trim()}
+            disabled={isStreaming || phase === "checking" || !localInput.trim()}
             className="absolute right-3 bottom-3 w-8 h-8 rounded-md bg-cyan-500 hover:bg-cyan-400 text-slate-950 flex items-center justify-center transition-colors disabled:opacity-50"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">

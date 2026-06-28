@@ -1,4 +1,4 @@
-import { streamText, generateText } from "ai";
+import { streamText } from "ai";
 import { router } from "@/lib/model-router";
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
@@ -12,27 +12,37 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { messages, taskType = "chat", forceProvider } = await req.json();
+    const { messages: rawMessages, taskType = "chat", forceProvider } = await req.json();
 
-    // OPTION A: make a cheap non-streaming probe call first to confirm the
-    // provider is alive. If it 429s or errors, executeWithFailover catches it
-    // and retries with the next provider in the round-robin list.
-    const { provider } = await router.executeWithFailover(async (p) => {
-      // Probe: single-token generation — cheap, but triggers real auth + quota check
-      await generateText({
-        model: p.model,
-        messages: [{ role: "user", content: "ping" }],
-      });
-      return p;
-    }, taskType as "code" | "chat");
+    // Convert ai@7 UIMessage format (parts-based) to the simple format the AI SDK expects
+    // UIMessages have { role, parts: [{ type: 'text', text: '...' }] }
+    // We need to extract the text content for the LLM
+    const messages = (rawMessages || []).map((msg: any) => {
+      if (msg.content) {
+        // Already in legacy format
+        return { role: msg.role, content: msg.content };
+      }
+      if (msg.parts && Array.isArray(msg.parts)) {
+        const text = msg.parts
+          .filter((p: any) => p.type === "text")
+          .map((p: any) => p.text || "")
+          .join("");
+        return { role: msg.role, content: text };
+      }
+      return { role: msg.role, content: "" };
+    });
 
-    // Provider confirmed live — now stream the real request
-    const result = await streamText({
+    // Pick a live provider using round-robin with failover
+    const provider = router.getNextProvider(taskType as "code" | "chat", forceProvider);
+
+    // Stream the real request
+    const result = streamText({
       model: provider.model,
       messages,
     });
 
-    return result.toTextStreamResponse({
+    // ai@7: use toUIMessageStreamResponse so the client-side useChat can parse it
+    return result.toUIMessageStreamResponse({
       headers: {
         "X-Kareixo-Provider": provider.name,
         "X-Kareixo-Model": provider.modelName,
