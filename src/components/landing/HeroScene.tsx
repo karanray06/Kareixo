@@ -161,7 +161,7 @@ export default function HeroScene() {
       <div className="relative z-10 flex flex-col items-center justify-center h-full px-6 text-center pointer-events-none">
         {/* Tagline badge */}
         <div className="badge badge-cyan mb-6 pointer-events-auto animate-fade-in-up">
-          <span className="inline-block w-2 h-2 rounded-full bg-cyan-400 mr-1 animate-pulse-glow" />
+          <span className="inline-block w-2 h-2 rounded-full bg-coral-400 mr-1 animate-pulse-glow" />
           Free &middot; Transparent &middot; No credit card
         </div>
 
@@ -176,7 +176,7 @@ export default function HeroScene() {
 
         {/* Subheadline */}
         <p
-          className="text-graphite-300 text-lg md:text-xl max-w-2xl mb-8 animate-fade-in-up"
+          className="text-dusk-700 text-lg md:text-xl max-w-2xl mb-8 animate-fade-in-up"
           style={{ animationDelay: "0.2s" }}
         >
           Free multi-model AI routing across 6+ providers. Every reasoning step
@@ -213,14 +213,14 @@ export default function HeroScene() {
         </div>
 
         {/* Bottom gradient fade */}
-        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-slate-950 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-cream-50 to-transparent" />
       </div>
 
       {/* Scroll indicator */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 animate-fade-in" style={{ animationDelay: "1s" }}>
-        <span className="text-graphite-500 text-[10px] font-mono tracking-widest uppercase">Scroll</span>
-        <div className="w-5 h-8 border border-graphite-600 rounded-full flex items-start justify-center p-1.5">
-          <div className="w-1 h-2 bg-cyan-400 rounded-full animate-[float_1.5s_ease-in-out_infinite]" />
+        <span className="text-dusk-500 text-[10px] font-mono tracking-widest uppercase">Scroll</span>
+        <div className="w-5 h-8 border border-dusk-400 rounded-full flex items-start justify-center p-1.5">
+          <div className="w-1 h-2 bg-coral-400 rounded-full animate-[float_1.5s_ease-in-out_infinite]" />
         </div>
       </div>
     </div>

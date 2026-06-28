@@ -21,9 +21,9 @@ function VerticalSep({ id }: { id: string }) {
   return (
     <Separator
       id={id}
-      className="w-[3px] bg-graphite-800 cursor-col-resize transition-colors
-        data-[separator=hover]:bg-cyan-400
-        data-[separator=active]:bg-cyan-400"
+      className="w-[3px] bg-cream-200 cursor-col-resize transition-colors
+        data-[separator=hover]:bg-coral-400
+        data-[separator=active]:bg-coral-400"
     />
   );
 }
@@ -32,9 +32,9 @@ function HorizontalSep({ id }: { id: string }) {
   return (
     <Separator
       id={id}
-      className="h-[3px] w-full bg-graphite-800 cursor-row-resize transition-colors
-        data-[separator=hover]:bg-cyan-400
-        data-[separator=active]:bg-cyan-400"
+      className="h-[3px] w-full bg-cream-200 cursor-row-resize transition-colors
+        data-[separator=hover]:bg-coral-400
+        data-[separator=active]:bg-coral-400"
     />
   );
 }
@@ -238,7 +238,7 @@ export default function IdeClient() {
 
   if (error) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-slate-950 text-red-400 p-8 text-center gap-4">
+      <div className="flex-1 flex flex-col items-center justify-center bg-cream-50 text-red-400 p-8 text-center gap-4">
         <h2 className="text-xl font-bold">Failed to load IDE</h2>
         <p className="text-sm font-mono bg-red-950/50 p-4 rounded-md border border-red-900/50 max-w-2xl whitespace-pre-wrap">{error}</p>
       </div>
@@ -247,9 +247,9 @@ export default function IdeClient() {
 
   if (isLoading || !activeProject) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-slate-950 text-graphite-400">
+      <div className="flex-1 flex items-center justify-center bg-cream-50 text-dusk-500">
         <div className="flex items-center gap-3">
-          <div className="w-5 h-5 border-2 border-graphite-600 border-t-cyan-400 rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-dusk-400 border-t-coral-400 rounded-full animate-spin" />
           Loading IDE...
         </div>
       </div>
@@ -274,7 +274,7 @@ export default function IdeClient() {
           defaultSize="220px"
           minSize="180px"
           maxSize="480px"
-          className="hidden md:flex flex-col bg-graphite-900 overflow-y-auto"
+          className="hidden md:flex flex-col bg-cream-100 overflow-y-auto"
         >
           <FileExplorer
             files={Object.keys(localFiles)}

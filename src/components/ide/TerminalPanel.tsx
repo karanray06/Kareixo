@@ -169,13 +169,13 @@ export default function TerminalPanel({ files = {} }: TerminalPanelProps) {
   }, []);
 
   return (
-    <div className="w-full h-full bg-slate-950 flex flex-col min-h-0">
-      <div className="h-8 border-b border-graphite-800 flex items-center px-4 bg-graphite-900 justify-between">
+    <div className="w-full h-full bg-cream-50 flex flex-col min-h-0">
+      <div className="h-8 border-b border-cream-200 flex items-center px-4 bg-cream-100 justify-between">
         <div className="flex items-center gap-3">
           <div className="flex items-center">
-            <span className="text-[11px] font-bold text-graphite-300 uppercase tracking-wider pr-3 border-r border-graphite-800">Terminal</span>
+            <span className="text-[11px] font-bold text-dusk-700 uppercase tracking-wider pr-3 border-r border-cream-200">Terminal</span>
             <button 
-              className="ml-2 text-graphite-500 hover:text-white transition-colors p-1 rounded hover:bg-graphite-800"
+              className="ml-2 text-dusk-500 hover:text-dusk-900 transition-colors p-1 rounded hover:bg-cream-200"
               title="New Terminal (Coming in v2)"
               onClick={() => alert("Multi-terminal support is coming in v2. For now, enjoy the single Lite Shell!")}
             >
@@ -185,14 +185,14 @@ export default function TerminalPanel({ files = {} }: TerminalPanelProps) {
               </svg>
             </button>
           </div>
-          <span className="flex items-center gap-1.5 text-[10px] font-mono text-cyan-400 border border-cyan-400/30 bg-cyan-400/10 px-1.5 py-0.5 rounded">
-            <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+          <span className="flex items-center gap-1.5 text-[10px] font-mono text-coral-400 border border-coral-400/30 bg-coral-400/10 px-1.5 py-0.5 rounded">
+            <div className="w-1.5 h-1.5 rounded-full bg-coral-400" />
             Lite Shell — file commands only
           </span>
         </div>
         <div className="flex items-center gap-2">
           <button
-            className="text-graphite-500 hover:text-white transition-colors p-1 rounded hover:bg-graphite-800"
+            className="text-dusk-500 hover:text-dusk-900 transition-colors p-1 rounded hover:bg-cream-200"
             onClick={() => termInstance.current?.clear()}
             title="Clear Terminal"
           >
@@ -201,9 +201,9 @@ export default function TerminalPanel({ files = {} }: TerminalPanelProps) {
               <polyline points="21 3 21 8 16 8"></polyline>
             </svg>
           </button>
-          <div className="w-px h-4 bg-graphite-800 mx-1"></div>
+          <div className="w-px h-4 bg-cream-200 mx-1"></div>
           <button
-            className="text-graphite-500 hover:text-white transition-colors p-1 rounded hover:bg-graphite-800"
+            className="text-dusk-500 hover:text-dusk-900 transition-colors p-1 rounded hover:bg-cream-200"
             title="Close Terminal (Coming in v2)"
             onClick={() => alert("Collapsible terminal panel is coming in v2.")}
           >

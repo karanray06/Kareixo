@@ -13,14 +13,14 @@ interface FileExplorerProps {
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 const Icons = {
-  Folder: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-graphite-400"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>,
-  FolderOpen: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-graphite-400"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>,
-  React: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-cyan-400"><circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(45 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-45 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(90 12 12)"/></svg>,
+  Folder: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-dusk-500"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>,
+  FolderOpen: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-dusk-500"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>,
+  React: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-coral-400"><circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(45 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-45 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(90 12 12)"/></svg>,
   TS: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-blue-400"><path d="M4 4h16v16H4z"/><path d="M9 9v6"/><path d="M7 9h4"/><path d="M15 15c-1.5 0-2-1-2-1v-1s.5 1 2 1 2-.5 2-1-.5-2-2-2-2-.5-2-2 .5-2 2-2 2 .5 2 1"/><path d="M17 11h-2"/></svg>,
-  JS: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-amber-400"><path d="M4 4h16v16H4z"/><path d="M9 15v-6"/><path d="M15 15c-1.5 0-2-1-2-1v-1s.5 1 2 1 2-.5 2-1-.5-2-2-2-2-.5-2-2 .5-2 2-2 2 .5 2 1"/><path d="M17 11h-2"/></svg>,
+  JS: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-rosegold-400"><path d="M4 4h16v16H4z"/><path d="M9 15v-6"/><path d="M15 15c-1.5 0-2-1-2-1v-1s.5 1 2 1 2-.5 2-1-.5-2-2-2-2-.5-2-2 .5-2 2-2 2 .5 2 1"/><path d="M17 11h-2"/></svg>,
   JSON: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-green-400"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M10 12v6"/><path d="M12 16h-4"/></svg>,
   CSS: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-pink-400"><path d="M4 4h16v16H4z"/><path d="M10 9l2 3-2 3"/><path d="M14 9v6"/></svg>,
-  Default: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-graphite-400"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+  Default: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-dusk-500"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
 };
 
 function getFileIcon(filename: string) {
@@ -153,7 +153,7 @@ export default function FileExplorer({
         return (
           <div key={fullPath}>
             <button
-              className="w-full text-left py-1.5 text-[13px] flex items-center gap-2 text-graphite-300 hover:bg-graphite-800 hover:text-white transition-colors"
+              className="w-full text-left py-1.5 text-[13px] flex items-center gap-2 text-dusk-700 hover:bg-cream-200 hover:text-dusk-900 transition-colors"
               style={{ paddingLeft: `${depth * 12 + 16}px` }}
               onClick={() => toggleFolder(fullPath)}
             >
@@ -170,7 +170,7 @@ export default function FileExplorer({
           <div key={fullPath} onContextMenu={(e) => handleContextMenu(e, fullPath)}>
             {isRenaming ? (
               <div 
-                className="w-full py-1.5 flex items-center gap-2 bg-graphite-800"
+                className="w-full py-1.5 flex items-center gap-2 bg-cream-200"
                 style={{ paddingLeft: `${depth * 12 + 16}px` }}
               >
                 {getFileIcon(name)}
@@ -181,7 +181,7 @@ export default function FileExplorer({
                   onChange={(e) => setRenameValue(e.target.value)}
                   onBlur={handleRenameSubmit}
                   onKeyDown={handleRenameSubmit}
-                  className="bg-slate-950 border border-cyan-400 text-white text-[13px] font-mono rounded px-1 outline-none w-full mr-2"
+                  className="bg-cream-50 border border-coral-400 text-dusk-900 text-[13px] font-mono rounded px-1 outline-none w-full mr-2"
                 />
               </div>
             ) : (
@@ -189,8 +189,8 @@ export default function FileExplorer({
                 onClick={() => onSelectFile(fullPath)}
                 className={`w-full text-left py-1.5 text-[13px] flex items-center gap-2 transition-colors border-l-2 ${
                   isActive 
-                    ? "bg-cyan-500/10 text-cyan-300 border-cyan-400" 
-                    : "text-graphite-300 hover:bg-graphite-800 hover:text-white border-transparent"
+                    ? "bg-coral-500/10 text-coral-300 border-coral-400" 
+                    : "text-dusk-700 hover:bg-cream-200 hover:text-dusk-900 border-transparent"
                 }`}
                 style={{ paddingLeft: `${depth * 12 + 14}px` }} // -2 for the border
               >
@@ -206,11 +206,11 @@ export default function FileExplorer({
 
   return (
     <div className="flex flex-col h-full relative">
-      <div className="px-4 h-9 flex justify-between items-center shrink-0 border-b border-graphite-800 bg-graphite-900">
-        <span className="text-[11px] font-bold text-graphite-400 tracking-wider uppercase">Explorer</span>
+      <div className="px-4 h-9 flex justify-between items-center shrink-0 border-b border-cream-200 bg-cream-100">
+        <span className="text-[11px] font-bold text-dusk-500 tracking-wider uppercase">Explorer</span>
         <div className="flex gap-1">
           <button 
-            className="text-graphite-500 hover:text-white hover:bg-graphite-700 p-1 rounded transition-colors" 
+            className="text-dusk-500 hover:text-dusk-900 hover:bg-cream-300 p-1 rounded transition-colors" 
             title="New File" 
             onClick={() => setCreatingFile(true)}
           >
@@ -238,7 +238,7 @@ export default function FileExplorer({
               onBlur={handleCreateSubmit}
               onKeyDown={handleCreateSubmit}
               placeholder="filename.js"
-              className="bg-graphite-800 border border-cyan-400 text-white text-[13px] font-mono rounded px-1 outline-none w-full"
+              className="bg-cream-200 border border-coral-400 text-dusk-900 text-[13px] font-mono rounded px-1 outline-none w-full"
             />
           </div>
         )}
@@ -246,14 +246,14 @@ export default function FileExplorer({
 
       {contextMenu && (
         <div 
-          className="fixed bg-graphite-800 border border-graphite-700 rounded-lg shadow-xl py-1 w-40 z-50 text-[13px] text-graphite-200"
+          className="fixed bg-cream-200 border border-cream-300 rounded-lg shadow-xl py-1 w-40 z-50 text-[13px] text-dusk-700"
           style={{ top: contextMenu.y, left: contextMenu.x }}
         >
-          <div className="px-3 py-1 text-[10px] text-graphite-500 uppercase tracking-wider border-b border-graphite-700 mb-1 truncate">
+          <div className="px-3 py-1 text-[10px] text-dusk-500 uppercase tracking-wider border-b border-cream-300 mb-1 truncate">
             {contextMenu.path}
           </div>
           <button 
-            className="w-full text-left px-3 py-1.5 hover:bg-cyan-500/10 hover:text-cyan-400 transition-colors"
+            className="w-full text-left px-3 py-1.5 hover:bg-coral-500/10 hover:text-coral-400 transition-colors"
             onClick={() => {
               setRenamingPath(contextMenu.path);
               setRenameValue(contextMenu.path);
@@ -262,7 +262,7 @@ export default function FileExplorer({
             Rename
           </button>
           <button 
-            className="w-full text-left px-3 py-1.5 hover:bg-cyan-500/10 hover:text-cyan-400 transition-colors"
+            className="w-full text-left px-3 py-1.5 hover:bg-coral-500/10 hover:text-coral-400 transition-colors"
             onClick={() => {
               // Extract extension to duplicate with suffix
               const parts = contextMenu.path.split('.');

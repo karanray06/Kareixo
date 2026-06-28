@@ -10,9 +10,9 @@ import IdeErrorBoundary from "@/components/ide/IdeErrorBoundary";
 const IdeClient = dynamic(() => import("@/components/ide/IdeClient"), {
   ssr: false,
   loading: () => (
-    <div className="flex-1 flex items-center justify-center bg-slate-950 text-graphite-400">
+    <div className="flex-1 flex items-center justify-center bg-cream-50 text-dusk-500">
       <div className="flex items-center gap-3">
-        <div className="w-5 h-5 border-2 border-graphite-600 border-t-cyan-400 rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-dusk-400 border-t-coral-400 rounded-full animate-spin" />
         Loading IDE...
       </div>
     </div>

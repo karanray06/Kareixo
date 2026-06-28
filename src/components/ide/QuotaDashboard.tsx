@@ -59,23 +59,23 @@ export default function QuotaDashboard() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-graphite-800 border border-transparent hover:border-graphite-700 transition-colors"
+        className="flex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-cream-200 border border-transparent hover:border-cream-300 transition-colors"
         title="Provider Quotas"
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-graphite-400">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-dusk-500">
           <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
         </svg>
-        <span className="text-xs font-mono text-graphite-300">Quotas</span>
+        <span className="text-xs font-mono text-dusk-700">Quotas</span>
       </button>
 
       {isOpen && (
-        <div className="absolute top-full mt-2 right-0 w-72 bg-graphite-900 border border-graphite-700 rounded-lg shadow-lg z-50 overflow-hidden">
-          <div className="px-4 py-3 border-b border-graphite-700 bg-graphite-800 flex items-center justify-between">
+        <div className="absolute top-full mt-2 right-0 w-72 bg-cream-100 border border-cream-300 rounded-lg shadow-lg z-50 overflow-hidden">
+          <div className="px-4 py-3 border-b border-cream-300 bg-cream-200 flex items-center justify-between">
             <div>
-              <h3 className="font-display font-bold text-sm text-white">Free Tier Limits</h3>
-              <p className="text-xs text-graphite-400 mt-1">Live request counts per provider</p>
+              <h3 className="font-display font-bold text-sm text-dusk-900">Free Tier Limits</h3>
+              <p className="text-xs text-dusk-500 mt-1">Live request counts per provider</p>
             </div>
-            {loading && <div className="w-3 h-3 border border-cyan-400 border-t-transparent rounded-full animate-spin" />}
+            {loading && <div className="w-3 h-3 border border-coral-400 border-t-transparent rounded-full animate-spin" />}
           </div>
 
           <div className="p-2 space-y-1 max-h-64 overflow-y-auto">
@@ -84,32 +84,32 @@ export default function QuotaDashboard() {
               const max = PROVIDER_LIMITS[name] ?? -1;
               const status = deriveStatus(stat, max);
               return (
-                <div key={name} className="p-3 rounded-md hover:bg-graphite-800 transition-colors">
+                <div key={name} className="p-3 rounded-md hover:bg-cream-200 transition-colors">
                   <div className="flex justify-between items-center mb-2">
                     <div className="flex items-center gap-2">
                       <div className={`w-1.5 h-1.5 rounded-full ${
                         status === "active" ? "bg-green-400" :
-                        status === "warning" ? "bg-amber-400" : "bg-red-400"
+                        status === "warning" ? "bg-rosegold-400" : "bg-red-400"
                       }`} />
-                      <span className="text-xs font-bold text-graphite-200">{name}</span>
+                      <span className="text-xs font-bold text-dusk-700">{name}</span>
                     </div>
-                    <span className="text-xs font-mono text-graphite-400">
+                    <span className="text-xs font-mono text-dusk-500">
                       {stat.requestsToday} {max > 0 ? `/ ${max}` : "reqs"}
                     </span>
                   </div>
                   {max > 0 && (
-                    <div className="w-full h-1.5 bg-graphite-700 rounded-full overflow-hidden">
+                    <div className="w-full h-1.5 bg-cream-300 rounded-full overflow-hidden">
                       <div
                         className={`h-full transition-all ${
                           status === "active" ? "bg-green-400" :
-                          status === "warning" ? "bg-amber-400" : "bg-red-400"
+                          status === "warning" ? "bg-rosegold-400" : "bg-red-400"
                         }`}
                         style={{ width: `${Math.min(100, (stat.requestsToday / max) * 100)}%` }}
                       />
                     </div>
                   )}
                   {max === -1 && (
-                    <div className="text-[10px] text-graphite-500 font-mono mt-1">No listed cap</div>
+                    <div className="text-[10px] text-dusk-500 font-mono mt-1">No listed cap</div>
                   )}
                   {status === "exhausted" && (
                     <div className="text-[10px] text-red-400 font-mono mt-1">Rate limited — skipping for 5m</div>
@@ -119,7 +119,7 @@ export default function QuotaDashboard() {
             })}
           </div>
 
-          <div className="px-4 py-3 border-t border-graphite-700 bg-graphite-950 text-[10px] text-graphite-500 font-mono text-center">
+          <div className="px-4 py-3 border-t border-cream-300 bg-graphite-950 text-[10px] text-dusk-500 font-mono text-center">
             Router automatically skips exhausted providers. Refreshes every 15s.
           </div>
         </div>

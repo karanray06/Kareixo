@@ -12,7 +12,7 @@ export default function Home() {
       {/* 1. 3D Hero */}
       <HeroScene />
 
-      <div className="relative z-10 bg-slate-950">
+      <div className="relative z-10 bg-cream-50">
         {/* Ambient glow orbs */}
         <div className="glow-orb glow-orb-cyan" style={{ width: 500, height: 500, top: 200, left: -200 }} />
         <div className="glow-orb glow-orb-amber" style={{ width: 400, height: 400, top: 1200, right: -150 }} />
@@ -45,7 +45,7 @@ export default function Home() {
         <AudienceSection />
 
         {/* Footer */}
-        <footer className="border-t border-graphite-800 py-8 text-center text-graphite-500 text-sm font-mono mt-12 relative">
+        <footer className="border-t border-cream-200 py-8 text-center text-dusk-500 text-sm font-mono mt-12 relative">
           <div className="scan-line" />
           <p>&copy; {new Date().getFullYear()} Kareixo. The Glass Box IDE.</p>
         </footer>

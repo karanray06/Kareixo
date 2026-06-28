@@ -29,7 +29,28 @@ function makeMockModel(name: string, shouldFail: boolean): LanguageModel {
       } as any;
     },
     doStream: async () => {
-      throw new Error("Not used in probe test");
+      if (shouldFail) {
+        return {
+          stream: new ReadableStream({
+            start(controller) {
+              const err: any = new Error(`Provider ${name} rate limited`);
+              err.statusCode = 429;
+              controller.enqueue({ type: 'error', error: err });
+              controller.close();
+            }
+          }),
+          rawCall: { rawPrompt: "", rawSettings: {} },
+        } as any;
+      }
+      return {
+        stream: new ReadableStream({
+          start(controller) {
+            controller.enqueue({ type: 'text-delta', textDelta: 'pong' });
+            controller.close();
+          }
+        }),
+        rawCall: { rawPrompt: "", rawSettings: {} },
+      } as any;
     },
   } as unknown as LanguageModel;
 }
@@ -59,6 +80,26 @@ async function testFailover() {
   }
 
   console.log(`✓ Failover worked: request fell through to "${resolvedProvider}" after Mock-Fail 429'd`);
+
+  console.log("\n--- Stream Failover Integration Test ---\n");
+
+  const { provider: streamProvider } = await testRouter.executeWithFailover(async (p) => {
+    // Simulate the route.ts stream interception
+    const res = await (p.model as any).doStream({ inputFormat: "messages", prompt: [{ role: "user", content: [{ type: "text", text: "ping" }] }], mode: { type: "regular" } });
+    const reader = res.stream.getReader();
+    const firstChunk = await reader.read();
+    if (firstChunk.value && firstChunk.value.type === 'error') {
+      throw firstChunk.value.error;
+    }
+    return p;
+  }, "chat");
+
+  if (streamProvider.modelName !== "Mock-OK") {
+    throw new Error(`FAIL: Expected Mock-OK for stream but got ${streamProvider.modelName}`);
+  }
+
+  console.log(`✓ Stream failover worked: request fell through to "${streamProvider.modelName}" after Mock-Fail 429'd inside stream chunks`);
+
   console.log("\n--- Test Passed ---\n");
 }
 

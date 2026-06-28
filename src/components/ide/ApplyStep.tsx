@@ -16,7 +16,7 @@ export default function ApplyStep({
   providerBadge
 }: ApplyStepProps) {
   return (
-    <div className="flex items-center justify-between mt-3 pt-3 border-t border-graphite-700/50">
+    <div className="flex items-center justify-between mt-3 pt-3 border-t border-cream-300/50">
       <div>
         {providerBadge}
       </div>

@@ -42,10 +42,10 @@ export default function LoginForm() {
   return (
     <div className="card max-w-md w-full mx-auto mt-16">
       <div className="text-center mb-8">
-        <h2 className="font-display text-2xl font-bold text-white mb-2">
+        <h2 className="font-display text-2xl font-bold text-dusk-900 mb-2">
           Sign in to Kareixo
         </h2>
-        <p className="text-graphite-400 text-sm">
+        <p className="text-dusk-500 text-sm">
           Welcome back to the Glass Box IDE.
         </p>
       </div>
@@ -73,10 +73,10 @@ export default function LoginForm() {
 
       <div className="relative mb-8">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-graphite-700"></div>
+          <div className="w-full border-t border-cream-300"></div>
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-graphite-900 text-graphite-500">
+          <span className="px-2 bg-cream-100 text-dusk-500">
             Or continue with email
           </span>
         </div>
@@ -89,26 +89,26 @@ export default function LoginForm() {
           </div>
         )}
         <div>
-          <label className="block text-sm font-medium text-graphite-300 mb-1.5">
+          <label className="block text-sm font-medium text-dusk-700 mb-1.5">
             Email address
           </label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2.5 bg-graphite-800 border border-graphite-700 rounded-md text-white focus:outline-none focus:border-cyan-400 transition-colors"
+            className="w-full px-4 py-2.5 bg-cream-200 border border-cream-300 rounded-md text-dusk-900 focus:outline-none focus:border-coral-400 transition-colors"
             required
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-graphite-300 mb-1.5">
+          <label className="block text-sm font-medium text-dusk-700 mb-1.5">
             Password
           </label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2.5 bg-graphite-800 border border-graphite-700 rounded-md text-white focus:outline-none focus:border-cyan-400 transition-colors"
+            className="w-full px-4 py-2.5 bg-cream-200 border border-cream-300 rounded-md text-dusk-900 focus:outline-none focus:border-coral-400 transition-colors"
             required
           />
         </div>
@@ -121,9 +121,9 @@ export default function LoginForm() {
         </button>
       </form>
 
-      <p className="text-center text-sm text-graphite-400 mt-6">
+      <p className="text-center text-sm text-dusk-500 mt-6">
         Don&apos;t have an account?{" "}
-        <a href="/signup" className="text-cyan-400 hover:text-cyan-300">
+        <a href="/signup" className="text-coral-400 hover:text-coral-300">
           Sign up
         </a>
       </p>

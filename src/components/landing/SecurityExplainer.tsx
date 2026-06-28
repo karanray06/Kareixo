@@ -83,7 +83,7 @@ export default function SecurityExplainer() {
           <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
             Every change is <span className="text-gradient-amber">security-checked</span>
           </h2>
-          <p className="text-graphite-300 text-lg max-w-2xl mx-auto">
+          <p className="text-dusk-700 text-lg max-w-2xl mx-auto">
             Before any AI-generated code is offered for your approval, a
             secondary model runs a focused security analysis. This directly
             addresses the documented finding that most AI-generated code ships
@@ -95,25 +95,25 @@ export default function SecurityExplainer() {
           {CHECKS.map((check, i) => (
             <div
               key={check.title}
-              className="card group hover:border-amber-500/30 transition-all"
+              className="card group hover:border-rosegold-500/30 transition-all"
               style={{
                 animationDelay: `${i * 0.1}s`,
               }}
             >
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-lg bg-amber-400/10 border border-amber-400/20 flex items-center justify-center text-amber-400 shrink-0 group-hover:glow-amber transition-all">
+                <div className="w-10 h-10 rounded-lg bg-rosegold-400/10 border border-rosegold-400/20 flex items-center justify-center text-rosegold-400 shrink-0 group-hover:glow-amber transition-all">
                   {check.icon}
                 </div>
                 <div>
-                  <h3 className="font-display text-base font-bold text-graphite-100 mb-1.5">
+                  <h3 className="font-display text-base font-bold text-dusk-900 mb-1.5">
                     {check.title}
                   </h3>
-                  <p className="text-graphite-400 text-sm leading-relaxed mb-3">
+                  <p className="text-dusk-500 text-sm leading-relaxed mb-3">
                     {check.description}
                   </p>
-                  <div className="font-mono text-xs bg-graphite-800 rounded px-3 py-2 border border-graphite-700 flex items-center gap-2">
+                  <div className="font-mono text-xs bg-cream-200 rounded px-3 py-2 border border-cream-300 flex items-center gap-2">
                     <span className="text-red-400/80">{check.example}</span>
-                    <span className="text-amber-400 text-[10px] font-bold tracking-wider ml-auto">FLAGGED</span>
+                    <span className="text-rosegold-400 text-[10px] font-bold tracking-wider ml-auto">FLAGGED</span>
                   </div>
                 </div>
               </div>

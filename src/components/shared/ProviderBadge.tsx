@@ -14,11 +14,11 @@ export default function ProviderBadge({
   return (
     <div className="inline-flex items-center gap-2">
       <span className="badge badge-cyan">
-        <span className="inline-block w-1.5 h-1.5 rounded-full bg-cyan-400" />
+        <span className="inline-block w-1.5 h-1.5 rounded-full bg-coral-400" />
         via {model} · {provider}
       </span>
       {latency && (
-        <span className="text-graphite-500 text-[11px] font-mono">{latency}</span>
+        <span className="text-dusk-500 text-[11px] font-mono">{latency}</span>
       )}
     </div>
   );

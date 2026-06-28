@@ -87,7 +87,7 @@ function TypingText({ text, speed = 25 }: { text: string; speed?: number }) {
     <span>
       {displayed}
       {displayed.length < text.length && (
-        <span className="inline-block w-[2px] h-[1em] bg-cyan-400 ml-[1px] align-text-bottom animate-[blink_1s_step-end_infinite]" />
+        <span className="inline-block w-[2px] h-[1em] bg-coral-400 ml-[1px] align-text-bottom animate-[blink_1s_step-end_infinite]" />
       )}
     </span>
   );
@@ -142,7 +142,7 @@ export default function LiveDemo() {
         <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
           See the <span className="text-gradient-cyan">Glass Box</span> in action
         </h2>
-        <p className="text-graphite-300 text-lg max-w-xl mx-auto">
+        <p className="text-dusk-700 text-lg max-w-xl mx-auto">
           Every agent action follows the same 4-step flow: Think → Diff → Security Check → Apply.
           Nothing happens without your approval.
         </p>
@@ -151,11 +151,11 @@ export default function LiveDemo() {
       <div className="max-w-3xl mx-auto">
         <div className="glass-strong rounded-xl overflow-hidden" style={{ borderRadius: "var(--radius-lg)" }}>
           {/* Terminal header */}
-          <div className="flex items-center gap-2 px-4 py-3 border-b border-graphite-700">
+          <div className="flex items-center gap-2 px-4 py-3 border-b border-cream-300">
             <div className="w-3 h-3 rounded-full bg-red-400 opacity-60" />
-            <div className="w-3 h-3 rounded-full bg-amber-400 opacity-60" />
+            <div className="w-3 h-3 rounded-full bg-rosegold-400 opacity-60" />
             <div className="w-3 h-3 rounded-full bg-green-400 opacity-60" />
-            <span className="ml-3 text-graphite-500 text-sm font-mono">
+            <span className="ml-3 text-dusk-500 text-sm font-mono">
               Kareixo Agent Panel
             </span>
           </div>
@@ -166,10 +166,10 @@ export default function LiveDemo() {
             {activeStep >= 0 && (
               <div className="animate-fade-in-up">
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-md bg-graphite-700 flex items-center justify-center text-xs text-graphite-300 shrink-0 mt-0.5">
+                  <div className="w-6 h-6 rounded-md bg-cream-300 flex items-center justify-center text-xs text-dusk-700 shrink-0 mt-0.5">
                     U
                   </div>
-                  <div className="bg-graphite-800 rounded-lg px-4 py-3 text-graphite-100">
+                  <div className="bg-cream-200 rounded-lg px-4 py-3 text-dusk-900">
                     <TypingText text={(DEMO_STEPS[0] as any).text} speed={30} />
                   </div>
                 </div>
@@ -179,14 +179,14 @@ export default function LiveDemo() {
             {/* Thinking step */}
             {activeStep >= 1 && (
               <div className="animate-fade-in-up">
-                <div className="flex items-center gap-2 text-cyan-400 text-xs mb-2 ml-9">
+                <div className="flex items-center gap-2 text-coral-400 text-xs mb-2 ml-9">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/>
                     <line x1="9" y1="21" x2="15" y2="21"/>
                   </svg>
                   STEP 1 — Thinking
                 </div>
-                <div className="ml-9 glass-cyan rounded-lg px-4 py-3 text-cyan-200 text-xs leading-relaxed">
+                <div className="ml-9 glass-cyan rounded-lg px-4 py-3 text-coral-200 text-xs leading-relaxed">
                   <TypingText text={(DEMO_STEPS[1] as any).text} speed={15} />
                 </div>
               </div>
@@ -195,18 +195,18 @@ export default function LiveDemo() {
             {/* Diff step */}
             {activeStep >= 2 && (
               <div className="animate-fade-in-up">
-                <div className="flex items-center gap-2 text-cyan-400 text-xs mb-2 ml-9">
+                <div className="flex items-center gap-2 text-coral-400 text-xs mb-2 ml-9">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M12 3v18M3 12h18"/>
                   </svg>
                   STEP 2 — Proposed Change
-                  <span className="text-graphite-500 ml-2">
+                  <span className="text-dusk-500 ml-2">
                     {(DEMO_STEPS[2] as typeof DEMO_STEPS[2] & { filename: string }).filename}
                   </span>
                 </div>
-                <div className="ml-9 bg-graphite-900 rounded-lg overflow-hidden border border-graphite-700">
-                  <div className="flex items-center justify-between px-3 py-1.5 bg-graphite-800 border-b border-graphite-700 text-xs">
-                    <span className="text-graphite-400">
+                <div className="ml-9 bg-cream-100 rounded-lg overflow-hidden border border-cream-300">
+                  <div className="flex items-center justify-between px-3 py-1.5 bg-cream-200 border-b border-cream-300 text-xs">
+                    <span className="text-dusk-500">
                       {(DEMO_STEPS[2] as typeof DEMO_STEPS[2] & { filename: string }).filename}
                     </span>
                     <span>
@@ -222,7 +222,7 @@ export default function LiveDemo() {
                         className={
                           line.startsWith("+")
                             ? "text-green-400 bg-green-400/5"
-                            : "text-graphite-400"
+                            : "text-dusk-500"
                         }
                       >
                         {line}
@@ -236,7 +236,7 @@ export default function LiveDemo() {
             {/* Security check */}
             {activeStep >= 3 && (
               <div className="animate-fade-in-up">
-                <div className="flex items-center gap-2 text-amber-400 text-xs mb-2 ml-9">
+                <div className="flex items-center gap-2 text-rosegold-400 text-xs mb-2 ml-9">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                   </svg>
@@ -253,7 +253,7 @@ export default function LiveDemo() {
                       }}
                     >
                       <span className="text-green-400">✓</span>
-                      <span className="text-graphite-300">{check.name}</span>
+                      <span className="text-dusk-700">{check.name}</span>
                     </div>
                   ))}
                   <div
@@ -278,7 +278,7 @@ export default function LiveDemo() {
                 <span className="badge badge-cyan text-[11px]">
                   via {(DEMO_STEPS[4] as typeof DEMO_STEPS[4] & { model: string; provider: string; latency: string }).model} · {(DEMO_STEPS[4] as typeof DEMO_STEPS[4] & { model: string; provider: string; latency: string }).provider}
                 </span>
-                <span className="text-graphite-500 text-[11px]">
+                <span className="text-dusk-500 text-[11px]">
                   {(DEMO_STEPS[4] as typeof DEMO_STEPS[4] & { model: string; provider: string; latency: string }).latency}
                 </span>
                 <button className="btn btn-primary text-xs px-4 py-1.5 ml-auto">

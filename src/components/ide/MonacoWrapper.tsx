@@ -6,9 +6,9 @@ import dynamic from "next/dynamic";
 const Editor = dynamic(() => import("@monaco-editor/react").then((mod) => mod.Editor), {
   ssr: false,
   loading: () => (
-    <div className="absolute inset-0 flex items-center justify-center bg-slate-950">
-      <div className="text-graphite-500 font-mono text-sm flex items-center gap-2">
-        <div className="w-4 h-4 border-2 border-graphite-600 border-t-cyan-400 rounded-full animate-spin" />
+    <div className="absolute inset-0 flex items-center justify-center bg-cream-50">
+      <div className="text-dusk-500 font-mono text-sm flex items-center gap-2">
+        <div className="w-4 h-4 border-2 border-dusk-400 border-t-coral-400 rounded-full animate-spin" />
         Loading editor...
       </div>
     </div>
@@ -76,14 +76,14 @@ export default function MonacoWrapper({ file, content, onChange }: MonacoWrapper
             base: "vs-dark",
             inherit: true,
             rules: [
-              { background: "0a0f14" } // slate-950
+              { background: "0a0f14" } // cream-50
             ],
             colors: {
               "editor.background": "#0a0f14",
-              "editor.lineHighlightBackground": "#17202a", // graphite-900
-              "editorLineNumber.foreground": "#4d5b6b", // graphite-500
-              "editorIndentGuide.background": "#293645", // graphite-700
-              "editorIndentGuide.activeBackground": "#4d5b6b", // graphite-500
+              "editor.lineHighlightBackground": "#17202a", // cream-100
+              "editorLineNumber.foreground": "#4d5b6b", // dusk-500
+              "editorIndentGuide.background": "#293645", // cream-300
+              "editorIndentGuide.activeBackground": "#4d5b6b", // dusk-500
             }
           });
           monaco.editor.setTheme("kareixo");

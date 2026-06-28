@@ -15,9 +15,9 @@ export default function SecurityPass({ result, isChecking }: SecurityPassProps) 
 
   if (isChecking) {
     return (
-      <div className="flex items-center gap-3 p-3 rounded-md bg-graphite-800 border border-graphite-700 mt-2">
-        <div className="w-4 h-4 border-2 border-graphite-600 border-t-amber-400 rounded-full animate-spin shrink-0" />
-        <span className="text-sm font-medium text-graphite-300">
+      <div className="flex items-center gap-3 p-3 rounded-md bg-cream-200 border border-cream-300 mt-2">
+        <div className="w-4 h-4 border-2 border-dusk-400 border-t-rosegold-400 rounded-full animate-spin shrink-0" />
+        <span className="text-sm font-medium text-dusk-700">
           Running security checks...
         </span>
       </div>
@@ -31,14 +31,14 @@ export default function SecurityPass({ result, isChecking }: SecurityPassProps) 
       <div 
         className={`flex items-center justify-between p-3 rounded-md border cursor-pointer select-none transition-colors ${
           result.passed
-            ? "bg-amber-400/5 border-amber-400/20 hover:bg-amber-400/10"
+            ? "bg-rosegold-400/5 border-rosegold-400/20 hover:bg-rosegold-400/10"
             : "bg-red-400/10 border-red-400/30 hover:bg-red-400/20"
         }`}
         onClick={() => setExpanded(!expanded)}
       >
         <div className="flex items-center gap-3">
           {result.passed ? (
-            <div className="badge badge-amber glow-amber text-[10px] py-1 shadow-[0_0_15px_rgba(251,191,36,0.3)] border-amber-400/40 font-bold bg-amber-400/15">
+            <div className="badge badge-amber glow-amber text-[10px] py-1 shadow-[0_0_15px_rgba(251,191,36,0.3)] border-rosegold-400/40 font-bold bg-rosegold-400/15">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="mr-1">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               </svg>
@@ -55,7 +55,7 @@ export default function SecurityPass({ result, isChecking }: SecurityPassProps) 
             </div>
           )}
           
-          <span className="text-sm font-medium text-graphite-200">
+          <span className="text-sm font-medium text-dusk-700">
             {result.passed 
               ? "Code is safe to apply" 
               : "Review required before applying"}
@@ -64,21 +64,21 @@ export default function SecurityPass({ result, isChecking }: SecurityPassProps) 
         
         <svg 
           width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-          className={`text-graphite-400 transition-transform ${expanded ? "rotate-180" : ""}`}
+          className={`text-dusk-500 transition-transform ${expanded ? "rotate-180" : ""}`}
         >
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
       </div>
 
       {expanded && result.issues.length > 0 && (
-        <div className="p-3 bg-graphite-900 border border-t-0 border-graphite-700 rounded-b-md -mt-1 space-y-2">
+        <div className="p-3 bg-cream-100 border border-t-0 border-cream-300 rounded-b-md -mt-1 space-y-2">
           {result.issues.map(issue => (
-            <div key={issue.id} className="text-sm text-graphite-300 flex items-start gap-2">
+            <div key={issue.id} className="text-sm text-dusk-700 flex items-start gap-2">
               <span className="text-red-400 shrink-0 mt-0.5">•</span>
               <div>
-                <span className="font-medium text-graphite-200">{issue.message}</span>
+                <span className="font-medium text-dusk-700">{issue.message}</span>
                 {issue.line && (
-                  <span className="ml-2 text-xs font-mono text-graphite-500">Line {issue.line}</span>
+                  <span className="ml-2 text-xs font-mono text-dusk-500">Line {issue.line}</span>
                 )}
               </div>
             </div>
@@ -87,8 +87,8 @@ export default function SecurityPass({ result, isChecking }: SecurityPassProps) 
       )}
       
       {expanded && result.passed && (
-        <div className="p-3 bg-graphite-900 border border-t-0 border-graphite-700 rounded-b-md -mt-1">
-          <p className="text-sm text-graphite-400">
+        <div className="p-3 bg-cream-100 border border-t-0 border-cream-300 rounded-b-md -mt-1">
+          <p className="text-sm text-dusk-500">
             No hardcoded secrets, unsafe eval patterns, or obvious injection vectors detected.
           </p>
         </div>

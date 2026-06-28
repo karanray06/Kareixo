@@ -2,6 +2,9 @@ import { LanguageModel } from "ai";
 import { quotaTracker, ProviderName } from "./quota-tracker";
 
 import { moonshot, moonshotModels } from "./providers/moonshot";
+import { openRouter, openRouterModels } from "./providers/openrouter";
+import { cloudflare, cloudflareModels } from "./providers/cloudflare";
+import { zai, zaiModels } from "./providers/zai";
 import {
   nvidia, nvidiaModels,
   nvidiaMinimax, nvidiaKimi, nvidiaMistral,
@@ -13,31 +16,51 @@ export type ProviderEntry = {
   name: ProviderName;
   modelName: string;
   model: LanguageModel;
+  requiredEnvVars: string[];
 };
 
 export class ModelRouter {
-  private providers: ProviderEntry[];
+  public providers: ProviderEntry[];
   private lastUsedIndex = -1;
 
   constructor(providers?: ProviderEntry[]) {
     this.providers = providers ?? [
+      // ── OpenRouter (Broadest fallback) ──
+      { name: "OpenRouter", modelName: "Qwen OpenRouter",       model: openRouter(openRouterModels.qwen), requiredEnvVars: ["OPENROUTER_API_KEY"] },
+
       // ── NVIDIA NIM Free Endpoints (best models first) ──
-      { name: "NVIDIA", modelName: "Kimi K2.6",             model: nvidiaKimi(nvidiaModels.kimi_k2) },
-      { name: "NVIDIA", modelName: "DeepSeek V4 Pro",       model: nvidiaDeepseek(nvidiaModels.deepseek_v4) },
-      { name: "NVIDIA", modelName: "Qwen 3.5 397B",         model: nvidiaQwen(nvidiaModels.qwen_3_5) },
-      { name: "NVIDIA", modelName: "Mistral Medium 3.5",    model: nvidiaMistral(nvidiaModels.mistral_medium) },
-      { name: "NVIDIA", modelName: "MiniMax M3",            model: nvidiaMinimax(nvidiaModels.minimax_m3) },
-      { name: "NVIDIA", modelName: "GLM 5.1",               model: nvidiaGlm(nvidiaModels.glm_5_1) },
-      { name: "NVIDIA", modelName: "Gemma 4 31B",           model: nvidiaGemma(nvidiaModels.gemma_4) },
+      { name: "NVIDIA", modelName: "Kimi K2.6",               model: nvidiaKimi(nvidiaModels.kimi_k2), requiredEnvVars: ["NVIDIA_KEY_KIMI"] },
+      { name: "NVIDIA", modelName: "DeepSeek V4 Pro",         model: nvidiaDeepseek(nvidiaModels.deepseek_v4), requiredEnvVars: ["NVIDIA_KEY_DEEPSEEK"] },
+      { name: "NVIDIA", modelName: "Qwen 3.5 397B",           model: nvidiaQwen(nvidiaModels.qwen_3_5), requiredEnvVars: ["NVIDIA_KEY_QWEN"] },
+      { name: "NVIDIA", modelName: "Mistral Medium 3.5",      model: nvidiaMistral(nvidiaModels.mistral_medium), requiredEnvVars: ["NVIDIA_KEY_MISTRAL"] },
+      { name: "NVIDIA", modelName: "MiniMax M3",              model: nvidiaMinimax(nvidiaModels.minimax_m3), requiredEnvVars: ["NVIDIA_KEY_MINIMAX"] },
+      { name: "NVIDIA", modelName: "GLM 5.1",                 model: nvidiaGlm(nvidiaModels.glm_5_1), requiredEnvVars: ["NVIDIA_KEY_GLM"] },
+      { name: "NVIDIA", modelName: "Gemma 4 31B",             model: nvidiaGemma(nvidiaModels.gemma_4), requiredEnvVars: ["NVIDIA_KEY_GEMMA"] },
 
       // ── Groq (blazing fast) ──
-      { name: "Groq", modelName: "Llama 3 70B",             model: groq(groqModels.llama3) },
-      { name: "Groq", modelName: "Llama 3 8B",              model: groq(groqModels.llama3_8b) },
-      { name: "Groq", modelName: "Mixtral 8x7B",            model: groq(groqModels.mixtral) },
+      { name: "Groq", modelName: "Llama 3 70B",               model: groq(groqModels.llama3), requiredEnvVars: ["GROQ_API_KEY"] },
+      { name: "Groq", modelName: "Llama 3 8B",                model: groq(groqModels.llama3_8b), requiredEnvVars: ["GROQ_API_KEY"] },
+      { name: "Groq", modelName: "Mixtral 8x7B",              model: groq(groqModels.mixtral), requiredEnvVars: ["GROQ_API_KEY"] },
+      
+      // ── Z.AI (Fast open-weight models) ──
+      { name: "Z.AI", modelName: "Qwen 2 72B",                model: zai(zaiModels.qwen), requiredEnvVars: ["ZAI_API_KEY"] },
+
+      // ── Cloudflare (Workers AI) ──
+      { name: "Cloudflare", modelName: "Llama 3 8B",          model: cloudflare(cloudflareModels.llama3), requiredEnvVars: ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID"] },
 
       // ── Moonshot (Kimi direct API fallback) ──
-      { name: "Moonshot", modelName: "Kimi 8k",             model: moonshot(moonshotModels.v1_8k) },
+      { name: "Moonshot", modelName: "Kimi 8k",               model: moonshot(moonshotModels.v1_8k), requiredEnvVars: ["MOONSHOT_API_KEY"] },
     ];
+  }
+
+  public get allRequiredEnvVars(): string[] {
+    const vars = new Set<string>();
+    for (const p of this.providers) {
+      for (const v of p.requiredEnvVars) {
+        vars.add(v);
+      }
+    }
+    return Array.from(vars);
   }
 
   /** Round-robin, skipping rate-limited providers */

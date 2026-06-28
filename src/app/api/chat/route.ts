@@ -12,9 +12,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!process.env.GROQ_API_KEY && !process.env.MOONSHOT_API_KEY && !process.env.NVIDIA_KEY_KIMI) {
+    const allRequiredKeys = router.allRequiredEnvVars;
+    const hasAnyKey = allRequiredKeys.some((key) => !!process.env[key]);
+    
+    if (!hasAnyKey) {
       return NextResponse.json(
-        { error: "No AI provider keys configured. Please add GROQ_API_KEY, NVIDIA_KEY_* or MOONSHOT_API_KEY to your environment variables." },
+        { error: `No AI provider keys configured. Please add at least one of these to your environment variables: ${allRequiredKeys.join(", ")}` },
         { status: 401 }
       );
     }
@@ -39,16 +42,46 @@ export async function POST(req: Request) {
       return { role: msg.role, content: "" };
     });
 
-    // Pick a live provider using round-robin with failover
-    const provider = router.getNextProvider(taskType as "code" | "chat", forceProvider);
+    // Execute the request with automatic failover
+    const { result, provider } = await router.executeWithFailover(async (p) => {
+      const res = streamText({
+        model: p.model,
+        messages,
+      });
 
-    // Stream the real request
-    const result = streamText({
-      model: provider.model,
-      messages,
-    });
+      // Intercept the stream to catch immediate failures (e.g. 401/429) before streaming
+      const reader = res.fullStream.getReader();
+      const chunk1 = await reader.read();
+      const chunk2 = await reader.read();
 
-    // ai@7: use toUIMessageStreamResponse so the client-side useChat can parse it
+      // If the API call fails immediately, chunk2 will be the error
+      if (chunk2.value && chunk2.value.type === "error") {
+        throw chunk2.value.error;
+      }
+
+      // It's a valid stream. Reconstruct fullStream so the start chunks aren't lost.
+      const customFullStream = new ReadableStream({
+        start(controller) {
+          if (!chunk1.done) controller.enqueue(chunk1.value);
+          if (!chunk2.done) controller.enqueue(chunk2.value);
+        },
+        async pull(controller) {
+          const { done, value } = await reader.read();
+          if (done) controller.close();
+          else controller.enqueue(value);
+        },
+        cancel() {
+          reader.cancel();
+        }
+      });
+
+      // Override fullStream property bypass readonly
+      Object.defineProperty(res, "fullStream", { value: customFullStream, configurable: true });
+
+      return res;
+    }, taskType as "code" | "chat");
+
+    // return the response to the client
     return result.toUIMessageStreamResponse({
       headers: {
         "X-Kareixo-Provider": provider.name,

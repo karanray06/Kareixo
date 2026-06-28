@@ -77,7 +77,7 @@ export default function AudienceSection() {
             Built for builders with{" "}
             <span className="text-gradient-cyan">zero budget</span>
           </h2>
-          <p className="text-graphite-300 text-lg max-w-xl mx-auto">
+          <p className="text-dusk-700 text-lg max-w-xl mx-auto">
             We&apos;re not hiding who this is for. If you can&apos;t afford $20/month
             for AI tooling, you are exactly our user.
           </p>
@@ -87,15 +87,15 @@ export default function AudienceSection() {
           {AUDIENCES.map((audience, i) => (
             <div
               key={audience.title}
-              className="card hover:border-cyan-500/30 transition-all group"
+              className="card hover:border-coral-500/30 transition-all group"
             >
-              <div className="w-10 h-10 rounded-lg bg-cyan-400/10 border border-cyan-400/20 flex items-center justify-center text-cyan-400 mb-4 group-hover:glow-cyan transition-all">
+              <div className="w-10 h-10 rounded-lg bg-coral-400/10 border border-coral-400/20 flex items-center justify-center text-coral-400 mb-4 group-hover:glow-cyan transition-all">
                 {audience.icon}
               </div>
-              <h3 className="font-display text-lg font-bold text-graphite-100 mb-2">
+              <h3 className="font-display text-lg font-bold text-dusk-900 mb-2">
                 {audience.title}
               </h3>
-              <p className="text-graphite-400 text-sm leading-relaxed">
+              <p className="text-dusk-500 text-sm leading-relaxed">
                 {audience.description}
               </p>
             </div>
@@ -111,7 +111,7 @@ export default function AudienceSection() {
             <h3 className="font-display text-2xl md:text-4xl font-bold mb-3">
               Start building — no card, no signup limits
             </h3>
-            <p className="text-graphite-400 text-base mb-6 max-w-md mx-auto">
+            <p className="text-dusk-500 text-base mb-6 max-w-md mx-auto">
               Your projects sync everywhere, free. See exactly what the AI does
               and why, every time.
             </p>
@@ -136,7 +136,7 @@ export default function AudienceSection() {
                 />
               </svg>
             </a>
-            <p className="text-graphite-500 text-xs mt-4 font-mono">
+            <p className="text-dusk-500 text-xs mt-4 font-mono">
               No credit card · No usage limits · Projects sync across devices
             </p>
           </div>

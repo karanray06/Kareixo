@@ -103,7 +103,7 @@ export function IconWave() {
           return (
             <div
               key={index}
-              className="w-16 h-16 md:w-24 md:h-24 shrink-0 rounded-full flex items-center justify-center glass-strong border-graphite-700/50 shadow-lg text-graphite-300 transition-colors hover:text-cyan-400 hover:border-cyan-400/50"
+              className="w-16 h-16 md:w-24 md:h-24 shrink-0 rounded-full flex items-center justify-center glass-strong border-cream-300/50 shadow-lg text-dusk-700 transition-colors hover:text-coral-400 hover:border-coral-400/50"
               style={{
                 transform: `translateY(${yOffset}px)`,
                 // We use transform directly instead of tailwind for dynamic values,

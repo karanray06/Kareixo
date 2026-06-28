@@ -50,7 +50,7 @@ export default function RouterVisual() {
         <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
           How the <span className="text-gradient-cyan">free-tier router</span> works
         </h2>
-        <p className="text-graphite-300 text-lg max-w-xl mx-auto">
+        <p className="text-dusk-700 text-lg max-w-xl mx-auto">
           Your requests flow between multiple providers automatically. If one
           hits its limit, the router instantly fails over — under 2 seconds,
           completely invisible.
@@ -68,8 +68,8 @@ export default function RouterVisual() {
                 ${isRouting ? "glow-cyan scale-105" : ""}
               `}
               style={{
-                background: "linear-gradient(135deg, var(--cyan-700), var(--cyan-900))",
-                border: "1px solid var(--cyan-500)",
+                background: "linear-gradient(135deg, var(--coral-700), var(--coral-900))",
+                border: "1px solid var(--coral-500)",
               }}
             >
               <div className="text-center">
@@ -80,12 +80,12 @@ export default function RouterVisual() {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="1.5"
-                  className="mx-auto text-cyan-400 mb-1"
+                  className="mx-auto text-coral-400 mb-1"
                 >
                   <circle cx="12" cy="12" r="3" />
                   <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" />
                 </svg>
-                <span className="text-cyan-300 text-[10px] font-mono font-bold">
+                <span className="text-coral-300 text-[10px] font-mono font-bold">
                   ROUTER
                 </span>
               </div>
@@ -111,13 +111,13 @@ export default function RouterVisual() {
                         ? "bg-red-400/10 border border-red-400/30"
                         : isActive
                         ? "glass-cyan glow-cyan scale-[1.03]"
-                        : "bg-graphite-800 border border-graphite-700"
+                        : "bg-cream-200 border border-cream-300"
                     }
                   `}
                 >
                   {/* Connection line indicator */}
                   {isActive && !isFailed && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-0.5 h-3 bg-cyan-400 rounded-full" />
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-0.5 h-3 bg-coral-400 rounded-full" />
                   )}
 
                   <div
@@ -125,13 +125,13 @@ export default function RouterVisual() {
                       isFailed
                         ? "text-red-400"
                         : isActive
-                        ? "text-cyan-300"
-                        : "text-graphite-300"
+                        ? "text-coral-300"
+                        : "text-dusk-700"
                     }`}
                   >
                     {provider.name}
                   </div>
-                  <div className="text-[10px] text-graphite-500 font-mono leading-tight">
+                  <div className="text-[10px] text-dusk-500 font-mono leading-tight">
                     {provider.models}
                   </div>
 
@@ -142,8 +142,8 @@ export default function RouterVisual() {
                         isFailed
                           ? "bg-red-400"
                           : isActive
-                          ? "bg-cyan-400 animate-pulse"
-                          : "bg-graphite-600"
+                          ? "bg-coral-400 animate-pulse"
+                          : "bg-dusk-400"
                       }`}
                     />
                     <span
@@ -151,8 +151,8 @@ export default function RouterVisual() {
                         isFailed
                           ? "text-red-400"
                           : isActive
-                          ? "text-cyan-400"
-                          : "text-graphite-600"
+                          ? "text-coral-400"
+                          : "text-dusk-400"
                       }`}
                     >
                       {isFailed ? "429" : isActive ? "active" : "standby"}
@@ -164,13 +164,13 @@ export default function RouterVisual() {
           </div>
 
           {/* Stats */}
-          <div className="mt-6 flex items-center justify-center gap-6 text-xs text-graphite-400">
+          <div className="mt-6 flex items-center justify-center gap-6 text-xs text-dusk-500">
             <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full bg-cyan-400" />
+              <div className="w-2 h-2 rounded-full bg-coral-400" />
               <span>Round-robin routing</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full bg-amber-400" />
+              <div className="w-2 h-2 rounded-full bg-rosegold-400" />
               <span>&lt;2s failover</span>
             </div>
             <div className="flex items-center gap-1.5">

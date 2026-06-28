@@ -6,41 +6,37 @@
    ═══════════════════════════════════════════ */
 
 :root {
-  /* ── Surface / Background Palette ── */
-  --slate-950: hsl(220, 20%, 8%);
-  --graphite-900: hsl(218, 18%, 12%);
-  --graphite-800: hsl(216, 16%, 18%);
-  --graphite-700: hsl(214, 14%, 25%);
-  --graphite-600: hsl(213, 13%, 32%);
-  --graphite-500: hsl(212, 12%, 40%);
-  --graphite-400: hsl(211, 11%, 52%);
-  --graphite-300: hsl(210, 10%, 65%);
-  --graphite-200: hsl(209, 9%, 78%);
-  --graphite-100: hsl(208, 8%, 88%);
-  --white: hsl(0, 0%, 96%);
+  /* ── Surface palette — warm cream base, not stark white ── */
+  --cream-50:  hsl(32, 45%, 97%);
+  --cream-100: hsl(30, 42%, 94%);
+  --cream-200: hsl(28, 38%, 89%);
+  --cream-300: hsl(26, 32%, 82%);
+  --dusk-400:  hsl(280, 18%, 62%);
+  --dusk-500:  hsl(282, 20%, 48%);
+  --dusk-700:  hsl(285, 22%, 30%);
+  --dusk-900:  hsl(288, 24%, 16%);
 
-  /* ── Primary Accent — Glass Cyan ── */
-  --cyan-100: hsl(186, 72%, 88%);
-  --cyan-200: hsl(186, 72%, 72%);
-  --cyan-300: hsl(186, 72%, 62%);
-  --cyan-400: hsl(186, 72%, 52%);
-  --cyan-500: hsl(186, 72%, 42%);
-  --cyan-600: hsl(186, 72%, 32%);
-  --cyan-700: hsl(186, 72%, 22%);
-  --cyan-900: hsl(186, 72%, 10%);
+  /* ── Primary accent — coral/peach ── */
+  --coral-100: hsl(18, 75%, 90%);
+  --coral-200: hsl(16, 72%, 80%);
+  --coral-400: hsl(14, 68%, 65%);
+  --coral-500: hsl(12, 65%, 55%);
+  --coral-600: hsl(10, 62%, 45%);
 
-  /* ── Security Badge — Amber (trust warmth) ── */
-  --amber-100: hsl(38, 92%, 88%);
-  --amber-200: hsl(38, 92%, 72%);
-  --amber-400: hsl(38, 92%, 55%);
-  --amber-500: hsl(38, 92%, 45%);
-  --amber-600: hsl(38, 92%, 35%);
+  /* ── Secondary accent — periwinkle ── */
+  --periwinkle-200: hsl(230, 45%, 85%);
+  --periwinkle-400: hsl(228, 42%, 68%);
+  --periwinkle-600: hsl(226, 38%, 48%);
 
-  /* ── Semantic Colors ── */
-  --red-400: hsl(0, 72%, 55%);
-  --red-500: hsl(0, 72%, 45%);
-  --green-400: hsl(145, 60%, 48%);
-  --green-500: hsl(145, 60%, 38%);
+  /* ── Security/trust badge — rose-gold ── */
+  --rosegold-400: hsl(28, 70%, 60%);
+  --rosegold-500: hsl(26, 68%, 50%);
+
+  /* ── Semantic Colors (warmed) ── */
+  --red-400: hsl(6, 65%, 58%);
+  --red-500: hsl(6, 65%, 48%);
+  --green-400: hsl(110, 35%, 50%);
+  --green-500: hsl(110, 35%, 40%);
 
   /* ── Layout Tokens ── */
   --radius-xs: 4px;
@@ -58,8 +54,8 @@
   --shadow-sm: 0 1px 2px hsla(0, 0%, 0%, 0.3);
   --shadow-md: 0 4px 12px hsla(0, 0%, 0%, 0.35);
   --shadow-lg: 0 8px 30px hsla(0, 0%, 0%, 0.4);
-  --shadow-glow-cyan: 0 0 20px hsla(186, 72%, 52%, 0.25);
-  --shadow-glow-amber: 0 0 20px hsla(38, 92%, 55%, 0.25);
+  --shadow-glow-cyan: 0 0 20px hsla(14, 68%, 65%, 0.25);
+  --shadow-glow-amber: 0 0 20px hsla(28, 70%, 60%, 0.25);
 
   /* ── Transitions ── */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -70,32 +66,28 @@
 
 /* ── Tailwind v4 Theme Extension ── */
 @theme inline {
-  --color-slate-950: var(--slate-950);
-  --color-graphite-900: var(--graphite-900);
-  --color-graphite-800: var(--graphite-800);
-  --color-graphite-700: var(--graphite-700);
-  --color-graphite-600: var(--graphite-600);
-  --color-graphite-500: var(--graphite-500);
-  --color-graphite-400: var(--graphite-400);
-  --color-graphite-300: var(--graphite-300);
-  --color-graphite-200: var(--graphite-200);
-  --color-graphite-100: var(--graphite-100);
+  --color-cream-50: var(--cream-50);
+  --color-cream-100: var(--cream-100);
+  --color-cream-200: var(--cream-200);
+  --color-cream-300: var(--cream-300);
+  --color-dusk-400: var(--dusk-400);
+  --color-dusk-500: var(--dusk-500);
+  --color-dusk-700: var(--dusk-700);
+  --color-dusk-900: var(--dusk-900);
   --color-kareixo-white: var(--white);
 
-  --color-cyan-100: var(--cyan-100);
-  --color-cyan-200: var(--cyan-200);
-  --color-cyan-300: var(--cyan-300);
-  --color-cyan-400: var(--cyan-400);
-  --color-cyan-500: var(--cyan-500);
-  --color-cyan-600: var(--cyan-600);
-  --color-cyan-700: var(--cyan-700);
-  --color-cyan-900: var(--cyan-900);
+  --color-coral-100: var(--coral-100);
+  --color-coral-200: var(--coral-200);
+  --color-coral-400: var(--coral-400);
+  --color-coral-500: var(--coral-500);
+  --color-coral-600: var(--coral-600);
 
-  --color-amber-100: var(--amber-100);
-  --color-amber-200: var(--amber-200);
-  --color-amber-400: var(--amber-400);
-  --color-amber-500: var(--amber-500);
-  --color-amber-600: var(--amber-600);
+  --color-periwinkle-200: var(--periwinkle-200);
+  --color-periwinkle-400: var(--periwinkle-400);
+  --color-periwinkle-600: var(--periwinkle-600);
+
+  --color-rosegold-400: var(--rosegold-400);
+  --color-rosegold-500: var(--rosegold-500);
 
   --color-red-400: var(--red-400);
   --color-red-500: var(--red-500);
@@ -117,8 +109,8 @@
 
 html {
   scroll-behavior: smooth;
-  background-color: var(--slate-950);
-  color: var(--graphite-100);
+  background-color: var(--cream-50);
+  color: var(--dusk-700);
 }
 
 body {
@@ -127,14 +119,14 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
-  background-color: var(--slate-950);
+  background-color: var(--cream-50);
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: "Space Grotesk", system-ui, sans-serif;
   line-height: 1.15;
   font-weight: 700;
-  color: var(--white);
+  color: var(--dusk-900);
 }
 
 code, pre, kbd, samp {
@@ -142,18 +134,18 @@ code, pre, kbd, samp {
 }
 
 a {
-  color: var(--cyan-400);
+  color: var(--coral-500);
   text-decoration: none;
   transition: color var(--transition-fast);
 }
 
 a:hover {
-  color: var(--cyan-300);
+  color: var(--coral-400);
 }
 
 ::selection {
-  background: hsla(186, 72%, 52%, 0.3);
-  color: var(--white);
+  background: hsla(14, 68%, 65%, 0.3);
+  color: var(--dusk-900);
 }
 
 /* ── Scrollbar Styling ── */
@@ -163,16 +155,16 @@ a:hover {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--graphite-900);
+  background: var(--cream-100);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--graphite-600);
+  background: var(--cream-300);
   border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--graphite-500);
+  background: var(--dusk-400);
 }
 
 /* ═══════════════════════════════════════════
@@ -181,36 +173,36 @@ a:hover {
 
 /* ── Glass Morphism ── */
 .glass {
-  background: hsla(218, 18%, 12%, 0.6);
+  background: hsla(32, 45%, 97%, 0.7);
   backdrop-filter: blur(16px) saturate(1.2);
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
-  border: 1px solid hsla(214, 14%, 25%, 0.5);
+  border: 1px solid hsla(280, 18%, 62%, 0.2);
 }
 
 .glass-strong {
-  background: hsla(218, 18%, 12%, 0.85);
+  background: hsla(32, 45%, 97%, 0.9);
   backdrop-filter: blur(24px) saturate(1.4);
   -webkit-backdrop-filter: blur(24px) saturate(1.4);
-  border: 1px solid hsla(214, 14%, 25%, 0.7);
+  border: 1px solid hsla(280, 18%, 62%, 0.3);
 }
 
 .glass-cyan {
-  background: hsla(186, 72%, 52%, 0.08);
+  background: hsla(14, 68%, 65%, 0.08);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid hsla(186, 72%, 52%, 0.2);
+  border: 1px solid hsla(14, 68%, 65%, 0.2);
 }
 
 /* ── Gradient Text ── */
 .text-gradient-cyan {
-  background: linear-gradient(135deg, var(--cyan-300), var(--cyan-500));
+  background: linear-gradient(135deg, var(--coral-400), var(--coral-600));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .text-gradient-amber {
-  background: linear-gradient(135deg, var(--amber-200), var(--amber-500));
+  background: linear-gradient(135deg, var(--rosegold-400), var(--coral-400));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -244,18 +236,18 @@ a:hover {
 }
 
 .btn:focus-visible {
-  outline: 2px solid var(--cyan-400);
+  outline: 2px solid var(--coral-400);
   outline-offset: 2px;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--cyan-500), var(--cyan-400));
-  color: var(--slate-950);
+  background: linear-gradient(135deg, var(--coral-500), var(--coral-400));
+  color: var(--cream-50);
   font-weight: 700;
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, var(--cyan-400), var(--cyan-300));
+  background: linear-gradient(135deg, var(--coral-400), var(--coral-200));
   box-shadow: var(--shadow-glow-cyan);
   transform: translateY(-1px);
 }
@@ -265,24 +257,24 @@ a:hover {
 }
 
 .btn-secondary {
-  background: var(--graphite-800);
-  color: var(--graphite-100);
-  border: 1px solid var(--graphite-700);
+  background: var(--cream-100);
+  color: var(--dusk-700);
+  border: 1px solid var(--cream-300);
 }
 
 .btn-secondary:hover {
-  background: var(--graphite-700);
-  border-color: var(--graphite-600);
+  background: var(--cream-200);
+  border-color: var(--dusk-400);
 }
 
 .btn-ghost {
   background: transparent;
-  color: var(--graphite-300);
+  color: var(--dusk-500);
 }
 
 .btn-ghost:hover {
-  background: hsla(214, 14%, 25%, 0.3);
-  color: var(--graphite-100);
+  background: hsla(280, 18%, 62%, 0.1);
+  color: var(--dusk-900);
 }
 
 /* ── Badge ── */
@@ -299,15 +291,15 @@ a:hover {
 }
 
 .badge-cyan {
-  background: hsla(186, 72%, 52%, 0.12);
-  color: var(--cyan-400);
-  border: 1px solid hsla(186, 72%, 52%, 0.25);
+  background: hsla(14, 68%, 65%, 0.12);
+  color: var(--coral-500);
+  border: 1px solid hsla(14, 68%, 65%, 0.25);
 }
 
 .badge-amber {
-  background: hsla(38, 92%, 55%, 0.12);
-  color: var(--amber-400);
-  border: 1px solid hsla(38, 92%, 55%, 0.25);
+  background: hsla(28, 70%, 60%, 0.12);
+  color: var(--rosegold-500);
+  border: 1px solid hsla(28, 70%, 60%, 0.25);
 }
 
 .badge-green {
@@ -324,15 +316,16 @@ a:hover {
 
 /* ── Card ── */
 .card {
-  background: var(--graphite-900);
-  border: 1px solid var(--graphite-700);
+  background: var(--cream-100);
+  border: 1px solid var(--cream-200);
   border-radius: var(--radius-lg);
   padding: 24px;
   transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
 }
 
 .card:hover {
-  border-color: var(--graphite-600);
+  border-color: var(--dusk-400);
   box-shadow: var(--shadow-md);
 }
 
@@ -431,12 +424,12 @@ a:hover {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    var(--cyan-700) 20%,
-    var(--cyan-400) 50%,
-    var(--cyan-700) 80%,
+    var(--coral-200) 20%,
+    var(--coral-400) 50%,
+    var(--coral-200) 80%,
     transparent 100%
   );
-  opacity: 0.3;
+  opacity: 0.5;
   margin: 0 auto;
   max-width: 800px;
 }
@@ -449,9 +442,9 @@ a:hover {
   transform: translateX(-50%);
   width: 6px;
   height: 6px;
-  background: var(--cyan-400);
+  background: var(--coral-400);
   border-radius: 50%;
-  box-shadow: 0 0 12px var(--cyan-400);
+  box-shadow: 0 0 12px var(--coral-400);
 }
 
 /* ── Scroll reveal animation ── */
@@ -484,7 +477,7 @@ a:hover {
   left: -20%;
   width: 20%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--cyan-400), transparent);
+  background: linear-gradient(90deg, transparent, var(--coral-400), transparent);
   animation: scanline 4s linear infinite;
   pointer-events: none;
 }
@@ -499,10 +492,10 @@ a:hover {
 }
 
 .glow-orb-cyan {
-  background: radial-gradient(circle, var(--cyan-400), transparent 70%);
+  background: radial-gradient(circle, var(--coral-200), transparent 70%);
 }
 
 .glow-orb-amber {
-  background: radial-gradient(circle, var(--amber-400), transparent 70%);
+  background: radial-gradient(circle, var(--rosegold-400), transparent 70%);
 }
 
