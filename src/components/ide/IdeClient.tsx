@@ -352,9 +352,12 @@ export default function IdeClient() {
           className="hidden lg:flex flex-col relative"
         >
           <AgentPanel
+            projectId={activeProject.id}
+            localFiles={localFiles}
             currentFile={activeFile}
             currentContent={localFiles[activeFile] || ""}
             onApplyChange={handleApplyChange}
+            onUpdateFile={(path, content) => setLocalFiles(prev => ({ ...prev, [path]: content }))}
           />
         </Panel>
       </Group>
