@@ -58,7 +58,11 @@ function CodeFragment({
   });
 
   return (
-    <e.mesh theatreKey={`CodeFragment ${index}`} ref={ref}>
+    <e.mesh 
+      theatreKey={`CodeFragment ${index}`} 
+      ref={ref}
+      position={[Math.cos(angle) * radius, yOffset, Math.sin(angle) * radius]}
+    >
       <Text
         fontSize={0.13}
         color="#e88a6d" // coral-400

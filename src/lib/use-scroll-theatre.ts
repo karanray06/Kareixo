@@ -3,22 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { getProject, ISheet } from "@theatre/core";
 
-// We create a minimal programmatic state for the scroll animation
-// rather than requiring the studio editor.
-const heroAnimationState = {
-  "sheetsById": {
-    "Hero Scene": {
-      "staticOverrides": {
-        "byObject": {}
-      },
-      "sequence": {
-        "type": "PositionalSequence",
-        "length": 10,
-        "tracksByObject": {}
-      }
-    }
-  }
-};
+
 
 let projectInstance: any = null;
 
@@ -29,7 +14,7 @@ export function useScrollTheatre() {
   useEffect(() => {
     // Only initialize once on client to prevent crashes on remount
     if (!projectInstance) {
-      projectInstance = getProject("Kareixo Hero", { state: heroAnimationState });
+      projectInstance = getProject("Kareixo Hero");
     }
     const newSheet = projectInstance.sheet("Hero Scene");
     setSheet(newSheet);
