@@ -3,6 +3,8 @@ import QuotaDashboard from "@/components/ide/QuotaDashboard";
 import { ProjectProvider } from "@/components/ide/ProjectContext";
 import ProjectHeader from "@/components/ide/ProjectHeader";
 
+export const dynamic = "force-dynamic";
+
 export default async function IdeLayout({
   children,
 }: {
@@ -11,7 +13,10 @@ export default async function IdeLayout({
   let session = null;
   try {
     session = await auth();
-  } catch (e) {
+  } catch (e: any) {
+    if (e.digest === "DYNAMIC_SERVER_USAGE") {
+      throw e; // Let Next.js handle dynamic route bailouts internally
+    }
     console.error("[IdeLayout] auth() failed:", e);
   }
 
