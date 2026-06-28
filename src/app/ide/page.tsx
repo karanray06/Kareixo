@@ -44,7 +44,17 @@ function HorizontalSep({ id }: { id: string }) {
 const safeStorage = {
   getItem: (key: string) => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem(key);
+      try {
+        const val = localStorage.getItem(key);
+        if (!val) return null;
+        // Verify it parses as JSON to prevent useDefaultLayout from crashing React
+        JSON.parse(val);
+        return val;
+      } catch (e) {
+        console.warn(`Corrupted localStorage key ${key}, clearing it.`);
+        localStorage.removeItem(key);
+        return null;
+      }
     }
     return null;
   },
@@ -71,8 +81,8 @@ export default function IdePage() {
   const terminalPanelRef = usePanelRef();
 
   // Persistence hooks — saves/restores layout from localStorage automatically
-  const hLayout = useDefaultLayout({ id: "kareixo-ide-h", storage: safeStorage });
-  const vLayout = useDefaultLayout({ id: "kareixo-ide-v", storage: safeStorage });
+  const hLayout = useDefaultLayout({ id: "ide-h-v3", storage: safeStorage });
+  const vLayout = useDefaultLayout({ id: "ide-v-v3", storage: safeStorage });
 
   // Debounced IDE resize event dispatcher — tells Monaco & xterm to relayout
   const resizeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -257,7 +267,7 @@ export default function IdePage() {
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
       <Group
-        id="kareixo-ide-h"
+        id="ide-h-v3"
         orientation="horizontal"
         defaultLayout={hLayout.defaultLayout}
         onLayoutChange={handleHLayoutChange}
@@ -287,7 +297,7 @@ export default function IdePage() {
         {/* ── Center: Editor + Terminal ─────────────────────────── */}
         <Panel id="center">
           <Group
-            id="kareixo-ide-v"
+            id="ide-v-v3"
             orientation="vertical"
             defaultLayout={vLayout.defaultLayout}
             onLayoutChange={handleVLayoutChange}
