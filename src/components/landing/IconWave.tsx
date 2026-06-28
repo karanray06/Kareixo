@@ -62,7 +62,7 @@ export function IconWave() {
           // Calculate the sine wave position
           // Offset based on index, modulated by scroll position
           const wavePhase = (index * 0.4) + (scrollY * -0.003); 
-          const yOffset = Math.sin(wavePhase) * 60; // 60px amplitude
+          const yOffset = (Math.sin(wavePhase) * 60).toFixed(2); // 60px amplitude, rounded for hydration
           
           return (
             <div
