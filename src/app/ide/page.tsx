@@ -2,6 +2,8 @@
 
 import dynamic from "next/dynamic";
 
+import IdeErrorBoundary from "@/components/ide/IdeErrorBoundary";
+
 // IdeClient contains react-resizable-panels, Monaco, and xterm — all of which
 // use browser-only APIs (window.matchMedia, localStorage, etc.).
 // Loading with ssr: false prevents Next.js from ever running them on the server.
@@ -18,5 +20,9 @@ const IdeClient = dynamic(() => import("@/components/ide/IdeClient"), {
 });
 
 export default function IdePage() {
-  return <IdeClient />;
+  return (
+    <IdeErrorBoundary>
+      <IdeClient />
+    </IdeErrorBoundary>
+  );
 }
