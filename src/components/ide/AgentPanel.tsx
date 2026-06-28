@@ -129,7 +129,7 @@ export default function AgentPanel({
   return (
     <div className="flex flex-col h-full bg-graphite-900 border-l border-graphite-700">
       {/* Header */}
-      <div className="h-12 border-b border-graphite-700 flex items-center justify-between px-4 shrink-0 bg-graphite-800">
+      <div className="h-9 border-b border-graphite-700 flex items-center justify-between px-4 shrink-0 bg-graphite-800">
         <div className="flex items-center gap-2">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-cyan-400">
             <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/>
@@ -261,6 +261,21 @@ export default function AgentPanel({
                 Changes applied to {currentFile}.
               </div>
             )}
+          </div>
+        )}
+
+        {isStreaming && phase === "thinking" && !lastAssistantMessage && (
+          <div className="flex gap-3 animate-pulse">
+            <div className="w-8 h-8 rounded bg-cyan-900/30 border border-cyan-800/50 shrink-0 flex items-center justify-center">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-cyan-400">
+                <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/>
+              </svg>
+            </div>
+            <div className="flex-1 space-y-2 py-1">
+              <div className="h-3 bg-graphite-800 rounded w-3/4"></div>
+              <div className="h-3 bg-graphite-800 rounded w-1/2"></div>
+              <div className="h-3 bg-graphite-800 rounded w-5/6"></div>
+            </div>
           </div>
         )}
       </div>

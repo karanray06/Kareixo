@@ -164,17 +164,40 @@ export default function TerminalPanel({ files = {} }: TerminalPanelProps) {
     <div className="h-64 bg-slate-950 border-t border-graphite-700 flex flex-col shrink-0">
       <div className="h-8 border-b border-graphite-800 flex items-center px-4 bg-graphite-900 justify-between">
         <div className="flex items-center gap-3">
-          <span className="text-[11px] font-bold text-graphite-300 uppercase tracking-wider">Terminal</span>
+          <div className="flex items-center">
+            <span className="text-[11px] font-bold text-graphite-300 uppercase tracking-wider pr-3 border-r border-graphite-800">Terminal</span>
+            <button 
+              className="ml-2 text-graphite-500 hover:text-white transition-colors p-1 rounded hover:bg-graphite-800"
+              title="New Terminal (Coming in v2)"
+              onClick={() => alert("Multi-terminal support is coming in v2. For now, enjoy the single Lite Shell!")}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </button>
+          </div>
           <span className="flex items-center gap-1.5 text-[10px] font-mono text-cyan-400 border border-cyan-400/30 bg-cyan-400/10 px-1.5 py-0.5 rounded">
             <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
             Lite Shell — file commands only
           </span>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <button
-            className="text-graphite-500 hover:text-white transition-colors"
+            className="text-graphite-500 hover:text-white transition-colors p-1 rounded hover:bg-graphite-800"
             onClick={() => termInstance.current?.clear()}
-            title="Clear"
+            title="Clear Terminal"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>
+              <polyline points="21 3 21 8 16 8"></polyline>
+            </svg>
+          </button>
+          <div className="w-px h-4 bg-graphite-800 mx-1"></div>
+          <button
+            className="text-graphite-500 hover:text-white transition-colors p-1 rounded hover:bg-graphite-800"
+            title="Close Terminal (Coming in v2)"
+            onClick={() => alert("Collapsible terminal panel is coming in v2.")}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="18" y1="6" x2="6" y2="18" />
