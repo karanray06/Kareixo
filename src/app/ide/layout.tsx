@@ -8,7 +8,13 @@ export default async function IdeLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
+  let session = null;
+  try {
+    session = await auth();
+  } catch (e) {
+    console.error("[IdeLayout] auth() failed:", e);
+  }
+
   
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-slate-950 text-graphite-100">
