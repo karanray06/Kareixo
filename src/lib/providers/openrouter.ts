@@ -10,7 +10,7 @@ export const openRouter = createOpenAI({
 });
 
 export const openRouterModels = {
-  deepseek: "deepseek/deepseek-chat-v4:free",
-  qwen: "qwen/qwen3-coder:free",
+  gemini: "google/gemini-2.0-flash-exp:free",
+  qwen: "qwen/qwen-2.5-coder-32b-instruct:free",
   llama: "meta-llama/llama-3.3-70b-instruct:free",
 };

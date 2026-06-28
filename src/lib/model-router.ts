@@ -19,8 +19,8 @@ export class ModelRouter {
 
   constructor(providers?: ProviderEntry[]) {
     this.providers = providers ?? [
-      { name: "OpenRouter", modelName: "DeepSeek V4 Flash", model: openRouter(openRouterModels.deepseek) },
-      { name: "OpenRouter", modelName: "Qwen3 Coder",       model: openRouter(openRouterModels.qwen) },
+      { name: "OpenRouter", modelName: "Gemini 2.0 Flash", model: openRouter(openRouterModels.gemini) },
+      { name: "OpenRouter", modelName: "Qwen 2.5 Coder",   model: openRouter(openRouterModels.qwen) },
       { name: "NVIDIA",     modelName: "Nemotron 4",         model: nvidia(nvidiaModels.nemotron) },
       { name: "Z.AI",       modelName: "GLM 4 Flash",        model: zai(zaiModels.glm4_flash) },
       { name: "Cloudflare", modelName: "Qwen Coder",         model: cloudflare(cloudflareModels.qwen_coder) },
