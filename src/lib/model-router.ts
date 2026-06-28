@@ -43,7 +43,7 @@ export class ModelRouter {
       { name: "Groq", modelName: "Mixtral 8x7B",              model: groq(groqModels.mixtral), requiredEnvVars: ["GROQ_API_KEY"] },
       
       // ── Z.AI (Fast open-weight models) ──
-      { name: "Z.AI", modelName: "Qwen 2 72B",                model: zai(zaiModels.qwen), requiredEnvVars: ["ZAI_API_KEY"] },
+      { name: "Z.AI", modelName: "GLM-4 Flash",               model: zai(zaiModels.glm4_flash), requiredEnvVars: ["ZAI_API_KEY"] },
 
       // ── Cloudflare (Workers AI) ──
       { name: "Cloudflare", modelName: "Llama 3 8B",          model: cloudflare(cloudflareModels.llama3), requiredEnvVars: ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID"] },
