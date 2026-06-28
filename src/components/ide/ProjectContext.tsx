@@ -13,6 +13,7 @@ interface ProjectContextType {
   activeProject: Project | null;
   setActiveProjectId: (id: string) => void;
   isLoading: boolean;
+  error: string | null;
   isSaving: boolean;
   setIsSaving: (val: boolean) => void;
   refreshProjects: () => Promise<void>;
@@ -24,10 +25,12 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   const fetchProjects = async () => {
     try {
+      setError(null);
       const res = await fetch("/api/projects");
       if (res.ok) {
         const data = await res.json();
@@ -45,11 +48,20 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
             const newProj = await createRes.json();
             setProjects([newProj]);
             setActiveProjectId(newProj.id);
+          } else {
+            const errText = await createRes.text();
+            console.error("Failed to create project:", errText);
+            setError(`Failed to create default project: ${createRes.status} ${errText}`);
           }
         }
+      } else {
+        const errText = await res.text();
+        console.error("Failed to fetch projects:", errText);
+        setError(`Failed to load projects: ${res.status} ${errText}`);
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error("Failed to load projects", e);
+      setError(e.message || "Unknown network error");
     } finally {
       setIsLoading(false);
     }
@@ -68,6 +80,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       activeProject,
       setActiveProjectId,
       isLoading,
+      error,
       isSaving,
       setIsSaving,
       refreshProjects: fetchProjects

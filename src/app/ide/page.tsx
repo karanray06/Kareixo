@@ -43,7 +43,7 @@ function HorizontalSep({ id }: { id: string }) {
 // ── IDE Page ─────────────────────────────────────────────────────────────────
 
 export default function IdePage() {
-  const { activeProject, setIsSaving } = useProject();
+  const { activeProject, setIsSaving, error } = useProject();
   const [activeFile, setActiveFile] = useState<string>("");
 
   const [persistedFiles, setPersistedFiles] = useState<Record<string, string>>({});
@@ -219,6 +219,15 @@ export default function IdePage() {
       );
     }
   };
+
+  if (error) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center bg-slate-950 text-red-400 p-8 text-center gap-4">
+        <h2 className="text-xl font-bold">Failed to load IDE</h2>
+        <p className="text-sm font-mono bg-red-950/50 p-4 rounded-md border border-red-900/50 max-w-2xl whitespace-pre-wrap">{error}</p>
+      </div>
+    );
+  }
 
   if (isLoading || !activeProject) {
     return (
