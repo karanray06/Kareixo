@@ -20,14 +20,18 @@ const heroAnimationState = {
   }
 };
 
+let projectInstance: any = null;
+
 export function useScrollTheatre() {
   const [sheet, setSheet] = useState<ISheet | null>(null);
 
   // Initialize Theatre.js project
   useEffect(() => {
-    // Only initialize once on client
-    const project = getProject("Kareixo Hero", { state: heroAnimationState });
-    const newSheet = project.sheet("Hero Scene");
+    // Only initialize once on client to prevent crashes on remount
+    if (!projectInstance) {
+      projectInstance = getProject("Kareixo Hero", { state: heroAnimationState });
+    }
+    const newSheet = projectInstance.sheet("Hero Scene");
     setSheet(newSheet);
   }, []);
 
