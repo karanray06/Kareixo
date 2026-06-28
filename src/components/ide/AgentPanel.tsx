@@ -98,24 +98,33 @@ export default function AgentPanel({
   const lastAssistantMessage = [...messages].reverse().find((m) => m.role === "assistant");
 
   const handleSubmit = async () => {
-    const trimmed = input?.trim() || "";
-    if (!trimmed || status === "streaming" || status === "submitted") return;
+    try {
+      const trimmed = input?.trim() || "";
+      if (!trimmed || status === "streaming" || status === "submitted") return;
 
-    setStartTime(Date.now());
-    setPhase("thinking");
-    setProposedCode(null);
-    setSecurityResult(null);
-    setProviderInfo(null);
-    setLatency(null);
-    setInput("");
+      setStartTime(Date.now());
+      setPhase("thinking");
+      setProposedCode(null);
+      setSecurityResult(null);
+      setProviderInfo(null);
+      setLatency(null);
+      
+      // Temporarily store the old input in case of failure
+      const oldInput = input;
+      setInput("");
 
-    // Build system context: include current file content
-    await append({
-      role: "user",
-      content: explainMode
-        ? `Explain clearly (no code changes needed): ${trimmed}\n\nCurrent file (${currentFile}):\n\`\`\`\n${currentContent}\n\`\`\``
-        : `You are a coding assistant. The user is editing \`${currentFile}\`. Return ONLY the complete updated file content inside a single fenced code block. Do not include any prose outside the code block unless asked to explain.\n\nUser request: ${trimmed}\n\nCurrent file content:\n\`\`\`\n${currentContent}\n\`\`\``,
-    });
+      // Build system context: include current file content
+      await append({
+        role: "user",
+        content: explainMode
+          ? `Explain clearly (no code changes needed): ${trimmed}\n\nCurrent file (${currentFile}):\n\`\`\`\n${currentContent}\n\`\`\``
+          : `You are a coding assistant. The user is editing \`${currentFile}\`. Return ONLY the complete updated file content inside a single fenced code block. Do not include any prose outside the code block unless asked to explain.\n\nUser request: ${trimmed}\n\nCurrent file content:\n\`\`\`\n${currentContent}\n\`\`\``,
+      });
+    } catch (e: any) {
+      console.error("AgentPanel handleSubmit error:", e);
+      window.alert("Submit error: " + (e.message || String(e)));
+      setPhase("idle");
+    }
   };
 
   const handleApply = () => {
