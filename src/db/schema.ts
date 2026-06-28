@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, integer } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -23,5 +23,15 @@ export const files = pgTable("files", {
   path: text("path").notNull(), // e.g. '/src/index.js'
   content: text("content").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+/** Persisted per-provider quota state — survives cold starts & is shared across instances */
+export const providerStats = pgTable("provider_stats", {
+  providerName: text("provider_name").primaryKey(),
+  requestsToday: integer("requests_today").notNull().default(0),
+  rateLimitHits: integer("rate_limit_hits").notNull().default(0),
+  lastRateLimitAt: timestamp("last_rate_limit_at"),
+  lastRequestAt: timestamp("last_request_at"),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
