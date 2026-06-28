@@ -1,3 +1,5 @@
+"use client";
+
 import dynamic from "next/dynamic";
 
 // IdeClient contains react-resizable-panels, Monaco, and xterm — all of which
