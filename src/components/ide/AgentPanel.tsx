@@ -107,6 +107,7 @@ export default function AgentPanel({
     setSecurityResult(null);
     setProviderInfo(null);
     setLatency(null);
+    setInput("");
 
     // Build system context: include current file content
     await append({
@@ -115,8 +116,6 @@ export default function AgentPanel({
         ? `Explain clearly (no code changes needed): ${trimmed}\n\nCurrent file (${currentFile}):\n\`\`\`\n${currentContent}\n\`\`\``
         : `You are a coding assistant. The user is editing \`${currentFile}\`. Return ONLY the complete updated file content inside a single fenced code block. Do not include any prose outside the code block unless asked to explain.\n\nUser request: ${trimmed}\n\nCurrent file content:\n\`\`\`\n${currentContent}\n\`\`\``,
     });
-
-    setInput("");
   };
 
   const handleApply = () => {
@@ -191,20 +190,39 @@ export default function AgentPanel({
           </div>
         )}
 
-        {/* Chat messages (non-code exchanges for explain mode) */}
-        {messages.map((msg: any) => (
-          msg.role === "user" ? (
-            <div key={msg.id} className="flex gap-3">
-              <div className="w-8 h-8 rounded bg-graphite-800 border border-graphite-700 shrink-0 flex items-center justify-center text-sm font-bold text-graphite-300 mt-1">
-                U
+        {/* Chat messages */}
+        {messages.map((msg: any, i: number) => {
+          if (msg.role === "user") {
+            return (
+              <div key={msg.id} className="flex gap-3">
+                <div className="w-8 h-8 rounded bg-graphite-800 border border-graphite-700 shrink-0 flex items-center justify-center text-sm font-bold text-graphite-300 mt-1">
+                  U
+                </div>
+                <div className="flex-1 bg-graphite-800 rounded-lg p-3 text-sm text-graphite-100 whitespace-pre-wrap">
+                  {/* Strip the injected context from display */}
+                  {msg.content.split("\n\nCurrent file")[0].replace(/^You are a coding assistant[\s\S]*?User request: /, "")}
+                </div>
               </div>
-              <div className="flex-1 bg-graphite-800 rounded-lg p-3 text-sm text-graphite-100">
-                {/* Strip the injected context from display */}
-                {msg.content.split("\n\nCurrent file")[0].replace(/^You are a coding assistant[\s\S]*?User request: /, "")}
+            );
+          }
+
+          // For assistant messages: render them if they are the FINAL text response in "idle" phase,
+          // or if they are explicitly marked as Error
+          const isError = msg.content.startsWith("**Error:**");
+          const isLastMessage = i === messages.length - 1;
+          const hasCode = !!extractCode(msg.content);
+          
+          if ((phase === "idle" || isError) && !hasCode && msg.role === "assistant" && isLastMessage) {
+            return (
+              <div key={msg.id} className="ml-11 space-y-4">
+                <div className={`p-3 rounded-lg text-sm whitespace-pre-wrap ${isError ? "bg-red-950/50 text-red-400 border border-red-900/50" : "bg-graphite-800 text-graphite-300"}`}>
+                  {msg.content}
+                </div>
               </div>
-            </div>
-          ) : null
-        ))}
+            );
+          }
+          return null;
+        })}
 
         {/* Agent Response Flow */}
         {(phase === "thinking" || isStreaming) && (
