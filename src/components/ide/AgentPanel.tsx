@@ -84,6 +84,14 @@ export default function AgentPanel({
         setPhase("idle");
       }
     },
+    onError: (err) => {
+      setPhase("idle");
+      // Append a system error message to the chat
+      append({
+        role: "assistant",
+        content: `**Error:** ${err.message || "Failed to reach AI providers. Please check your API keys."}`,
+      });
+    },
   } as any) as any;
 
   // Derive the last assistant text message for ThinkingStep
