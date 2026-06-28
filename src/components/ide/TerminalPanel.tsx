@@ -51,8 +51,15 @@ export default function TerminalPanel({ files = {} }: TerminalPanelProps) {
     fitAddon.fit();
     termInstance.current = term;
 
-    const handleResize = () => fitAddon.fit();
+    const handleResize = () => {
+      requestAnimationFrame(() => {
+        if (termInstance.current && terminalRef.current && terminalRef.current.clientWidth > 0) {
+          fitAddon.fit();
+        }
+      });
+    };
     window.addEventListener("resize", handleResize);
+    window.addEventListener("ide-resize", handleResize);
 
     // Boot message — honest about scope
     term.writeln("\x1b[1;36mKareixo Lite Shell\x1b[0m  \x1b[90m(file commands only)\x1b[0m");
@@ -156,12 +163,13 @@ export default function TerminalPanel({ files = {} }: TerminalPanelProps) {
 
     return () => {
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("ide-resize", handleResize);
       term.dispose();
     };
   }, []);
 
   return (
-    <div className="h-64 bg-slate-950 border-t border-graphite-700 flex flex-col shrink-0">
+    <div className="w-full h-full bg-slate-950 flex flex-col min-h-0">
       <div className="h-8 border-b border-graphite-800 flex items-center px-4 bg-graphite-900 justify-between">
         <div className="flex items-center gap-3">
           <div className="flex items-center">

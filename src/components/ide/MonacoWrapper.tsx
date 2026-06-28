@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import dynamic from "next/dynamic";
 
 const Editor = dynamic(() => import("@monaco-editor/react").then((mod) => mod.Editor), {
@@ -21,6 +22,18 @@ interface MonacoWrapperProps {
 }
 
 export default function MonacoWrapper({ file, content, onChange }: MonacoWrapperProps) {
+  const editorRef = useRef<any>(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      requestAnimationFrame(() => {
+        editorRef.current?.layout();
+      });
+    };
+    window.addEventListener("ide-resize", handleResize);
+    return () => window.removeEventListener("ide-resize", handleResize);
+  }, []);
+
   // Determine language based on extension
   const ext = file.split(".").pop()?.toLowerCase();
   let language = "plaintext";
@@ -58,6 +71,7 @@ export default function MonacoWrapper({ file, content, onChange }: MonacoWrapper
         }}
         // Apply custom theme matching Kareixo palette on mount
         onMount={(editor, monaco) => {
+          editorRef.current = editor;
           monaco.editor.defineTheme("kareixo", {
             base: "vs-dark",
             inherit: true,

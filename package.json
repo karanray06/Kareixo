@@ -26,6 +26,7 @@
     "openai": "^6.45.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "react-resizable-panels": "^4.11.2",
     "three": "^0.185.0"
   },
   "devDependencies": {
