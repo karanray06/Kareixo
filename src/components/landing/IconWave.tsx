@@ -1,83 +1,83 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-
+import { useEffect, useRef } from "react";
 import { 
   Code, Hierarchy, BackSquare, MoreCircle, 
-  MagicStar, Command, Star1, Code1, Box, TickCircle 
+  MagicStar, Command, Star1, Code1, Box, TickCircle,
+  FolderOpen, DocumentCopy, Refresh2, Setting2
 } from "iconsax-react";
 
-// Iconsax icons matching the Antigravity style
-const ICONS = [
-  <Code key="1" size={24} variant="Outline" />,
-  <Hierarchy key="2" size={24} variant="Outline" />,
-  <BackSquare key="3" size={24} variant="Outline" />,
-  <MoreCircle key="4" size={24} variant="Outline" />,
-  <MagicStar key="5" size={24} variant="Outline" />,
-  <Command key="6" size={24} variant="Outline" />,
-  <Star1 key="7" size={24} variant="Outline" />,
-  <Code1 key="8" size={24} variant="Outline" />,
-  <Box key="9" size={24} variant="Outline" />,
-  <TickCircle key="10" size={24} variant="Outline" />
+// Store component references, not JSX instances, to avoid hydration/render issues
+const ICON_COMPONENTS = [
+  Refresh2, Code1, MagicStar, BackSquare, TickCircle, 
+  Star1, Hierarchy, MoreCircle, DocumentCopy, Box, 
+  Command, FolderOpen, Code, Setting2
 ];
 
-// Duplicate the array to allow for infinite scrolling effect if needed,
-// though a pure wave just needs a long enough array
-const WAVE_ICONS = [...ICONS, ...ICONS, ...ICONS]; 
+// Triple the icons for seamless infinite scroll
+const WAVE_ICONS = [...ICON_COMPONENTS, ...ICON_COMPONENTS, ...ICON_COMPONENTS];
 
 export function IconWave() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [scrollY, setScrollY] = useState(0);
+  const elementsRef = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
-    let ticking = false;
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          setScrollY(window.scrollY);
-          ticking = false;
-        });
-        ticking = true;
+    let animationFrameId: number;
+    let time = 0;
+
+    const animate = () => {
+      time += 0.015; // Speed of the snake simulation
+
+      if (containerRef.current) {
+        // Move the entire container left for infinite scroll
+        // 14 icons * (72px + 24px gap) = 1344px width per set approx.
+        // We calculate exact pixel offset dynamically based on time
+        const xOffset = -(time * 40) % (ICON_COMPONENTS.length * 100); 
+        containerRef.current.style.transform = `translateX(${xOffset}px)`;
       }
+
+      elementsRef.current.forEach((el, index) => {
+        if (!el) return;
+        // Calculate the sine wave position for each element
+        // The phase includes both the static index and the moving time
+        const wavePhase = (index * 0.4) - (time * 1.5); 
+        const yOffset = Math.sin(wavePhase) * 60; // 60px amplitude
+        
+        // We only animate Y here, X is handled by the parent container
+        el.style.transform = `translateY(${yOffset}px)`;
+      });
+
+      animationFrameId = requestAnimationFrame(animate);
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    // Initialize
-    handleScroll();
+    animate();
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => cancelAnimationFrame(animationFrameId);
   }, []);
 
   return (
     <div 
-      ref={containerRef} 
-      className="relative w-full h-[300px] overflow-hidden flex items-center justify-center my-12"
+      className="relative w-full h-[300px] overflow-hidden flex items-center justify-start my-12"
       style={{
-        maskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
-        WebkitMaskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
+        maskImage: "linear-gradient(to right, transparent, black 15%, black 85%, transparent)",
+        WebkitMaskImage: "linear-gradient(to right, transparent, black 15%, black 85%, transparent)",
       }}
     >
-      <div className="flex gap-4 md:gap-8 items-center px-[20vw] flex-nowrap w-max">
-        {WAVE_ICONS.map((icon, index) => {
-          // Calculate the sine wave position
-          // Offset based on index, modulated by scroll position
-          const wavePhase = (index * 0.4) + (scrollY * -0.003); 
-          const yOffset = (Math.sin(wavePhase) * 60).toFixed(2); // 60px amplitude, rounded for hydration
-          
-          return (
-            <div
-              key={index}
-              className="w-16 h-16 md:w-24 md:h-24 shrink-0 rounded-full flex items-center justify-center glass-strong border-cream-300/50 shadow-lg text-dusk-700 transition-colors hover:text-coral-400 hover:border-coral-400/50"
-              style={{
-                transform: `translateY(${yOffset}px)`,
-                // We use transform directly instead of tailwind for dynamic values,
-                // and avoid heavy CSS transitions to let React/Scroll drive it instantly
-              }}
-            >
-              {icon}
-            </div>
-          );
-        })}
+      <div 
+        ref={containerRef}
+        className="flex gap-6 md:gap-8 items-center px-[10vw] flex-nowrap w-max"
+        style={{ willChange: "transform" }}
+      >
+        {WAVE_ICONS.map((IconComponent, index) => (
+          <div
+            key={index}
+            ref={(el) => { elementsRef.current[index] = el; }}
+            className="w-16 h-16 md:w-20 md:h-20 shrink-0 rounded-full flex items-center justify-center bg-white border border-gray-200/60 shadow-sm text-gray-800 transition-colors hover:text-coral-500 hover:border-coral-400/50"
+            style={{ willChange: "transform" }}
+          >
+            <IconComponent size={24} variant="Outline" color="currentColor" />
+          </div>
+        ))}
       </div>
     </div>
   );

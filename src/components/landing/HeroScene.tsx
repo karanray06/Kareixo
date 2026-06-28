@@ -142,7 +142,7 @@ function Scene() {
         />
       ))}
 
-      <Environment preset="night" />
+      <Environment preset="city" />
     </>
   );
 }

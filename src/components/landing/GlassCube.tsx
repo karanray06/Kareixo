@@ -46,17 +46,20 @@ export default function GlassCube({
         <boxGeometry args={[size, size, size]} />
         <MeshTransmissionMaterial
           backside
-          samples={6}
-          thickness={0.4}
-          roughness={0.05}
-          ior={1.5}
-          chromaticAberration={0.06}
+          samples={8}
+          thickness={0.6}
+          roughness={0.12}
+          ior={1.2}
+          chromaticAberration={0.03}
           anisotropy={0.2}
           distortion={0.1}
           distortionScale={0.2}
-          color="#e88a6d"
-          attenuationColor="#7e3a2b"
-          attenuationDistance={2}
+          color="#ffffff"
+          attenuationColor="#f2bba8"
+          attenuationDistance={3}
+          transmission={1}
+          clearcoat={1}
+          clearcoatRoughness={0.1}
         />
       </mesh>
       {/* Wireframe edges for the "glass box" look */}
