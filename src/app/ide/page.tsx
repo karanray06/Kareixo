@@ -40,6 +40,21 @@ function HorizontalSep({ id }: { id: string }) {
   );
 }
 
+// ── SSR-Safe Storage ───────────────────────────────────────────────────────────
+const safeStorage = {
+  getItem: (key: string) => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem(key);
+    }
+    return null;
+  },
+  setItem: (key: string, value: string) => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(key, value);
+    }
+  },
+};
+
 // ── IDE Page ─────────────────────────────────────────────────────────────────
 
 export default function IdePage() {
@@ -56,8 +71,8 @@ export default function IdePage() {
   const terminalPanelRef = usePanelRef();
 
   // Persistence hooks — saves/restores layout from localStorage automatically
-  const hLayout = useDefaultLayout({ id: "kareixo-ide-h" });
-  const vLayout = useDefaultLayout({ id: "kareixo-ide-v" });
+  const hLayout = useDefaultLayout({ id: "kareixo-ide-h", storage: safeStorage });
+  const vLayout = useDefaultLayout({ id: "kareixo-ide-v", storage: safeStorage });
 
   // Debounced IDE resize event dispatcher — tells Monaco & xterm to relayout
   const resizeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
