@@ -2,7 +2,6 @@
 
 import { Suspense, useEffect, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
-// @ts-expect-error animejs types do not have a default export
 import anime from "animejs";
 import { Key, ShieldCross, Lock, Danger, ShieldTick } from "iconsax-react";
 import { ParticleNebula, FloatingIcosahedron, GridPlane } from "./SceneElements";

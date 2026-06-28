@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-// @ts-expect-error animejs types do not have a default export
 import anime from "animejs";
 
 const AXES = [
