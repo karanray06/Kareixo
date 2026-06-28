@@ -90,7 +90,7 @@ export default function AgentPanel({
   const lastAssistantMessage = [...messages].reverse().find((m) => m.role === "assistant");
 
   const handleSubmit = async () => {
-    const trimmed = input.trim();
+    const trimmed = input?.trim() || "";
     if (!trimmed || status === "streaming" || status === "submitted") return;
 
     setStartTime(Date.now());
@@ -299,7 +299,7 @@ export default function AgentPanel({
           />
           <button
             onClick={handleSubmit}
-            disabled={isStreaming || phase === "checking" || !input.trim()}
+            disabled={isStreaming || phase === "checking" || !input?.trim()}
             className="absolute right-3 bottom-3 w-8 h-8 rounded-md bg-cyan-500 hover:bg-cyan-400 text-slate-950 flex items-center justify-center transition-colors disabled:opacity-50"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
