@@ -220,7 +220,7 @@ export default function AgentPanel({
             <div className="absolute left-[-23px] top-4 bottom-4 w-px bg-graphite-700 -z-10" />
 
             <ThinkingStep
-              content={lastAssistantMessage?.content?.replace(/```[\s\S]*?```/g, "[code block]").trim() || "Code generated."}
+              content={lastAssistantMessage?.content?.replace(/```[\s\S]*?```/g, "[code block]")?.trim() || "Code generated."}
               isStreaming={false}
             />
 
