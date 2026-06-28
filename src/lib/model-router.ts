@@ -1,7 +1,7 @@
 import { LanguageModel } from "ai";
 import { quotaTracker, ProviderName } from "./quota-tracker";
 
-import { openRouter, openRouterModels } from "./providers/openrouter";
+
 import { nvidia, nvidiaModels } from "./providers/nvidia";
 import { zai, zaiModels } from "./providers/zai";
 import { cloudflare, cloudflareModels } from "./providers/cloudflare";
@@ -19,12 +19,12 @@ export class ModelRouter {
 
   constructor(providers?: ProviderEntry[]) {
     this.providers = providers ?? [
-      { name: "OpenRouter", modelName: "Gemini 2.0 Flash", model: openRouter(openRouterModels.gemini) },
-      { name: "OpenRouter", modelName: "Qwen 2.5 Coder",   model: openRouter(openRouterModels.qwen) },
+      { name: "Groq",       modelName: "Llama 3 70B",        model: groq(groqModels.llama3) },
+      { name: "Groq",       modelName: "Llama 3 8B",         model: groq(groqModels.llama3_8b) },
+      { name: "Groq",       modelName: "Mixtral 8x7B",       model: groq(groqModels.mixtral) },
       { name: "NVIDIA",     modelName: "Nemotron 4",         model: nvidia(nvidiaModels.nemotron) },
       { name: "Z.AI",       modelName: "GLM 4 Flash",        model: zai(zaiModels.glm4_flash) },
       { name: "Cloudflare", modelName: "Qwen Coder",         model: cloudflare(cloudflareModels.qwen_coder) },
-      { name: "Groq",       modelName: "Llama 3 70B",        model: groq(groqModels.llama3) },
     ];
   }
 

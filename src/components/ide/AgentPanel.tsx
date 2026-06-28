@@ -99,7 +99,7 @@ export default function AgentPanel({
     onError(err: Error) {
       setPhase("idle");
       const message = err.message === "An error occurred." 
-        ? "Failed to generate response. Please check if your OPENROUTER_API_KEY is valid and has sufficient quota."
+        ? "Failed to generate response. Please check if your GROQ_API_KEY is valid and has sufficient quota."
         : (err.message || "Failed to reach AI providers.");
       setErrorMsg(message);
     },
@@ -182,9 +182,9 @@ export default function AgentPanel({
             className="bg-graphite-800 border border-graphite-700 rounded text-xs text-graphite-300 py-1 px-2 focus:outline-none focus:border-cyan-400"
           >
             <option value="auto">Auto (Router)</option>
-            <option value="Gemini 2.0 Flash">Gemini 2.0 Flash</option>
-            <option value="Qwen 2.5 Coder">Qwen 2.5 Coder</option>
-            <option value="Llama 3 70B">Llama 3.3</option>
+            <option value="Llama 3 70B">Llama 3 70B</option>
+            <option value="Llama 3 8B">Llama 3 8B</option>
+            <option value="Mixtral 8x7B">Mixtral 8x7B</option>
           </select>
         </div>
       </div>

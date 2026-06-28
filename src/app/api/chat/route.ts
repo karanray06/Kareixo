@@ -12,9 +12,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!process.env.OPENROUTER_API_KEY) {
+    if (!process.env.GROQ_API_KEY) {
       return NextResponse.json(
-        { error: "OPENROUTER_API_KEY is not set. Please add it to your environment variables on Vercel." },
+        { error: "GROQ_API_KEY is not set. Please add it to your environment variables on Vercel." },
         { status: 401 }
       );
     }

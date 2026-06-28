@@ -7,5 +7,6 @@ export const groq = createOpenAI({
 
 export const groqModels = {
   llama3: "llama3-70b-8192",
+  llama3_8b: "llama-3.1-8b-instant",
   mixtral: "mixtral-8x7b-32768",
 };
