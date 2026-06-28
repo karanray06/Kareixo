@@ -4,8 +4,6 @@ import { useRef, useMemo, Suspense, useState, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Float, Text } from "@react-three/drei";
 import * as THREE from "three";
-import { editable as e, SheetProvider } from "@theatre/r3f";
-import { useScrollTheatre } from "@/lib/use-scroll-theatre";
 import { WebGLFallback } from "./WebGLFallback";
 import GlassCube from "./GlassCube";
 import {
@@ -58,8 +56,7 @@ function CodeFragment({
   });
 
   return (
-    <e.mesh 
-      theatreKey={`CodeFragment ${index}`} 
+    <mesh 
       ref={ref}
       position={[Math.cos(angle) * radius, yOffset, Math.sin(angle) * radius]}
     >
@@ -73,7 +70,7 @@ function CodeFragment({
       >
         {text}
       </Text>
-    </e.mesh>
+    </mesh>
   );
 }
 
@@ -99,20 +96,16 @@ function CameraRig() {
 
 /* ── Main Scene ── */
 function Scene() {
-  const sheet = useScrollTheatre();
-
-  if (!sheet) return null;
-
   return (
-    <SheetProvider sheet={sheet}>
+    <>
       <ambientLight intensity={0.3} />
       <directionalLight position={[5, 5, 5]} intensity={0.5} />
       <pointLight position={[-3, 2, -3]} intensity={0.3} color="#e88a6d" />
       <pointLight position={[4, -1, 4]} intensity={0.15} color="#c4583a" />
 
-      <e.group theatreKey="Camera Group">
+      <group>
         <CameraRig />
-      </e.group>
+      </group>
 
       {/* Structured Fibonacci spiral vortex background */}
       <ParticleVortex count={2500} radius={12} colorPrimary="#e88a6d" colorSecondary="#d0755a" size={0.018} />
@@ -134,11 +127,11 @@ function Scene() {
       <FloatingOctahedron position={[3.5, 2, 3]} scale={0.35} color="#e88a6d" speed={0.2} />
 
       {/* Central glass cube */}
-      <e.group theatreKey="Glass Cube Group">
+      <group>
         <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.3}>
           <GlassCube size={1.6} rotationSpeed={0.25} autoRotate />
         </Float>
-      </e.group>
+      </group>
 
       {/* Orbiting code fragments */}
       {CODE_FRAGMENTS.map((text, i) => (
@@ -151,7 +144,7 @@ function Scene() {
       ))}
 
       <Environment preset="night" />
-    </SheetProvider>
+    </>
   );
 }
 
