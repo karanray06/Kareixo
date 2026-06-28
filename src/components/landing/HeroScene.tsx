@@ -156,9 +156,8 @@ function useCapabilityCheck() {
     try {
       const canvas = document.createElement("canvas");
       const gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
-      const hwConcurrency = navigator.hardwareConcurrency || 4;
-      // Fail if WebGL is absent or if it's a severely constrained device (< 4 cores)
-      if (!gl || hwConcurrency < 4) {
+      // Fail if WebGL is absent entirely
+      if (!gl) {
         setIsCapable(false);
       } else {
         setIsCapable(true);
