@@ -1,10 +1,12 @@
 import { LanguageModel } from "ai";
 import { quotaTracker, ProviderName } from "./quota-tracker";
 
-
-import { nvidia, nvidiaModels } from "./providers/nvidia";
-import { zai, zaiModels } from "./providers/zai";
-import { cloudflare, cloudflareModels } from "./providers/cloudflare";
+import { moonshot, moonshotModels } from "./providers/moonshot";
+import {
+  nvidia, nvidiaModels,
+  nvidiaMinimax, nvidiaKimi, nvidiaMistral,
+  nvidiaDeepseek, nvidiaGlm, nvidiaGemma, nvidiaQwen,
+} from "./providers/nvidia";
 import { groq, groqModels } from "./providers/groq";
 
 export type ProviderEntry = {
@@ -19,12 +21,22 @@ export class ModelRouter {
 
   constructor(providers?: ProviderEntry[]) {
     this.providers = providers ?? [
-      { name: "Groq",       modelName: "Llama 3 70B",        model: groq(groqModels.llama3) },
-      { name: "Groq",       modelName: "Llama 3 8B",         model: groq(groqModels.llama3_8b) },
-      { name: "Groq",       modelName: "Mixtral 8x7B",       model: groq(groqModels.mixtral) },
-      { name: "NVIDIA",     modelName: "Nemotron 4",         model: nvidia(nvidiaModels.nemotron) },
-      { name: "Z.AI",       modelName: "GLM 4 Flash",        model: zai(zaiModels.glm4_flash) },
-      { name: "Cloudflare", modelName: "Qwen Coder",         model: cloudflare(cloudflareModels.qwen_coder) },
+      // ── NVIDIA NIM Free Endpoints (best models first) ──
+      { name: "NVIDIA", modelName: "Kimi K2.6",             model: nvidiaKimi(nvidiaModels.kimi_k2) },
+      { name: "NVIDIA", modelName: "DeepSeek V4 Pro",       model: nvidiaDeepseek(nvidiaModels.deepseek_v4) },
+      { name: "NVIDIA", modelName: "Qwen 3.5 397B",         model: nvidiaQwen(nvidiaModels.qwen_3_5) },
+      { name: "NVIDIA", modelName: "Mistral Medium 3.5",    model: nvidiaMistral(nvidiaModels.mistral_medium) },
+      { name: "NVIDIA", modelName: "MiniMax M3",            model: nvidiaMinimax(nvidiaModels.minimax_m3) },
+      { name: "NVIDIA", modelName: "GLM 5.1",               model: nvidiaGlm(nvidiaModels.glm_5_1) },
+      { name: "NVIDIA", modelName: "Gemma 4 31B",           model: nvidiaGemma(nvidiaModels.gemma_4) },
+
+      // ── Groq (blazing fast) ──
+      { name: "Groq", modelName: "Llama 3 70B",             model: groq(groqModels.llama3) },
+      { name: "Groq", modelName: "Llama 3 8B",              model: groq(groqModels.llama3_8b) },
+      { name: "Groq", modelName: "Mixtral 8x7B",            model: groq(groqModels.mixtral) },
+
+      // ── Moonshot (Kimi direct API fallback) ──
+      { name: "Moonshot", modelName: "Kimi 8k",             model: moonshot(moonshotModels.v1_8k) },
     ];
   }
 
@@ -44,8 +56,6 @@ export class ModelRouter {
 
   /**
    * Execute `operation` with automatic failover across all providers.
-   * The operation must actually call the provider — any error it throws
-   * triggers a retry with the next provider in the round-robin list.
    */
   public async executeWithFailover<T>(
     operation: (provider: ProviderEntry) => Promise<T>,

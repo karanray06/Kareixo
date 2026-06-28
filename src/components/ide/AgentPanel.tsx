@@ -99,7 +99,7 @@ export default function AgentPanel({
     onError(err: Error) {
       setPhase("idle");
       const message = err.message === "An error occurred." 
-        ? "Failed to generate response. Please check if your GROQ_API_KEY is valid and has sufficient quota."
+        ? "Failed to generate response. Please check if your GROQ_API_KEY or MOONSHOT_API_KEY is valid and has sufficient quota."
         : (err.message || "Failed to reach AI providers.");
       setErrorMsg(message);
     },
@@ -182,9 +182,20 @@ export default function AgentPanel({
             className="bg-graphite-800 border border-graphite-700 rounded text-xs text-graphite-300 py-1 px-2 focus:outline-none focus:border-cyan-400"
           >
             <option value="auto">Auto (Router)</option>
-            <option value="Llama 3 70B">Llama 3 70B</option>
-            <option value="Llama 3 8B">Llama 3 8B</option>
-            <option value="Mixtral 8x7B">Mixtral 8x7B</option>
+            <optgroup label="NVIDIA NIM (Free)">
+              <option value="Kimi K2.6">Kimi K2.6</option>
+              <option value="DeepSeek V4 Pro">DeepSeek V4 Pro</option>
+              <option value="Qwen 3.5 397B">Qwen 3.5 397B</option>
+              <option value="Mistral Medium 3.5">Mistral Medium 3.5</option>
+              <option value="MiniMax M3">MiniMax M3</option>
+              <option value="GLM 5.1">GLM 5.1</option>
+              <option value="Gemma 4 31B">Gemma 4 31B</option>
+            </optgroup>
+            <optgroup label="Groq (Fast)">
+              <option value="Llama 3 70B">Llama 3 70B</option>
+              <option value="Llama 3 8B">Llama 3 8B</option>
+              <option value="Mixtral 8x7B">Mixtral 8x7B</option>
+            </optgroup>
           </select>
         </div>
       </div>

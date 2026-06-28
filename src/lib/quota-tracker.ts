@@ -9,7 +9,7 @@ import { getDb } from "@/db";
 import { providerStats } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
-export type ProviderName = "OpenRouter" | "NVIDIA" | "Z.AI" | "Cloudflare" | "Groq";
+export type ProviderName = "OpenRouter" | "NVIDIA" | "Z.AI" | "Cloudflare" | "Groq" | "Moonshot";
 
 const RATE_LIMIT_WINDOW_MS = 5 * 60 * 1000; // 5 minutes
 

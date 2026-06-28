@@ -12,9 +12,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!process.env.GROQ_API_KEY) {
+    if (!process.env.GROQ_API_KEY && !process.env.MOONSHOT_API_KEY && !process.env.NVIDIA_KEY_KIMI) {
       return NextResponse.json(
-        { error: "GROQ_API_KEY is not set. Please add it to your environment variables on Vercel." },
+        { error: "No AI provider keys configured. Please add GROQ_API_KEY, NVIDIA_KEY_* or MOONSHOT_API_KEY to your environment variables." },
         { status: 401 }
       );
     }
