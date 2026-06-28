@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { Lamp, Code1, ShieldTick } from "iconsax-react";
 
 /* ── Scripted demo sequence ── */
 const DEMO_STEPS = [
@@ -180,10 +181,7 @@ export default function LiveDemo() {
             {activeStep >= 1 && (
               <div className="animate-fade-in-up">
                 <div className="flex items-center gap-2 text-coral-400 text-xs mb-2 ml-9">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/>
-                    <line x1="9" y1="21" x2="15" y2="21"/>
-                  </svg>
+                  <Lamp size={14} variant="Outline" />
                   STEP 1 — Thinking
                 </div>
                 <div className="ml-9 glass-cyan rounded-lg px-4 py-3 text-coral-200 text-xs leading-relaxed">
@@ -196,9 +194,7 @@ export default function LiveDemo() {
             {activeStep >= 2 && (
               <div className="animate-fade-in-up">
                 <div className="flex items-center gap-2 text-coral-400 text-xs mb-2 ml-9">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 3v18M3 12h18"/>
-                  </svg>
+                  <Code1 size={14} variant="Outline" />
                   STEP 2 — Proposed Change
                   <span className="text-dusk-500 ml-2">
                     {(DEMO_STEPS[2] as typeof DEMO_STEPS[2] & { filename: string }).filename}
@@ -237,9 +233,7 @@ export default function LiveDemo() {
             {activeStep >= 3 && (
               <div className="animate-fade-in-up">
                 <div className="flex items-center gap-2 text-rosegold-400 text-xs mb-2 ml-9">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                  </svg>
+                  <ShieldTick size={14} variant="Outline" />
                   STEP 3 — Security Pass
                 </div>
                 <div className="ml-9 space-y-1.5">
@@ -263,9 +257,7 @@ export default function LiveDemo() {
                       opacity: 0,
                     }}
                   >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    </svg>
+                    <ShieldTick size={12} variant="Bold" />
                     SECURITY CHECK PASSED
                   </div>
                 </div>

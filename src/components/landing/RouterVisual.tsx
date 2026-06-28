@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { CpuSetting } from "iconsax-react";
 
 const PROVIDERS = [
   { id: "openrouter", name: "OpenRouter", x: 20, y: 30, models: "DeepSeek, Qwen, Llama" },
@@ -73,18 +74,7 @@ export default function RouterVisual() {
               }}
             >
               <div className="text-center">
-                <svg
-                  width="28"
-                  height="28"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  className="mx-auto text-coral-400 mb-1"
-                >
-                  <circle cx="12" cy="12" r="3" />
-                  <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" />
-                </svg>
+                <CpuSetting size={28} variant="Outline" className="mx-auto text-coral-400 mb-1" />
                 <span className="text-coral-300 text-[10px] font-mono font-bold">
                   ROUTER
                 </span>

@@ -54,8 +54,8 @@ export default function GlassCube({
           anisotropy={0.2}
           distortion={0.1}
           distortionScale={0.2}
-          color="#4dd8d0"
-          attenuationColor="#1a3a4a"
+          color="#e88a6d"
+          attenuationColor="#7e3a2b"
           attenuationDistance={2}
         />
       </mesh>
@@ -64,7 +64,7 @@ export default function GlassCube({
         <edgesGeometry
           args={[new THREE.BoxGeometry(size * 1.001, size * 1.001, size * 1.001)]}
         />
-        <lineBasicMaterial color="#4dd8d0" transparent opacity={0.35} />
+        <lineBasicMaterial color="#e88a6d" transparent opacity={0.35} />
       </lineSegments>
     </group>
   );

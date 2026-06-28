@@ -1,50 +1,36 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
+// @ts-expect-error animejs types do not have a default export
+import anime from "animejs";
+import { Key, ShieldCross, Lock, Danger, ShieldTick } from "iconsax-react";
 import { ParticleNebula, FloatingIcosahedron, GridPlane } from "./SceneElements";
 
 const CHECKS = [
   {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-      </svg>
-    ),
+    icon: <Key size={20} variant="Outline" />,
     title: "Hardcoded secrets & API keys",
     description:
       "Scans every diff for patterns matching API keys, tokens, passwords, and connection strings. Catches .env values accidentally inlined in code.",
     example: 'const apiKey = "sk-proj-abc123..."',
   },
   {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-      </svg>
-    ),
+    icon: <ShieldCross size={20} variant="Outline" />,
     title: "Injection & XSS patterns",
     description:
       "Detects innerHTML assignments, unescaped template literals in HTML contexts, SQL string concatenation, and command injection vectors.",
     example: "el.innerHTML = userInput",
   },
   {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-      </svg>
-    ),
+    icon: <Lock size={20} variant="Outline" />,
     title: "Missing input validation",
     description:
       "Checks user-facing forms and API endpoints for missing sanitization, type checks, and length limits on inputs.",
     example: "req.body.email used without validation",
   },
   {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-      </svg>
-    ),
+    icon: <Danger size={20} variant="Outline" />,
     title: "Unsafe eval/exec usage",
     description:
       "Flags eval(), new Function(), child_process.exec with user-controlled args, and dynamic code generation from untrusted sources.",
@@ -53,8 +39,38 @@ const CHECKS = [
 ];
 
 export default function SecurityExplainer() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            anime({
+              targets: '.security-card',
+              opacity: [0, 1],
+              translateY: [30, 0],
+              scale: [0.95, 1],
+              delay: anime.stagger(150),
+              duration: 800,
+              easing: 'easeOutCubic'
+            });
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(containerRef.current);
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="relative overflow-hidden">
+    <div ref={containerRef} className="relative overflow-hidden">
       {/* 3D Background */}
       <div className="absolute inset-0 opacity-30 pointer-events-none">
         <Canvas
@@ -75,9 +91,7 @@ export default function SecurityExplainer() {
       <div className="section relative z-10">
         <div className="text-center mb-12">
           <div className="badge badge-amber mb-4 mx-auto">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
+            <ShieldTick size={12} variant="Bold" />
             PRE-COMMIT SECURITY
           </div>
           <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
@@ -95,10 +109,7 @@ export default function SecurityExplainer() {
           {CHECKS.map((check, i) => (
             <div
               key={check.title}
-              className="card group hover:border-rosegold-500/30 transition-all"
-              style={{
-                animationDelay: `${i * 0.1}s`,
-              }}
+              className="security-card card group hover:border-rosegold-500/30 transition-all opacity-0"
             >
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-lg bg-rosegold-400/10 border border-rosegold-400/20 flex items-center justify-center text-rosegold-400 shrink-0 group-hover:glow-amber transition-all">

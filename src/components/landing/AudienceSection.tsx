@@ -1,50 +1,33 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
+// @ts-expect-error animejs types do not have a default export
+import anime from "animejs";
+import { Book, Airplane, Hierarchy, Activity } from "iconsax-react";
 import { ParticleNebula, FloatingOctahedron, FloatingTorus } from "./SceneElements";
 
 const AUDIENCES = [
   {
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-        <path d="M6 12v5c3 3 9 3 12 0v-5" />
-      </svg>
-    ),
+    icon: <Book size={24} variant="Outline" />,
     title: "Students",
     description:
       "Learn to code with an AI assistant that explains its reasoning — not just generates code. Zero cost means zero barriers.",
   },
   {
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-      </svg>
-    ),
+    icon: <Airplane size={24} variant="Outline" />,
     title: "Indie hackers",
     description:
       "Ship your side project with AI assistance before you've earned your first dollar. No subscription to cancel if the project doesn't work out.",
   },
   {
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <circle cx="18" cy="18" r="3" />
-        <circle cx="6" cy="6" r="3" />
-        <path d="M13 6h3a2 2 0 0 1 2 2v7" />
-        <path d="M11 18H8a2 2 0 0 1-2-2V9" />
-      </svg>
-    ),
+    icon: <Hierarchy size={24} variant="Outline" />,
     title: "Open-source contributors",
     description:
       "Review AI suggestions with the same rigor you'd review a pull request. Full diff visibility and security checks, not blind trust.",
   },
   {
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-      </svg>
-    ),
+    icon: <Activity size={24} variant="Outline" />,
     title: "Curious builders",
     description:
       "Prototype faster, understand deeper. The 'explain mode' helps you learn why code works, not just that it works.",
@@ -52,6 +35,39 @@ const AUDIENCES = [
 ];
 
 export default function AudienceSection() {
+  const headlineRef = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    if (!headlineRef.current) return;
+
+    // Split text into words for animation
+    const text = headlineRef.current.innerHTML;
+    headlineRef.current.innerHTML = text.replace(/\S+/g, "<span class='word inline-block opacity-0 translate-y-4'>$&</span>");
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            anime({
+              targets: '.word',
+              opacity: [0, 1],
+              translateY: [15, 0],
+              delay: anime.stagger(100),
+              duration: 800,
+              easing: 'easeOutCubic'
+            });
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(headlineRef.current);
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="relative overflow-hidden">
       {/* 3D Background */}
@@ -64,16 +80,16 @@ export default function AudienceSection() {
         >
           <Suspense fallback={null}>
             <ambientLight intensity={0.3} />
-            <ParticleNebula count={300} radius={5} color="#4dd8d0" size={0.015} />
-            <FloatingOctahedron position={[-3, 1, -2]} scale={0.5} color="#4dd8d0" speed={0.1} />
-            <FloatingTorus position={[3, -1, -1]} scale={0.3} color="#f59e0b" speed={0.08} />
+            <ParticleNebula count={300} radius={5} color="#e88a6d" size={0.015} />
+            <FloatingOctahedron position={[-3, 1, -2]} scale={0.5} color="#e88a6d" speed={0.1} />
+            <FloatingTorus position={[3, -1, -1]} scale={0.3} color="#c4583a" speed={0.08} />
           </Suspense>
         </Canvas>
       </div>
 
       <div className="section relative z-10">
         <div className="text-center mb-12">
-          <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
+          <h2 ref={headlineRef} className="font-display text-3xl md:text-5xl font-bold mb-4">
             Built for builders with{" "}
             <span className="text-gradient-cyan">zero budget</span>
           </h2>

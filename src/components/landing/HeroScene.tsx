@@ -1,9 +1,12 @@
 "use client";
 
-import { useRef, useMemo, Suspense } from "react";
+import { useRef, useMemo, Suspense, useState, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Float, Text } from "@react-three/drei";
 import * as THREE from "three";
+import { editable as e, SheetProvider } from "@theatre/r3f";
+import { useScrollTheatre } from "@/lib/use-scroll-theatre";
+import { WebGLFallback } from "./WebGLFallback";
 import GlassCube from "./GlassCube";
 import {
   FloatingOctahedron,
@@ -48,18 +51,17 @@ function CodeFragment({
 
   useFrame((state) => {
     if (!ref.current) return;
-    const t = state.clock.elapsedTime * speed + angle;
-    ref.current.position.x = Math.cos(t) * radius;
-    ref.current.position.z = Math.sin(t) * radius;
-    ref.current.position.y = yOffset + Math.sin(t * 2) * 0.15;
+    // We let Theatre.js handle the base position via e.mesh, 
+    // but we can add a subtle local wobble if desired.
+    // For now, let's just make them look at the camera.
     ref.current.lookAt(state.camera.position);
   });
 
   return (
-    <mesh ref={ref}>
+    <e.mesh theatreKey={`CodeFragment ${index}`} ref={ref}>
       <Text
         fontSize={0.13}
-        color="#4dd8d0"
+        color="#e88a6d" // coral-400
         anchorX="center"
         anchorY="middle"
         font="/fonts/JetBrainsMono-Regular.ttf"
@@ -67,7 +69,7 @@ function CodeFragment({
       >
         {text}
       </Text>
-    </mesh>
+    </e.mesh>
   );
 }
 
@@ -81,8 +83,10 @@ function CameraRig() {
     const py = state.pointer.y * 0.2;
     mouse.current.x += (px - mouse.current.x) * 0.05;
     mouse.current.y += (py - mouse.current.y) * 0.05;
-    camera.position.x = mouse.current.x;
-    camera.position.y = mouse.current.y + 0.5;
+    // Base camera position will be controlled by Theatre.js on a parent group.
+    // Here we just add a small local offset based on mouse pointer.
+    camera.position.x += (mouse.current.x - camera.position.x) * 0.1;
+    camera.position.y += ((mouse.current.y + 0.5) - camera.position.y) * 0.1;
     camera.lookAt(0, 0, 0);
   });
 
@@ -91,38 +95,46 @@ function CameraRig() {
 
 /* ── Main Scene ── */
 function Scene() {
+  const sheet = useScrollTheatre();
+
+  if (!sheet) return null;
+
   return (
-    <>
+    <SheetProvider sheet={sheet}>
       <ambientLight intensity={0.3} />
       <directionalLight position={[5, 5, 5]} intensity={0.5} />
-      <pointLight position={[-3, 2, -3]} intensity={0.3} color="#4dd8d0" />
-      <pointLight position={[4, -1, 4]} intensity={0.15} color="#f59e0b" />
+      <pointLight position={[-3, 2, -3]} intensity={0.3} color="#e88a6d" />
+      <pointLight position={[4, -1, 4]} intensity={0.15} color="#c4583a" />
 
-      <CameraRig />
+      <e.group theatreKey="Camera Group">
+        <CameraRig />
+      </e.group>
 
       {/* Structured Fibonacci spiral vortex background */}
-      <ParticleVortex count={2500} radius={12} colorPrimary="#4dd8d0" colorSecondary="#f59e0b" size={0.018} />
+      <ParticleVortex count={2500} radius={12} colorPrimary="#e88a6d" colorSecondary="#d0755a" size={0.018} />
 
       {/* Constellation lines for depth */}
-      <ConstellationLines count={40} spread={10} color="#4dd8d0" opacity={0.06} />
+      <ConstellationLines count={40} spread={10} color="#e88a6d" opacity={0.06} />
 
       {/* Ground grid (antigravity-style) */}
-      <GridPlane size={50} divisions={50} color="#4dd8d0" opacity={0.04} position={[0, -2.5, 0]} />
+      <GridPlane size={50} divisions={50} color="#e88a6d" opacity={0.04} position={[0, -2.5, 0]} />
 
       {/* Orbiting rings at different heights */}
-      <OrbitRing radius={3.5} count={80} color="#4dd8d0" speed={0.08} y={-0.5} />
-      <OrbitRing radius={5} count={100} color="#4dd8d0" speed={-0.05} y={0.3} />
+      <OrbitRing radius={3.5} count={80} color="#e88a6d" speed={0.08} y={-0.5} />
+      <OrbitRing radius={5} count={100} color="#e88a6d" speed={-0.05} y={0.3} />
 
       {/* Floating wireframe geometry (antigravity-style depth) */}
-      <FloatingOctahedron position={[-4, 1.5, -3]} scale={0.6} color="#4dd8d0" speed={0.15} />
-      <FloatingTorus position={[4.5, -0.5, -2]} scale={0.4} color="#4dd8d0" speed={0.12} />
-      <FloatingIcosahedron position={[-3, -1.5, 2]} scale={0.5} color="#f59e0b" speed={0.1} />
-      <FloatingOctahedron position={[3.5, 2, 3]} scale={0.35} color="#4dd8d0" speed={0.2} />
+      <FloatingOctahedron position={[-4, 1.5, -3]} scale={0.6} color="#e88a6d" speed={0.15} />
+      <FloatingTorus position={[4.5, -0.5, -2]} scale={0.4} color="#e88a6d" speed={0.12} />
+      <FloatingIcosahedron position={[-3, -1.5, 2]} scale={0.5} color="#c4583a" speed={0.1} />
+      <FloatingOctahedron position={[3.5, 2, 3]} scale={0.35} color="#e88a6d" speed={0.2} />
 
       {/* Central glass cube */}
-      <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.3}>
-        <GlassCube size={1.6} rotationSpeed={0.25} autoRotate />
-      </Float>
+      <e.group theatreKey="Glass Cube Group">
+        <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.3}>
+          <GlassCube size={1.6} rotationSpeed={0.25} autoRotate />
+        </Float>
+      </e.group>
 
       {/* Orbiting code fragments */}
       {CODE_FRAGMENTS.map((text, i) => (
@@ -135,33 +147,62 @@ function Scene() {
       ))}
 
       <Environment preset="night" />
-    </>
+    </SheetProvider>
   );
+}
+
+// Simple capability check for WebGL/Hardware
+function useCapabilityCheck() {
+  const [isCapable, setIsCapable] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    try {
+      const canvas = document.createElement("canvas");
+      const gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
+      const hwConcurrency = navigator.hardwareConcurrency || 4;
+      // Fail if WebGL is absent or if it's a severely constrained device (< 4 cores)
+      if (!gl || hwConcurrency < 4) {
+        setIsCapable(false);
+      } else {
+        setIsCapable(true);
+      }
+    } catch (e) {
+      setIsCapable(false);
+    }
+  }, []);
+
+  return isCapable;
 }
 
 /* ── Export the full hero ── */
 export default function HeroScene() {
+  const isCapable = useCapabilityCheck();
+
   return (
     <div className="relative w-full h-[100vh] min-h-[700px]">
       {/* 3D Canvas — full viewport */}
       <div className="absolute inset-0">
-        <Canvas
-          camera={{ position: [0, 0.5, 5], fov: 45 }}
-          gl={{ antialias: true, alpha: true }}
-          style={{ background: "transparent" }}
-          dpr={[1, 1.5]}
-        >
-          <Suspense fallback={null}>
-            <Scene />
-          </Suspense>
-        </Canvas>
+        {isCapable === false ? (
+          <WebGLFallback />
+        ) : isCapable === true ? (
+          <Canvas
+            camera={{ position: [0, 0.5, 5], fov: 45 }}
+            gl={{ antialias: true, alpha: true }}
+            style={{ background: "transparent" }}
+            dpr={[1, 1.5]}
+          >
+            <Suspense fallback={null}>
+              <Scene />
+            </Suspense>
+          </Canvas>
+        ) : null /* Loading state */}
       </div>
 
       {/* Overlay content */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full px-6 text-center pointer-events-none">
         {/* Tagline badge */}
-        <div className="badge badge-cyan mb-6 pointer-events-auto animate-fade-in-up">
-          <span className="inline-block w-2 h-2 rounded-full bg-coral-400 mr-1 animate-pulse-glow" />
+        <div className="badge badge-amber mb-6 pointer-events-auto animate-fade-in-up">
+          <span className="inline-block w-2 h-2 rounded-full bg-rosegold-400 mr-1 animate-pulse-glow" />
           Free &middot; Transparent &middot; No credit card
         </div>
 
@@ -171,7 +212,7 @@ export default function HeroScene() {
           style={{ animationDelay: "0.1s" }}
         >
           The IDE that{" "}
-          <span className="text-gradient-cyan">shows its work</span>
+          <span className="text-gradient-amber">shows its work</span>
         </h1>
 
         {/* Subheadline */}

@@ -1,5 +1,9 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+// @ts-expect-error animejs types do not have a default export
+import anime from "animejs";
+
 const AXES = [
   {
     axis: "Cost model",
@@ -25,8 +29,37 @@ const AXES = [
 ];
 
 export default function ComparisonTable() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            anime({
+              targets: '.compare-row, .compare-card',
+              opacity: [0, 1],
+              translateY: [20, 0],
+              delay: anime.stagger(100),
+              duration: 800,
+              easing: 'easeOutCubic'
+            });
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(containerRef.current);
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="section">
+    <div ref={containerRef} className="section">
       <div className="text-center mb-12">
         <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
           The axis nobody else fills
@@ -65,9 +98,9 @@ export default function ComparisonTable() {
               {AXES.map((row, i) => (
                 <tr
                   key={row.axis}
-                  className={
+                  className={`compare-row opacity-0 ${
                     i < AXES.length - 1 ? "border-b border-cream-300/50" : ""
-                  }
+                  }`}
                 >
                   <td className="py-4 px-5 text-dusk-700 font-display font-semibold text-sm">
                     {row.axis}
@@ -96,7 +129,7 @@ export default function ComparisonTable() {
       {/* Mobile cards */}
       <div className="lg:hidden space-y-6 max-w-lg mx-auto">
         {AXES.map((row) => (
-          <div key={row.axis} className="card">
+          <div key={row.axis} className="card compare-card opacity-0">
             <h3 className="font-display text-lg font-bold text-dusk-900 mb-4">
               {row.axis}
             </h3>
