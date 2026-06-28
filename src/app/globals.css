@@ -1,0 +1,508 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════
+   KAREIXO — DESIGN TOKEN SYSTEM
+   The Glass Box IDE
+   ═══════════════════════════════════════════ */
+
+:root {
+  /* ── Surface / Background Palette ── */
+  --slate-950: hsl(220, 20%, 8%);
+  --graphite-900: hsl(218, 18%, 12%);
+  --graphite-800: hsl(216, 16%, 18%);
+  --graphite-700: hsl(214, 14%, 25%);
+  --graphite-600: hsl(213, 13%, 32%);
+  --graphite-500: hsl(212, 12%, 40%);
+  --graphite-400: hsl(211, 11%, 52%);
+  --graphite-300: hsl(210, 10%, 65%);
+  --graphite-200: hsl(209, 9%, 78%);
+  --graphite-100: hsl(208, 8%, 88%);
+  --white: hsl(0, 0%, 96%);
+
+  /* ── Primary Accent — Glass Cyan ── */
+  --cyan-100: hsl(186, 72%, 88%);
+  --cyan-200: hsl(186, 72%, 72%);
+  --cyan-300: hsl(186, 72%, 62%);
+  --cyan-400: hsl(186, 72%, 52%);
+  --cyan-500: hsl(186, 72%, 42%);
+  --cyan-600: hsl(186, 72%, 32%);
+  --cyan-700: hsl(186, 72%, 22%);
+  --cyan-900: hsl(186, 72%, 10%);
+
+  /* ── Security Badge — Amber (trust warmth) ── */
+  --amber-100: hsl(38, 92%, 88%);
+  --amber-200: hsl(38, 92%, 72%);
+  --amber-400: hsl(38, 92%, 55%);
+  --amber-500: hsl(38, 92%, 45%);
+  --amber-600: hsl(38, 92%, 35%);
+
+  /* ── Semantic Colors ── */
+  --red-400: hsl(0, 72%, 55%);
+  --red-500: hsl(0, 72%, 45%);
+  --green-400: hsl(145, 60%, 48%);
+  --green-500: hsl(145, 60%, 38%);
+
+  /* ── Layout Tokens ── */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  --sidebar-width: 260px;
+  --panel-width: 380px;
+  --header-height: 48px;
+
+  /* ── Shadows ── */
+  --shadow-sm: 0 1px 2px hsla(0, 0%, 0%, 0.3);
+  --shadow-md: 0 4px 12px hsla(0, 0%, 0%, 0.35);
+  --shadow-lg: 0 8px 30px hsla(0, 0%, 0%, 0.4);
+  --shadow-glow-cyan: 0 0 20px hsla(186, 72%, 52%, 0.25);
+  --shadow-glow-amber: 0 0 20px hsla(38, 92%, 55%, 0.25);
+
+  /* ── Transitions ── */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── Tailwind v4 Theme Extension ── */
+@theme inline {
+  --color-slate-950: var(--slate-950);
+  --color-graphite-900: var(--graphite-900);
+  --color-graphite-800: var(--graphite-800);
+  --color-graphite-700: var(--graphite-700);
+  --color-graphite-600: var(--graphite-600);
+  --color-graphite-500: var(--graphite-500);
+  --color-graphite-400: var(--graphite-400);
+  --color-graphite-300: var(--graphite-300);
+  --color-graphite-200: var(--graphite-200);
+  --color-graphite-100: var(--graphite-100);
+  --color-kareixo-white: var(--white);
+
+  --color-cyan-100: var(--cyan-100);
+  --color-cyan-200: var(--cyan-200);
+  --color-cyan-300: var(--cyan-300);
+  --color-cyan-400: var(--cyan-400);
+  --color-cyan-500: var(--cyan-500);
+  --color-cyan-600: var(--cyan-600);
+  --color-cyan-700: var(--cyan-700);
+  --color-cyan-900: var(--cyan-900);
+
+  --color-amber-100: var(--amber-100);
+  --color-amber-200: var(--amber-200);
+  --color-amber-400: var(--amber-400);
+  --color-amber-500: var(--amber-500);
+  --color-amber-600: var(--amber-600);
+
+  --color-red-400: var(--red-400);
+  --color-red-500: var(--red-500);
+  --color-green-400: var(--green-400);
+  --color-green-500: var(--green-500);
+
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-body: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+}
+
+/* ═══════════════════════════════════════════
+   BASE STYLES
+   ═══════════════════════════════════════════ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--slate-950);
+  color: var(--graphite-100);
+}
+
+body {
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  background-color: var(--slate-950);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  line-height: 1.15;
+  font-weight: 700;
+  color: var(--white);
+}
+
+code, pre, kbd, samp {
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+}
+
+a {
+  color: var(--cyan-400);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--cyan-300);
+}
+
+::selection {
+  background: hsla(186, 72%, 52%, 0.3);
+  color: var(--white);
+}
+
+/* ── Scrollbar Styling ── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--graphite-900);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--graphite-600);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--graphite-500);
+}
+
+/* ═══════════════════════════════════════════
+   UTILITY CLASSES
+   ═══════════════════════════════════════════ */
+
+/* ── Glass Morphism ── */
+.glass {
+  background: hsla(218, 18%, 12%, 0.6);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  border: 1px solid hsla(214, 14%, 25%, 0.5);
+}
+
+.glass-strong {
+  background: hsla(218, 18%, 12%, 0.85);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid hsla(214, 14%, 25%, 0.7);
+}
+
+.glass-cyan {
+  background: hsla(186, 72%, 52%, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid hsla(186, 72%, 52%, 0.2);
+}
+
+/* ── Gradient Text ── */
+.text-gradient-cyan {
+  background: linear-gradient(135deg, var(--cyan-300), var(--cyan-500));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-amber {
+  background: linear-gradient(135deg, var(--amber-200), var(--amber-500));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Glow Effects ── */
+.glow-cyan {
+  box-shadow: var(--shadow-glow-cyan);
+}
+
+.glow-amber {
+  box-shadow: var(--shadow-glow-amber);
+}
+
+/* ── Button Base ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border-radius: var(--radius-md);
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  border: none;
+  outline: none;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--cyan-400);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--cyan-500), var(--cyan-400));
+  color: var(--slate-950);
+  font-weight: 700;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--cyan-400), var(--cyan-300));
+  box-shadow: var(--shadow-glow-cyan);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background: var(--graphite-800);
+  color: var(--graphite-100);
+  border: 1px solid var(--graphite-700);
+}
+
+.btn-secondary:hover {
+  background: var(--graphite-700);
+  border-color: var(--graphite-600);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--graphite-300);
+}
+
+.btn-ghost:hover {
+  background: hsla(214, 14%, 25%, 0.3);
+  color: var(--graphite-100);
+}
+
+/* ── Badge ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.badge-cyan {
+  background: hsla(186, 72%, 52%, 0.12);
+  color: var(--cyan-400);
+  border: 1px solid hsla(186, 72%, 52%, 0.25);
+}
+
+.badge-amber {
+  background: hsla(38, 92%, 55%, 0.12);
+  color: var(--amber-400);
+  border: 1px solid hsla(38, 92%, 55%, 0.25);
+}
+
+.badge-green {
+  background: hsla(145, 60%, 48%, 0.12);
+  color: var(--green-400);
+  border: 1px solid hsla(145, 60%, 48%, 0.25);
+}
+
+.badge-red {
+  background: hsla(0, 72%, 55%, 0.12);
+  color: var(--red-400);
+  border: 1px solid hsla(0, 72%, 55%, 0.25);
+}
+
+/* ── Card ── */
+.card {
+  background: var(--graphite-900);
+  border: 1px solid var(--graphite-700);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  transition: all var(--transition-base);
+}
+
+.card:hover {
+  border-color: var(--graphite-600);
+  box-shadow: var(--shadow-md);
+}
+
+/* ── Section Spacing ── */
+.section {
+  padding: 96px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 64px 16px;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════ */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 15px hsla(186, 72%, 52%, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px hsla(186, 72%, 52%, 0.35);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes cube-spin {
+  0% { transform: rotateX(0deg) rotateY(0deg); }
+  100% { transform: rotateX(360deg) rotateY(360deg); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+/* ── Section Dividers (glowing line) ── */
+.section-divider {
+  position: relative;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--cyan-700) 20%,
+    var(--cyan-400) 50%,
+    var(--cyan-700) 80%,
+    transparent 100%
+  );
+  opacity: 0.3;
+  margin: 0 auto;
+  max-width: 800px;
+}
+
+.section-divider::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background: var(--cyan-400);
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--cyan-400);
+}
+
+/* ── Scroll reveal animation ── */
+@keyframes revealUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.98);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.animate-reveal-up {
+  animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ── Scanning horizontal line ── */
+@keyframes scanline {
+  0% { left: -20%; }
+  100% { left: 120%; }
+}
+
+.scan-line {
+  position: absolute;
+  top: 0;
+  left: -20%;
+  width: 20%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan-400), transparent);
+  animation: scanline 4s linear infinite;
+  pointer-events: none;
+}
+
+/* ── Glow orb backgrounds ── */
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  opacity: 0.15;
+}
+
+.glow-orb-cyan {
+  background: radial-gradient(circle, var(--cyan-400), transparent 70%);
+}
+
+.glow-orb-amber {
+  background: radial-gradient(circle, var(--amber-400), transparent 70%);
+}
+
