@@ -4,7 +4,11 @@ import { getDb } from "@/db";
 import { projects } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -17,7 +21,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   const [updated] = await db
     .update(projects)
     .set({ name, updatedAt: new Date() })
-    .where(and(eq(projects.id, params.id), eq(projects.userId, session.user.id)))
+    .where(and(eq(projects.id, id), eq(projects.userId, session.user.id)))
     .returning();
 
   if (!updated) return NextResponse.json({ error: "Project not found" }, { status: 404 });
