@@ -148,8 +148,15 @@ export default function AgentPanel({
       clearTimeout(timeoutId);
 
       if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "Execution failed");
+        const textResponse = await res.text();
+        let errMessage = "Execution failed";
+        try {
+          const errData = JSON.parse(textResponse);
+          errMessage = errData.error || errMessage;
+        } catch (parseError) {
+          errMessage = textResponse || errMessage;
+        }
+        throw new Error(errMessage);
       }
 
       const data = await res.json();
@@ -183,8 +190,15 @@ export default function AgentPanel({
       });
 
       if (!planRes.ok) {
-        const err = await planRes.json();
-        throw new Error(err.error || "Planning failed");
+        const textResponse = await planRes.text();
+        let errMessage = "Planning failed";
+        try {
+          const errData = JSON.parse(textResponse);
+          errMessage = errData.error || errMessage;
+        } catch (parseError) {
+          errMessage = textResponse || errMessage;
+        }
+        throw new Error(errMessage);
       }
 
       const planData = await planRes.json();

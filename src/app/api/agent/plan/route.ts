@@ -5,6 +5,8 @@ import { projects } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { planTasks, PlannerError } from "@/lib/agent-planner";
 
+export const maxDuration = 60; // Allow up to 60s for Vercel Hobby tier (requires Pro for >10s, but this enables it if configured)
+
 // Simple in-memory rate limiting for the planner (5 plans per user per 10m)
 const plannerRateLimit = new Map<string, { count: number; expiresAt: number }>();
 

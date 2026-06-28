@@ -7,6 +7,8 @@ import { generateText } from "ai";
 import { router } from "@/lib/model-router";
 import { checkSecurity } from "@/lib/security-check";
 
+export const maxDuration = 60;
+
 export async function POST(req: Request) {
   try {
     const session = await auth();
