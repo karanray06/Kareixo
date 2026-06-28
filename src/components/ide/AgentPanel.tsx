@@ -84,7 +84,7 @@ export default function AgentPanel({
         setPhase("idle");
       }
     },
-    onError: (err) => {
+    onError: (err: Error) => {
       setPhase("idle");
       // Append a system error message to the chat
       append({
