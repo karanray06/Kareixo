@@ -65,7 +65,6 @@ function CodeFragment({
         color="#e88a6d" // coral-400
         anchorX="center"
         anchorY="middle"
-        font="/fonts/JetBrainsMono-Regular.ttf"
         fillOpacity={0.6}
       >
         {text}
@@ -197,15 +196,15 @@ export default function HeroScene() {
       {/* Overlay content */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full px-6 text-center pointer-events-none">
         {/* Tagline badge */}
-        <div className="badge badge-amber mb-6 pointer-events-auto animate-fade-in-up">
+        <div className="badge badge-amber mb-6 pointer-events-auto animate-fade-in-up" style={{ opacity: 0, animationDelay: "0.1s" }}>
           <span className="inline-block w-2 h-2 rounded-full bg-rosegold-400 mr-1 animate-pulse-glow" />
           Free &middot; Transparent &middot; No credit card
         </div>
 
         {/* Headline */}
         <h1
-          className="font-display text-5xl md:text-7xl lg:text-8xl font-bold leading-[1.05] max-w-4xl mb-6"
-          style={{ animationDelay: "0.1s" }}
+          className="font-display text-5xl md:text-7xl lg:text-8xl font-bold leading-[1.05] max-w-4xl mb-6 animate-fade-in-up"
+          style={{ opacity: 0, animationDelay: "0.2s" }}
         >
           The IDE that{" "}
           <span className="text-gradient-amber">shows its work</span>
@@ -214,7 +213,7 @@ export default function HeroScene() {
         {/* Subheadline */}
         <p
           className="text-dusk-700 text-lg md:text-xl max-w-2xl mb-8 animate-fade-in-up"
-          style={{ animationDelay: "0.2s" }}
+          style={{ opacity: 0, animationDelay: "0.3s" }}
         >
           Free multi-model AI routing across 6+ providers. Every reasoning step
           visible. Every diff reviewed. Every change security-checked — before it
@@ -224,7 +223,7 @@ export default function HeroScene() {
         {/* CTA */}
         <div
           className="flex flex-col sm:flex-row gap-4 pointer-events-auto animate-fade-in-up"
-          style={{ animationDelay: "0.3s" }}
+          style={{ opacity: 0, animationDelay: "0.4s" }}
         >
           <a href="/signup" className="btn btn-primary text-lg px-8 py-3">
             Start building — free
@@ -254,7 +253,7 @@ export default function HeroScene() {
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 animate-fade-in" style={{ animationDelay: "1s" }}>
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 animate-fade-in" style={{ opacity: 0, animationDelay: "1s" }}>
         <span className="text-dusk-500 text-[10px] font-mono tracking-widest uppercase">Scroll</span>
         <div className="w-5 h-8 border border-dusk-400 rounded-full flex items-start justify-center p-1.5">
           <div className="w-1 h-2 bg-coral-400 rounded-full animate-[float_1.5s_ease-in-out_infinite]" />

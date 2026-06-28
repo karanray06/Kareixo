@@ -48,7 +48,7 @@ export default function SecurityExplainer() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             anime({
-              targets: '.security-card',
+              targets: '.security-reveal, .security-card',
               opacity: [0, 1],
               translateY: [30, 0],
               scale: [0.95, 1],
@@ -88,7 +88,7 @@ export default function SecurityExplainer() {
       </div>
 
       <div className="section relative z-10">
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 security-reveal opacity-0">
           <div className="badge badge-amber mb-4 mx-auto">
             <ShieldTick size={12} variant="Bold" />
             PRE-COMMIT SECURITY

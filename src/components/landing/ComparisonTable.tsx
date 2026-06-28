@@ -38,6 +38,14 @@ export default function ComparisonTable() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             anime({
+              targets: '.compare-reveal',
+              opacity: [0, 1],
+              translateY: [30, 0],
+              delay: anime.stagger(150),
+              duration: 800,
+              easing: 'easeOutCubic'
+            });
+            anime({
               targets: '.compare-row, .compare-card',
               opacity: [0, 1],
               translateY: [20, 0],
@@ -59,7 +67,7 @@ export default function ComparisonTable() {
 
   return (
     <div ref={containerRef} className="section">
-      <div className="text-center mb-12">
+      <div className="text-center mb-12 compare-reveal opacity-0">
         <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
           The axis nobody else fills
         </h2>
@@ -71,7 +79,7 @@ export default function ComparisonTable() {
       </div>
 
       {/* Desktop table */}
-      <div className="hidden lg:block max-w-5xl mx-auto">
+      <div className="hidden lg:block max-w-5xl mx-auto compare-reveal opacity-0">
         <div className="glass-strong overflow-hidden" style={{ borderRadius: "var(--radius-lg)" }}>
           <table className="w-full text-sm">
             <thead>

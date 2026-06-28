@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import anime from "animejs";
 import { CpuSetting } from "iconsax-react";
 
 const PROVIDERS = [
@@ -16,6 +17,34 @@ export default function RouterVisual() {
   const [failedProvider, setFailedProvider] = useState(-1);
   const [isRouting, setIsRouting] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            anime({
+              targets: '.router-reveal',
+              opacity: [0, 1],
+              translateY: [30, 0],
+              delay: anime.stagger(150),
+              duration: 800,
+              easing: 'easeOutCubic'
+            });
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(containerRef.current);
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const cycle = () => {
@@ -46,8 +75,8 @@ export default function RouterVisual() {
   }, [activeProvider]);
 
   return (
-    <div className="section">
-      <div className="text-center mb-12">
+    <div ref={containerRef} className="section">
+      <div className="text-center mb-12 router-reveal opacity-0">
         <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
           How the <span className="text-gradient-cyan">free-tier router</span> works
         </h2>
@@ -58,7 +87,7 @@ export default function RouterVisual() {
         </p>
       </div>
 
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-3xl mx-auto router-reveal opacity-0">
         <div className="glass-strong p-8 relative overflow-hidden" style={{ borderRadius: "var(--radius-lg)" }}>
           {/* Center node - the router */}
           <div className="flex items-center justify-center mb-8">

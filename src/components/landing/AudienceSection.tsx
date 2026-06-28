@@ -34,24 +34,20 @@ const AUDIENCES = [
 ];
 
 export default function AudienceSection() {
-  const headlineRef = useRef<HTMLHeadingElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!headlineRef.current) return;
-
-    // Split text into words for animation
-    const text = headlineRef.current.innerHTML;
-    headlineRef.current.innerHTML = text.replace(/\S+/g, "<span class='word inline-block opacity-0 translate-y-4'>$&</span>");
+    if (!containerRef.current) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             anime({
-              targets: '.word',
+              targets: '.audience-reveal',
               opacity: [0, 1],
-              translateY: [15, 0],
-              delay: anime.stagger(100),
+              translateY: [30, 0],
+              delay: anime.stagger(150),
               duration: 800,
               easing: 'easeOutCubic'
             });
@@ -62,7 +58,7 @@ export default function AudienceSection() {
       { threshold: 0.1 }
     );
 
-    observer.observe(headlineRef.current);
+    observer.observe(containerRef.current);
 
     return () => observer.disconnect();
   }, []);
@@ -86,13 +82,13 @@ export default function AudienceSection() {
         </Canvas>
       </div>
 
-      <div className="section relative z-10">
+      <div ref={containerRef} className="section relative z-10">
         <div className="text-center mb-12">
-          <h2 ref={headlineRef} className="font-display text-3xl md:text-5xl font-bold mb-4">
+          <h2 className="font-display text-3xl md:text-5xl font-bold mb-4 audience-reveal opacity-0">
             Built for builders with{" "}
             <span className="text-gradient-cyan">zero budget</span>
           </h2>
-          <p className="text-dusk-700 text-lg max-w-xl mx-auto">
+          <p className="text-dusk-700 text-lg max-w-xl mx-auto audience-reveal opacity-0">
             We&apos;re not hiding who this is for. If you can&apos;t afford $20/month
             for AI tooling, you are exactly our user.
           </p>
@@ -102,7 +98,7 @@ export default function AudienceSection() {
           {AUDIENCES.map((audience, i) => (
             <div
               key={audience.title}
-              className="card hover:border-coral-500/30 transition-all group"
+              className="card hover:border-coral-500/30 transition-all group audience-reveal opacity-0"
             >
               <div className="w-10 h-10 rounded-lg bg-coral-400/10 border border-coral-400/20 flex items-center justify-center text-coral-400 mb-4 group-hover:glow-cyan transition-all">
                 {audience.icon}
@@ -120,7 +116,7 @@ export default function AudienceSection() {
         {/* Final CTA */}
         <div className="text-center">
           <div
-            className="glass-strong inline-block px-12 py-10 text-center"
+            className="glass-strong inline-block px-12 py-10 text-center audience-reveal opacity-0"
             style={{ borderRadius: "var(--radius-xl)" }}
           >
             <h3 className="font-display text-2xl md:text-4xl font-bold mb-3">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import anime from "animejs";
 import { Lamp, Code1, ShieldTick } from "iconsax-react";
 
 /* ── Scripted demo sequence ── */
@@ -96,6 +97,7 @@ function TypingText({ text, speed = 25 }: { text: string; speed?: number }) {
 
 export default function LiveDemo() {
   const [activeStep, setActiveStep] = useState(-1);
+  const [cycle, setCycle] = useState(0);
   const [hasStarted, setHasStarted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -112,19 +114,30 @@ export default function LiveDemo() {
     timers.push(
       setTimeout(() => {
         setActiveStep(-1);
-        setTimeout(() => setHasStarted(true), 500);
+        setTimeout(() => setCycle(c => c + 1), 500);
       }, 12000)
     );
 
     return () => timers.forEach(clearTimeout);
-  }, [hasStarted]);
+  }, [hasStarted, cycle]);
 
-  // Start on scroll into view
+  // Start on scroll into view and animate entrance
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !hasStarted) {
-          setHasStarted(true);
+        if (entry.isIntersecting) {
+          if (!hasStarted) {
+            setHasStarted(true);
+          }
+          anime({
+            targets: '.demo-reveal',
+            opacity: [0, 1],
+            translateY: [30, 0],
+            delay: anime.stagger(150),
+            duration: 800,
+            easing: 'easeOutCubic'
+          });
+          observer.disconnect();
         }
       },
       { threshold: 0.3 }
@@ -139,7 +152,7 @@ export default function LiveDemo() {
       id="demo"
       className="section"
     >
-      <div className="text-center mb-12">
+      <div className="text-center mb-12 demo-reveal opacity-0">
         <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
           See the <span className="text-gradient-cyan">Glass Box</span> in action
         </h2>
@@ -149,7 +162,7 @@ export default function LiveDemo() {
         </p>
       </div>
 
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-3xl mx-auto demo-reveal opacity-0">
         <div className="glass-strong rounded-xl overflow-hidden" style={{ borderRadius: "var(--radius-lg)" }}>
           {/* Terminal header */}
           <div className="flex items-center gap-2 px-4 py-3 border-b border-cream-300">
