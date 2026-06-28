@@ -98,7 +98,10 @@ export default function AgentPanel({
     },
     onError(err: Error) {
       setPhase("idle");
-      setErrorMsg(err.message || "Failed to reach AI providers. Please check your API keys.");
+      const message = err.message === "An error occurred." 
+        ? "Failed to generate response. Please check if your OPENROUTER_API_KEY is valid and has sufficient quota."
+        : (err.message || "Failed to reach AI providers.");
+      setErrorMsg(message);
     },
   } as any);
 

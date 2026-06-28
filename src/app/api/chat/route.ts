@@ -12,6 +12,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    if (!process.env.OPENROUTER_API_KEY) {
+      return NextResponse.json(
+        { error: "OPENROUTER_API_KEY is not set. Please add it to your environment variables on Vercel." },
+        { status: 401 }
+      );
+    }
+
     const { messages: rawMessages, taskType = "chat", forceProvider } = await req.json();
 
     // Convert ai@7 UIMessage format (parts-based) to the simple format the AI SDK expects
