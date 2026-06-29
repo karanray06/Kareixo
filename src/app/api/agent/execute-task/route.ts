@@ -3,11 +3,14 @@ import { auth } from "@/auth";
 import { getDb } from "@/db";
 import { projects } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
-import { generateText } from "ai";
+import { streamText } from "ai";
 import { router } from "@/lib/model-router";
 import { checkSecurity } from "@/lib/security-check";
 
 export const maxDuration = 60;
+
+/** Max time a single provider attempt may spend streaming before we abort and fail over. */
+const PER_ATTEMPT_TIMEOUT_MS = 45_000;
 
 export async function POST(req: Request) {
   try {
@@ -51,17 +54,46 @@ ${projectContext || "No other files"}
 
 ${existingCode ? `Here is the EXISTING content of ${task.filename}:\n${existingCode}\n\nUpdate this file according to the task description.` : "This is a new file."}`;
 
-    // Execute via ModelRouter
+    // Execute via ModelRouter. Stream and accumulate internally rather than blocking on
+    // one generateText() await: this keeps the function actively pulling data and lets
+    // the per-attempt timeout fail over to the next provider instead of dying at 60s.
     const { result, provider } = await router.executeWithFailover(async (p) => {
-      return await generateText({
-        model: p.model,
-        system: systemPrompt,
-        prompt: "Provide the code for the requested file.",
-        temperature: 0.3, // Low temperature for code reliability
+      const controller = new AbortController();
+      let timer: ReturnType<typeof setTimeout> | undefined;
+
+      const timeout = new Promise<never>((_, reject) => {
+        timer = setTimeout(() => {
+          controller.abort();
+          reject(new Error(`Provider stream exceeded ${PER_ATTEMPT_TIMEOUT_MS}ms timeout`));
+        }, PER_ATTEMPT_TIMEOUT_MS);
       });
+
+      const accumulate = (async () => {
+        const stream = streamText({
+          model: p.model,
+          system: systemPrompt,
+          prompt: "Provide the code for the requested file.",
+          temperature: 0.3, // Low temperature for code reliability
+          abortSignal: controller.signal,
+        });
+
+        let code = "";
+        for await (const chunk of stream.textStream) {
+          code += chunk;
+        }
+        return code;
+      })();
+
+      try {
+        // Security check and file-write both need the COMPLETE file content,
+        // so assemble the full string before returning.
+        return await Promise.race([accumulate, timeout]);
+      } finally {
+        if (timer) clearTimeout(timer);
+      }
     }, "code");
 
-    let generatedCode = result.text;
+    let generatedCode = result;
     
     // Fallback cleanup in case the model ignored instruction 2
     if (generatedCode.startsWith("\`\`\`")) {

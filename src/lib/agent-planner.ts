@@ -1,5 +1,8 @@
-import { generateText } from "ai";
+import { streamText } from "ai";
 import { router } from "./model-router";
+
+/** Max time a single provider attempt may spend streaming before we abort and fail over. */
+const PER_ATTEMPT_TIMEOUT_MS = 45_000;
 
 export interface AgentTask {
   id: string;
@@ -46,15 +49,45 @@ EXAMPLE OUTPUT:
 
 export async function planTasks(userPrompt: string, projectContext: string): Promise<AgentTask[]> {
   const { result } = await router.executeWithFailover(async (provider) => {
-    return await generateText({
-      model: provider.model,
-      system: PLANNER_SYSTEM_PROMPT,
-      prompt: `PROJECT CONTEXT:\n${projectContext}\n\nUSER REQUEST:\n${userPrompt}`,
-      temperature: 0.2, // Lower temperature for more predictable JSON output
+    // Stream instead of one blocking generateText() call: actively pull chunks so a
+    // dead/slow provider is detected quickly instead of stalling in a single silent await.
+    const controller = new AbortController();
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
+    const timeout = new Promise<never>((_, reject) => {
+      timer = setTimeout(() => {
+        controller.abort();
+        reject(new Error(`Provider stream exceeded ${PER_ATTEMPT_TIMEOUT_MS}ms timeout`));
+      }, PER_ATTEMPT_TIMEOUT_MS);
     });
+
+    const accumulate = (async () => {
+      const stream = streamText({
+        model: provider.model,
+        system: PLANNER_SYSTEM_PROMPT,
+        prompt: `PROJECT CONTEXT:\n${projectContext}\n\nUSER REQUEST:\n${userPrompt}`,
+        temperature: 0.2, // Lower temperature for more predictable JSON output
+        abortSignal: controller.signal,
+      });
+
+      let text = "";
+      for await (const chunk of stream.textStream) {
+        text += chunk;
+      }
+      return text;
+    })();
+
+    try {
+      // The caller needs the FULL JSON array before it can parse, so we accumulate
+      // the whole response here; the per-attempt timeout lets failover react to a
+      // slow provider instead of burning the entire 60s function budget.
+      return await Promise.race([accumulate, timeout]);
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
   }, "chat");
 
-  const rawText = result.text.trim();
+  const rawText = result.trim();
   
   // Extract JSON if the model ignored instructions and wrapped in markdown
   let jsonString = rawText;
