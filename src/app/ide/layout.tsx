@@ -1,6 +1,6 @@
 import { auth, signOut } from "@/auth";
 import { ProjectProvider } from "@/components/ide/ProjectContext";
-import { Add, Setting2, ExportSquare, Information, NodeSquare, Automion, SecuritySafe, DocumentText, SearchNormal, TaskSquare, ArrowUp2 } from "iconsax-react";
+import { Add, Setting2, ExportSquare, Information, NoteSquare, Automion, SecuritySafe, DocumentText, SearchNormal, TaskSquare, ArrowUp2 } from "iconsax-react";
 
 export const dynamic = "force-dynamic";
 
@@ -46,7 +46,7 @@ export default async function IdeLayout({ children }: { children: React.ReactNod
               <a href="#" className="flex items-center gap-3 px-3 py-2 text-sm text-gray-400 hover:text-gray-200 hover:bg-[#202124] rounded-md transition-colors"><TaskSquare size={16} /> Automations</a>
               <a href="#" className="flex items-center gap-3 px-3 py-2 text-sm text-gray-400 hover:text-gray-200 hover:bg-[#202124] rounded-md transition-colors"><SecuritySafe size={16} /> Security</a>
               <a href="#" className="flex items-center gap-3 px-3 py-2 text-sm text-gray-400 hover:text-gray-200 hover:bg-[#202124] rounded-md transition-colors"><DocumentText size={16} /> Review</a>
-              <a href="#" className="flex items-center gap-3 px-3 py-2 text-sm text-gray-400 hover:text-gray-200 hover:bg-[#202124] rounded-md transition-colors"><NodeSquare size={16} /> Wiki</a>
+              <a href="#" className="flex items-center gap-3 px-3 py-2 text-sm text-gray-400 hover:text-gray-200 hover:bg-[#202124] rounded-md transition-colors"><NoteSquare size={16} /> Wiki</a>
             </nav>
           </div>
 
@@ -72,7 +72,7 @@ export default async function IdeLayout({ children }: { children: React.ReactNod
               ].map((session, i) => (
                 <div key={i} className="group flex flex-col px-3 py-2 rounded-md hover:bg-[#202124] cursor-pointer transition-colors">
                   <div className="flex items-center gap-2">
-                    <NodeSquare size={14} className="text-gray-500 shrink-0" variant="Outline" />
+                    <NoteSquare size={14} className="text-gray-500 shrink-0" variant="Outline" />
                     <span className="text-sm text-gray-300 truncate">{session.title}</span>
                   </div>
                   {(session.status || session.time) && (

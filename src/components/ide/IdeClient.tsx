@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useChat } from "ai/react";
+import { useChat } from "@ai-sdk/react";
 import { Add, Microphone, Setting4, ArrowUp2, CloseCircle, TickCircle, ArrowDown2 } from "iconsax-react";
 
 export default function IdeClient() {
