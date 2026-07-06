@@ -8,7 +8,7 @@ export default function IdeClient() {
   const [showChecklist, setShowChecklist] = useState(true);
   const [input, setInput] = useState("");
 
-  const { messages, append, status } = useChat({
+  const { messages, sendMessage, status } = useChat({
     id: "ide-chat",
   });
 
@@ -19,7 +19,7 @@ export default function IdeClient() {
     if (!input.trim() || isLoading) return;
     const text = input;
     setInput("");
-    await append({ role: "user", content: text });
+    await sendMessage({ text });
   };
 
   // Extract text from a UIMessage
