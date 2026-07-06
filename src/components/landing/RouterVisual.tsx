@@ -75,36 +75,26 @@ export default function RouterVisual() {
   }, [activeProvider]);
 
   return (
-    <div ref={containerRef} className="section">
-      <div className="text-center mb-12 router-reveal opacity-0">
-        <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
-          How the <span className="text-gradient-cyan">free-tier router</span> works
-        </h2>
-        <p className="text-dusk-700 text-lg max-w-xl mx-auto">
-          Your requests flow between multiple providers automatically. If one
-          hits its limit, the router instantly fails over — under 2 seconds,
-          completely invisible.
-        </p>
-      </div>
-
-      <div className="max-w-3xl mx-auto router-reveal opacity-0">
-        <div className="glass-strong p-8 relative overflow-hidden" style={{ borderRadius: "var(--radius-lg)" }}>
+    <div ref={containerRef} className="w-full h-full flex flex-col justify-center">
+      <div className="w-full mx-auto router-reveal opacity-0">
+        <div className="relative">
           {/* Center node - the router */}
           <div className="flex items-center justify-center mb-8">
             <div
               className={`
-                relative w-24 h-24 rounded-xl flex items-center justify-center
-                transition-all duration-300
-                ${isRouting ? "glow-cyan scale-105" : ""}
+                relative w-24 h-24 rounded-2xl flex items-center justify-center
+                transition-all duration-300 shadow-[0_10px_30px_rgba(0,191,255,0.3)]
+                ${isRouting ? "scale-110 shadow-[0_10px_40px_rgba(0,191,255,0.6)]" : ""}
               `}
               style={{
-                background: "linear-gradient(135deg, var(--coral-700), var(--coral-900))",
-                border: "1px solid var(--coral-500)",
+                background: "linear-gradient(135deg, rgba(0,191,255,0.2), rgba(0,191,255,0.05))",
+                border: "1px solid rgba(0,191,255,0.4)",
+                backdropFilter: "blur(20px)",
               }}
             >
               <div className="text-center">
-                <CpuSetting size={28} variant="Outline" className="mx-auto text-coral-400 mb-1" />
-                <span className="text-coral-300 text-[10px] font-mono font-bold">
+                <CpuSetting size={32} variant="Outline" className="mx-auto text-[#00BFFF] mb-2 drop-shadow-[0_0_10px_rgba(0,191,255,0.8)]" />
+                <span className="text-[#00BFFF] text-[11px] font-mono font-bold tracking-widest drop-shadow-md">
                   ROUTER
                 </span>
               </div>
@@ -124,54 +114,54 @@ export default function RouterVisual() {
                 <div
                   key={provider.id}
                   className={`
-                    relative p-3 rounded-lg text-center transition-all duration-500
+                    relative p-3.5 rounded-xl text-center transition-all duration-500
                     ${
                       isFailed
-                        ? "bg-red-400/10 border border-red-400/30"
+                        ? "bg-red-500/10 border border-red-500/30 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
                         : isActive
-                        ? "glass-cyan glow-cyan scale-[1.03]"
-                        : "bg-cream-200 border border-cream-300"
+                        ? "bg-cyan-500/10 border border-cyan-500/30 scale-[1.05] shadow-[0_0_20px_rgba(0,191,255,0.2)]"
+                        : "bg-white/5 border border-white/10"
                     }
                   `}
                 >
                   {/* Connection line indicator */}
                   {isActive && !isFailed && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-0.5 h-3 bg-coral-400 rounded-full" />
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-1 h-3 bg-[#00BFFF] rounded-full shadow-[0_0_10px_rgba(0,191,255,0.8)]" />
                   )}
 
                   <div
-                    className={`text-xs font-display font-bold mb-1 transition-colors ${
+                    className={`text-xs font-bold mb-1 tracking-wide uppercase transition-colors ${
                       isFailed
                         ? "text-red-400"
                         : isActive
-                        ? "text-coral-300"
-                        : "text-dusk-700"
+                        ? "text-[#00BFFF]"
+                        : "text-white/60"
                     }`}
                   >
                     {provider.name}
                   </div>
-                  <div className="text-[10px] text-dusk-500 font-mono leading-tight">
+                  <div className="text-[10px] text-white/40 font-mono leading-tight">
                     {provider.models}
                   </div>
 
                   {/* Status indicator */}
-                  <div className="mt-2 flex items-center justify-center gap-1">
+                  <div className="mt-3 flex items-center justify-center gap-1.5">
                     <div
                       className={`w-1.5 h-1.5 rounded-full ${
                         isFailed
-                          ? "bg-red-400"
+                          ? "bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.8)]"
                           : isActive
-                          ? "bg-coral-400 animate-pulse"
-                          : "bg-dusk-400"
+                          ? "bg-[#00BFFF] shadow-[0_0_8px_rgba(0,191,255,0.8)] animate-pulse"
+                          : "bg-white/20"
                       }`}
                     />
                     <span
-                      className={`text-[9px] font-mono ${
+                      className={`text-[9px] font-mono tracking-widest uppercase ${
                         isFailed
                           ? "text-red-400"
                           : isActive
-                          ? "text-coral-400"
-                          : "text-dusk-400"
+                          ? "text-[#00BFFF]"
+                          : "text-white/30"
                       }`}
                     >
                       {isFailed ? "429" : isActive ? "active" : "standby"}
@@ -183,17 +173,17 @@ export default function RouterVisual() {
           </div>
 
           {/* Stats */}
-          <div className="mt-6 flex items-center justify-center gap-6 text-xs text-dusk-500">
-            <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full bg-coral-400" />
+          <div className="mt-8 flex items-center justify-center gap-6 text-xs text-white/50 font-medium tracking-wide">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-[#00BFFF] shadow-[0_0_5px_rgba(0,191,255,0.5)]" />
               <span>Round-robin routing</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full bg-rosegold-400" />
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-pink-500 shadow-[0_0_5px_rgba(236,72,153,0.5)]" />
               <span>&lt;2s failover</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full bg-green-400" />
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.5)]" />
               <span>6+ free providers</span>
             </div>
           </div>

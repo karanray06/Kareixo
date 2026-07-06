@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import { Space_Grotesk, Plus_Jakarta_Sans, JetBrains_Mono, Anton, Lora } from "next/font/google";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -23,8 +23,21 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+const anton = Anton({
+  variable: "--font-anton",
+  subsets: ["latin"],
+  weight: "400",
+  display: "swap",
+});
+
+const lora = Lora({
+  variable: "--font-lora",
+  subsets: ["latin"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "Kareixo — The Glass Box IDE",
+  title: "Kareixo — The AI Workspace",
   description:
     "The AI coding IDE that shows its work and never asks for a credit card. Free multi-model routing, visible agent reasoning, and pre-commit security checks.",
   keywords: [
@@ -34,10 +47,9 @@ export const metadata: Metadata = {
     "open source",
     "code editor",
     "transparent AI",
-    "glass box",
   ],
   openGraph: {
-    title: "Kareixo — The Glass Box IDE",
+    title: "Kareixo — The AI Workspace",
     description:
       "Free AI coding with full transparency. See every reasoning step, review every diff, pass every security check — before code lands.",
     type: "website",
@@ -45,7 +57,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Kareixo — The Glass Box IDE",
+    title: "Kareixo — The AI Workspace",
     description:
       "The IDE that shows its work — and never asks for a credit card.",
   },
@@ -59,7 +71,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${spaceGrotesk.variable} ${plusJakarta.variable} ${jetbrainsMono.variable}`}
+      className={`${spaceGrotesk.variable} ${plusJakarta.variable} ${jetbrainsMono.variable} ${anton.variable} ${lora.variable}`}
     >
       <body>{children}</body>
     </html>

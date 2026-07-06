@@ -67,63 +67,31 @@ export default function SecurityExplainer() {
 
     return () => observer.disconnect();
   }, []);
-
   return (
-    <div ref={containerRef} className="relative overflow-hidden">
-      {/* 3D Background */}
-      <div className="absolute inset-0 opacity-30 pointer-events-none">
-        <Canvas
-          camera={{ position: [0, 0, 6], fov: 50 }}
-          gl={{ antialias: true, alpha: true }}
-          style={{ background: "transparent" }}
-          dpr={[1, 1.5]}
-        >
-          <Suspense fallback={null}>
-            <ambientLight intensity={0.3} />
-            <ParticleNebula count={200} radius={4} color="#f59e0b" size={0.012} />
-            <FloatingIcosahedron position={[3, 1, -2]} scale={0.7} color="#f59e0b" speed={0.08} />
-            <GridPlane size={20} divisions={20} color="#f59e0b" opacity={0.03} position={[0, -2, 0]} />
-          </Suspense>
-        </Canvas>
-      </div>
+    <div ref={containerRef} className="relative w-full h-full flex flex-col justify-center">
 
-      <div className="section relative z-10">
-        <div className="text-center mb-12 security-reveal opacity-0">
-          <div className="badge badge-amber mb-4 mx-auto">
-            <ShieldTick size={12} variant="Bold" />
-            PRE-COMMIT SECURITY
-          </div>
-          <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
-            Every change is <span className="text-gradient-amber">security-checked</span>
-          </h2>
-          <p className="text-dusk-700 text-lg max-w-2xl mx-auto">
-            Before any AI-generated code is offered for your approval, a
-            secondary model runs a focused security analysis. This directly
-            addresses the documented finding that most AI-generated code ships
-            with unreviewed security flaws.
-          </p>
-        </div>
+      <div className="relative z-10 w-full">
 
-        <div className="grid md:grid-cols-2 gap-5 max-w-4xl mx-auto">
+        <div className="flex flex-col gap-4 w-full">
           {CHECKS.map((check, i) => (
             <div
               key={check.title}
-              className="security-card card group hover:border-rosegold-500/30 transition-all opacity-0"
+              className="security-card bg-white/5 border border-white/10 rounded-xl p-4 md:p-5 group hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all duration-300 opacity-0"
             >
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-lg bg-rosegold-400/10 border border-rosegold-400/20 flex items-center justify-center text-rosegold-400 shrink-0 group-hover:glow-amber transition-all">
+                <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 group-hover:shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all">
                   {check.icon}
                 </div>
-                <div>
-                  <h3 className="font-display text-base font-bold text-dusk-900 mb-1.5">
+                <div className="flex-1">
+                  <h3 className="text-sm md:text-base font-bold text-white mb-1.5 tracking-wide">
                     {check.title}
                   </h3>
-                  <p className="text-dusk-500 text-sm leading-relaxed mb-3">
+                  <p className="text-white/50 text-xs md:text-sm leading-relaxed mb-4">
                     {check.description}
                   </p>
-                  <div className="font-mono text-xs bg-cream-200 rounded px-3 py-2 border border-cream-300 flex items-center gap-2">
-                    <span className="text-red-400/80">{check.example}</span>
-                    <span className="text-rosegold-400 text-[10px] font-bold tracking-wider ml-auto">FLAGGED</span>
+                  <div className="font-mono text-[10px] md:text-xs bg-black/40 rounded-lg px-3 py-2 border border-red-500/20 flex items-center gap-2 group-hover:border-red-500/40 transition-colors">
+                    <span className="text-red-400/80 truncate">{check.example}</span>
+                    <span className="text-red-400 text-[9px] font-bold tracking-widest ml-auto bg-red-500/10 px-2 py-1 rounded">FLAGGED</span>
                   </div>
                 </div>
               </div>

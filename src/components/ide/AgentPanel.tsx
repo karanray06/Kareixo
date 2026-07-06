@@ -82,8 +82,8 @@ export default function AgentPanel({
   const [tasks, setTasks] = useState<AgentTask[]>([]);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  // ai@7 useChat: returns sendMessage, messages, status, error
-  const { messages, sendMessage, status, error, setMessages } = useChat({
+  // ai@7 useChat: returns append, messages, status, error
+  const { messages, append, status, error, setMessages } = useChat({
     api: "/api/chat",
     body: {
       taskType: "code",
@@ -287,7 +287,7 @@ export default function AgentPanel({
         // Explain mode is always single-shot
         setPhase("thinking");
         const prompt = `Explain clearly (no code changes needed): ${trimmed}\n\nCurrent file (${currentFile}):\n\`\`\`\n${currentContent}\n\`\`\``;
-        await sendMessage({ text: prompt });
+        await append({ role: "user", content: prompt });
       } else if (plannerMode) {
         // Run full multi-step agent
         await runPlannerLoop(trimmed);
@@ -295,7 +295,7 @@ export default function AgentPanel({
         // Single shot edit mode
         setPhase("thinking");
         const prompt = `You are a coding assistant. The user is editing \`${currentFile}\`. Return ONLY the complete updated file content inside a single fenced code block. Do not include any prose outside the code block unless asked to explain.\n\nUser request: ${trimmed}\n\nCurrent file content:\n\`\`\`\n${currentContent}\n\`\`\``;
-        await sendMessage({ text: prompt });
+        await append({ role: "user", content: prompt });
       }
     } catch (e: any) {
       console.error("AgentPanel handleSubmit error:", e);

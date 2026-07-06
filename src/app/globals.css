@@ -6,37 +6,46 @@
    ═══════════════════════════════════════════ */
 
 :root {
-  /* ── Surface palette — warm cream base, not stark white ── */
-  --cream-50:  hsl(32, 45%, 97%);
-  --cream-100: hsl(30, 42%, 94%);
-  --cream-200: hsl(28, 38%, 89%);
-  --cream-300: hsl(26, 32%, 82%);
-  --dusk-400:  hsl(280, 18%, 62%);
-  --dusk-500:  hsl(282, 20%, 48%);
-  --dusk-700:  hsl(285, 22%, 30%);
-  --dusk-900:  hsl(288, 24%, 16%);
+  /* ── Surface palette — immersive dark mode (dark.design / supahero inspired) ── */
+  --bg-base: hsl(240, 10%, 4%);
+  --bg-surface: hsl(240, 10%, 8%);
+  --bg-elevated: hsl(240, 10%, 12%);
+  --bg-raised: hsl(240, 10%, 16%);
+  
+  --text-primary: hsl(0, 0%, 98%);
+  --text-secondary: hsl(240, 5%, 65%);
+  --text-tertiary: hsl(240, 5%, 45%);
 
-  /* ── Primary accent — coral/peach ── */
-  --coral-100: hsl(18, 75%, 90%);
-  --coral-200: hsl(16, 72%, 80%);
-  --coral-400: hsl(14, 68%, 65%);
-  --coral-500: hsl(12, 65%, 55%);
-  --coral-600: hsl(10, 62%, 45%);
+  --cream-50:  var(--bg-base);
+  --cream-100: var(--bg-surface);
+  --cream-200: var(--bg-elevated);
+  --cream-300: var(--bg-raised);
+  --dusk-400:  var(--text-tertiary);
+  --dusk-500:  var(--text-secondary);
+  --dusk-700:  hsl(0, 0%, 85%);
+  --dusk-900:  var(--text-primary);
 
-  /* ── Secondary accent — periwinkle ── */
-  --periwinkle-200: hsl(230, 45%, 85%);
-  --periwinkle-400: hsl(228, 42%, 68%);
-  --periwinkle-600: hsl(226, 38%, 48%);
+  /* ── Primary accent — electric blue/cyan ── */
+  --coral-100: hsl(190, 90%, 80%);
+  --coral-200: hsl(190, 90%, 70%);
+  --coral-400: hsl(190, 90%, 55%);
+  --coral-500: hsl(190, 90%, 45%);
+  --coral-600: hsl(190, 90%, 35%);
 
-  /* ── Security/trust badge — rose-gold ── */
-  --rosegold-400: hsl(28, 70%, 60%);
-  --rosegold-500: hsl(26, 68%, 50%);
+  /* ── Secondary accent — vibrant purple ── */
+  --periwinkle-200: hsl(270, 80%, 70%);
+  --periwinkle-400: hsl(270, 80%, 60%);
+  --periwinkle-600: hsl(270, 80%, 50%);
 
-  /* ── Semantic Colors (warmed) ── */
-  --red-400: hsl(6, 65%, 58%);
-  --red-500: hsl(6, 65%, 48%);
-  --green-400: hsl(110, 35%, 50%);
-  --green-500: hsl(110, 35%, 40%);
+  /* ── Security/trust badge — neon green ── */
+  --rosegold-400: hsl(150, 80%, 50%);
+  --rosegold-500: hsl(150, 80%, 40%);
+
+  /* ── Semantic Colors ── */
+  --red-400: hsl(350, 80%, 60%);
+  --red-500: hsl(350, 80%, 50%);
+  --green-400: hsl(150, 80%, 50%);
+  --green-500: hsl(150, 80%, 40%);
 
   /* ── Layout Tokens ── */
   --radius-xs: 4px;
@@ -50,12 +59,12 @@
   --panel-width: 380px;
   --header-height: 48px;
 
-  /* ── Shadows ── */
-  --shadow-sm: 0 1px 2px hsla(0, 0%, 0%, 0.3);
-  --shadow-md: 0 4px 12px hsla(0, 0%, 0%, 0.35);
-  --shadow-lg: 0 8px 30px hsla(0, 0%, 0%, 0.4);
-  --shadow-glow-cyan: 0 0 20px hsla(14, 68%, 65%, 0.25);
-  --shadow-glow-amber: 0 0 20px hsla(28, 70%, 60%, 0.25);
+  /* ── Shadows (Glows for dark mode) ── */
+  --shadow-sm: 0 1px 2px hsla(0, 0%, 0%, 0.5);
+  --shadow-md: 0 4px 12px hsla(0, 0%, 0%, 0.6);
+  --shadow-lg: 0 8px 30px hsla(0, 0%, 0%, 0.8);
+  --shadow-glow-cyan: 0 0 20px hsla(190, 90%, 55%, 0.4);
+  --shadow-glow-amber: 0 0 20px hsla(270, 80%, 60%, 0.4);
 
   /* ── Transitions ── */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -144,8 +153,8 @@ a:hover {
 }
 
 ::selection {
-  background: hsla(14, 68%, 65%, 0.3);
-  color: var(--dusk-900);
+  background: hsla(190, 90%, 55%, 0.3);
+  color: var(--text-primary);
 }
 
 /* ── Scrollbar Styling ── */
@@ -173,24 +182,76 @@ a:hover {
 
 /* ── Glass Morphism ── */
 .glass {
-  background: hsla(32, 45%, 97%, 0.7);
+  background: hsla(240, 10%, 8%, 0.5);
   backdrop-filter: blur(16px) saturate(1.2);
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
-  border: 1px solid hsla(280, 18%, 62%, 0.2);
+  border: 1px solid hsla(0, 0%, 100%, 0.08);
 }
 
 .glass-strong {
-  background: hsla(32, 45%, 97%, 0.9);
+  background: hsla(240, 10%, 8%, 0.8);
   backdrop-filter: blur(24px) saturate(1.4);
   -webkit-backdrop-filter: blur(24px) saturate(1.4);
-  border: 1px solid hsla(280, 18%, 62%, 0.3);
+  border: 1px solid hsla(0, 0%, 100%, 0.1);
 }
 
 .glass-cyan {
-  background: hsla(14, 68%, 65%, 0.08);
+  background: hsla(190, 90%, 55%, 0.05);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid hsla(14, 68%, 65%, 0.2);
+  border: 1px solid hsla(190, 90%, 55%, 0.2);
+}
+
+/* ── Shaper Gradient Utilities (Dark.design style) ── */
+.shaper-gradient {
+  background: radial-gradient(circle at top right, hsla(190, 90%, 55%, 0.15), transparent 40%),
+              radial-gradient(circle at bottom left, hsla(270, 80%, 60%, 0.15), transparent 40%);
+  position: relative;
+}
+.shaper-gradient::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, hsla(0, 0%, 100%, 0.15), transparent 50%, hsla(0, 0%, 100%, 0.05));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ── GetLayers Glass Flower Utilities ── */
+.glass-flower-card {
+  background: linear-gradient(135deg, hsla(0, 0%, 100%, 0.05) 0%, hsla(0, 0%, 100%, 0.01) 100%);
+  backdrop-filter: blur(40px) saturate(1.5);
+  -webkit-backdrop-filter: blur(40px) saturate(1.5);
+  border: 1px solid hsla(0, 0%, 100%, 0.08);
+  box-shadow: 0 8px 32px 0 hsla(0, 0%, 0%, 0.3),
+              inset 0 1px 1px 0 hsla(0, 0%, 100%, 0.15);
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+}
+
+.glass-flower-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, hsla(270, 80%, 70%, 0.4), transparent 50%, hsla(190, 90%, 55%, 0.2));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.glass-flower-pill {
+  background: hsla(0, 0%, 100%, 0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid hsla(0, 0%, 100%, 0.1);
+  box-shadow: inset 0 1px 1px 0 hsla(0, 0%, 100%, 0.1);
 }
 
 /* ── Gradient Text ── */

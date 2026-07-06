@@ -1,366 +1,139 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import FileExplorer from "@/components/ide/FileExplorer";
-import EditorTabs from "@/components/ide/EditorTabs";
-import MonacoWrapper from "@/components/ide/MonacoWrapper";
-import TerminalPanel from "@/components/ide/TerminalPanel";
-import AgentPanel from "@/components/ide/AgentPanel";
-import { useProject } from "@/components/ide/ProjectContext";
-import {
-  Group,
-  Panel,
-  Separator,
-  usePanelRef,
-  useDefaultLayout,
-} from "react-resizable-panels";
-
-// ── Styled Separator Components ──────────────────────────────────────────────
-
-function VerticalSep({ id }: { id: string }) {
-  return (
-    <Separator
-      id={id}
-      className="w-[3px] bg-cream-200 cursor-col-resize transition-colors
-        data-[separator=hover]:bg-coral-400
-        data-[separator=active]:bg-coral-400"
-    />
-  );
-}
-
-function HorizontalSep({ id }: { id: string }) {
-  return (
-    <Separator
-      id={id}
-      className="h-[3px] w-full bg-cream-200 cursor-row-resize transition-colors
-        data-[separator=hover]:bg-coral-400
-        data-[separator=active]:bg-coral-400"
-    />
-  );
-}
-
-// ── SSR-Safe Storage (runs client-side only) ────────────────────────────────
-const safeStorage = {
-  getItem: (key: string) => {
-    try {
-      const val = localStorage.getItem(key);
-      if (!val) return null;
-      JSON.parse(val); // validate JSON before handing it to the library
-      return val;
-    } catch {
-      localStorage.removeItem(key);
-      return null;
-    }
-  },
-  setItem: (key: string, value: string) => {
-    localStorage.setItem(key, value);
-  },
-};
-
-// ── IDE Client ───────────────────────────────────────────────────────────────
-// This component is always loaded client-side only (ssr: false in page.tsx).
+import { useState } from "react";
+import { useChat } from "ai/react";
+import { Add, Microphone, Setting4, ArrowUp2, CloseCircle, TickCircle, ArrowDown2 } from "iconsax-react";
 
 export default function IdeClient() {
-  const { activeProject, setIsSaving, error } = useProject();
-  const [activeFile, setActiveFile] = useState<string>("");
-
-  const [persistedFiles, setPersistedFiles] = useState<Record<string, string>>({});
-  const [localFiles, setLocalFiles] = useState<Record<string, string>>({});
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Panel refs for imperative resize
-  const explorerPanelRef = usePanelRef();
-  const agentPanelRef = usePanelRef();
-  const terminalPanelRef = usePanelRef();
-
-  // Persistence hooks — save/restore layout sizes from localStorage
-  const hLayout = useDefaultLayout({ id: "ide-h-v4", storage: safeStorage });
-  const vLayout = useDefaultLayout({ id: "ide-v-v4", storage: safeStorage });
-
-  // Debounced resize event to trigger Monaco + xterm relayout
-  const resizeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const dispatchResize = useCallback(() => {
-    if (resizeTimeoutRef.current) clearTimeout(resizeTimeoutRef.current);
-    resizeTimeoutRef.current = setTimeout(() => {
-      window.dispatchEvent(new Event("ide-resize"));
-    }, 50);
-  }, []);
-
-  const handleHLayoutChange = useCallback(
-    (layout: Record<string, number>) => {
-      hLayout.onLayoutChange(layout);
-      dispatchResize();
-    },
-    [hLayout.onLayoutChange, dispatchResize]
-  );
-
-  const handleVLayoutChange = useCallback(
-    (layout: Record<string, number>) => {
-      vLayout.onLayoutChange(layout);
-      dispatchResize();
-    },
-    [vLayout.onLayoutChange, dispatchResize]
-  );
-
-  // Load files when project changes
-  useEffect(() => {
-    if (!activeProject) return;
-
-    let isMounted = true;
-    setIsLoading(true);
-
-    fetch(`/api/projects/${activeProject.id}/files`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (!isMounted) return;
-        const fileMap: Record<string, string> = {};
-        if (Array.isArray(data)) {
-          data.forEach((f: { path: string; content?: string }) => {
-            fileMap[f.path] = f.content || "";
-          });
-        }
-
-        if (Object.keys(fileMap).length === 0) {
-          fileMap["src/index.js"] =
-            "// Kareixo Glass Box IDE\nconsole.log('Hello world');\n";
-          fileMap["package.json"] = '{\n  "name": "demo"\n}\n';
-          Object.entries(fileMap).forEach(([p, c]) => {
-            fetch(`/api/projects/${activeProject.id}/files`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ path: p, content: c }),
-            });
-          });
-        }
-
-        setPersistedFiles(fileMap);
-        setLocalFiles(fileMap);
-        setActiveFile(Object.keys(fileMap)[0] || "");
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setIsLoading(false);
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [activeProject]);
-
-  // Debounced auto-save
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  useEffect(() => {
-    if (!activeProject || isLoading) return;
-
-    const dirtyFiles = Object.keys(localFiles).filter(
-      (p) => localFiles[p] !== persistedFiles[p]
-    );
-
-    if (dirtyFiles.length === 0) {
-      setIsSaving(false);
-      return;
-    }
-
-    setIsSaving(true);
-
-    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
-    saveTimeoutRef.current = setTimeout(() => {
-      Promise.all(
-        dirtyFiles.map((path) =>
-          fetch(`/api/projects/${activeProject.id}/files`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ path, content: localFiles[path] }),
-          })
-        )
-      )
-        .then(() => {
-          setPersistedFiles((prev) => ({ ...prev, ...localFiles }));
-          setIsSaving(false);
-        })
-        .catch((err) => {
-          console.error("Save failed", err);
-          setIsSaving(false);
-        });
-    }, 1000);
-
-    return () => {
-      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
-    };
-  }, [localFiles, persistedFiles, activeProject, isLoading, setIsSaving]);
-
-  const handleAddFile = (path: string) => {
-    if (!path.trim() || localFiles[path] !== undefined) return;
-    const trimmed = path.trim();
-    setLocalFiles((prev) => ({ ...prev, [trimmed]: "" }));
-    setActiveFile(trimmed);
-  };
-
-  const handleApplyChange = (newContent: string) => {
-    setLocalFiles((prev) => ({ ...prev, [activeFile]: newContent }));
-  };
-
-  const handleFileRename = (oldPath: string, newPath: string) => {
-    if (oldPath === newPath || localFiles[newPath] !== undefined) return;
-
-    const newLocal = { ...localFiles };
-    newLocal[newPath] = newLocal[oldPath];
-    delete newLocal[oldPath];
-    setLocalFiles(newLocal);
-
-    if (activeFile === oldPath) setActiveFile(newPath);
-
-    if (activeProject) {
-      fetch(
-        `/api/projects/${activeProject.id}/files?path=${encodeURIComponent(oldPath)}`,
-        { method: "DELETE" }
-      );
-    }
-  };
-
-  const handleFileDelete = (path: string) => {
-    const newLocal = { ...localFiles };
-    delete newLocal[path];
-    setLocalFiles(newLocal);
-
-    if (activeFile === path) {
-      setActiveFile(Object.keys(newLocal)[0] || "");
-    }
-
-    if (activeProject) {
-      fetch(
-        `/api/projects/${activeProject.id}/files?path=${encodeURIComponent(path)}`,
-        { method: "DELETE" }
-      );
-    }
-  };
-
-  if (error) {
-    return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-cream-50 text-red-400 p-8 text-center gap-4">
-        <h2 className="text-xl font-bold">Failed to load IDE</h2>
-        <p className="text-sm font-mono bg-red-950/50 p-4 rounded-md border border-red-900/50 max-w-2xl whitespace-pre-wrap">{error}</p>
-      </div>
-    );
-  }
-
-  if (isLoading || !activeProject) {
-    return (
-      <div className="flex-1 flex items-center justify-center bg-cream-50 text-dusk-500">
-        <div className="flex items-center gap-3">
-          <div className="w-5 h-5 border-2 border-dusk-400 border-t-coral-400 rounded-full animate-spin" />
-          Loading IDE...
-        </div>
-      </div>
-    );
-  }
-
-  const isDirty = localFiles[activeFile] !== persistedFiles[activeFile];
+  const [showChecklist, setShowChecklist] = useState(true);
+  
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+    api: "/api/chat",
+  });
 
   return (
-    <div className="flex flex-col flex-1 overflow-hidden">
-      <Group
-        id="ide-h-v4"
-        orientation="horizontal"
-        defaultLayout={hLayout.defaultLayout}
-        onLayoutChange={handleHLayoutChange}
-        onLayoutChanged={hLayout.onLayoutChanged}
-      >
-        {/* ── Left: File Explorer ───────────────────────────────── */}
-        <Panel
-          id="explorer"
-          panelRef={explorerPanelRef}
-          defaultSize="220px"
-          minSize="180px"
-          maxSize="480px"
-          className="hidden md:flex flex-col bg-cream-100 overflow-y-auto"
-        >
-          <FileExplorer
-            files={Object.keys(localFiles)}
-            activeFile={activeFile}
-            onSelectFile={setActiveFile}
-            onNewFile={handleAddFile}
-            onRenameFile={handleFileRename}
-            onDeleteFile={handleFileDelete}
-          />
-        </Panel>
+    <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden bg-[#1a1b1e] w-full">
+      {/* Top Header */}
+      <div className="absolute top-0 inset-x-0 h-16 flex items-center justify-between px-6">
+        <div className="w-24"></div>
+        
+        {/* Brand Center */}
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded flex items-center justify-center bg-coral-400/20 border border-coral-400/40 glow-cyan">
+            <div className="w-2 h-2 border border-coral-300 transform rotate-45" />
+          </div>
+          <span className="font-display font-bold text-lg text-gray-200">Kareixo</span>
+        </div>
 
-        <VerticalSep id="sep-explorer-editor" />
+        {/* Toggle Right */}
+        <div className="flex bg-[#141517] p-1 rounded-lg border border-[#2b2d31]">
+          <button className="px-4 py-1.5 text-sm font-medium rounded-md bg-[#2b2d31] text-gray-200 shadow-sm transition-all">
+            Agent
+          </button>
+          <button className="px-4 py-1.5 text-sm font-medium rounded-md text-gray-500 hover:text-gray-300 transition-all">
+            Ask
+          </button>
+        </div>
+      </div>
 
-        {/* ── Center: Editor + Terminal ─────────────────────────── */}
-        <Panel id="center">
-          <Group
-            id="ide-v-v4"
-            orientation="vertical"
-            defaultLayout={vLayout.defaultLayout}
-            onLayoutChange={handleVLayoutChange}
-            onLayoutChanged={vLayout.onLayoutChanged}
-            style={{ height: "100%", width: "100%" }}
-          >
-            {/* Editor */}
-            <Panel id="editor" defaultSize="75%" minSize="30%">
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  height: "100%",
-                  width: "100%",
-                  minHeight: 0,
-                }}
-              >
-                <EditorTabs activeFile={activeFile} isDirty={isDirty} />
-                <div style={{ flex: 1, position: "relative", minHeight: 0 }}>
-                  <MonacoWrapper
-                    file={activeFile}
-                    content={localFiles[activeFile] || ""}
-                    onChange={(val) =>
-                      setLocalFiles((prev) => ({
-                        ...prev,
-                        [activeFile]: val || "",
-                      }))
-                    }
-                  />
-                </div>
+      {/* Central Command Interface */}
+      <div className="w-full max-w-3xl px-6 flex flex-col gap-4 mt-12 z-10 h-full justify-center">
+        {messages.length > 0 && (
+          <div className="w-full max-w-3xl flex flex-col gap-4 mb-4 overflow-y-auto max-h-[50vh] pr-2 custom-scrollbar">
+            {messages.map((m, i) => (
+              <div key={i} className={`p-4 rounded-xl ${m.role === 'user' ? 'bg-[#2b2d31] text-gray-200 self-end ml-12' : 'bg-[#141517] border border-[#2b2d31] text-gray-300 self-start mr-12'}`}>
+                {m.content}
               </div>
-            </Panel>
+            ))}
+            {isLoading && (
+              <div className="p-4 rounded-xl bg-[#141517] border border-[#2b2d31] text-gray-400 self-start animate-pulse">
+                Agent is thinking...
+              </div>
+            )}
+          </div>
+        )}
 
-            <HorizontalSep id="sep-editor-terminal" />
-
-            {/* Terminal */}
-            <Panel
-              id="terminal"
-              panelRef={terminalPanelRef}
-              defaultSize="25%"
-              minSize="120px"
-              maxSize="70vh"
-            >
-              <TerminalPanel files={localFiles} />
-            </Panel>
-          </Group>
-        </Panel>
-
-        <VerticalSep id="sep-editor-agent" />
-
-        {/* ── Right: Agent Panel ────────────────────────────────── */}
-        <Panel
-          id="agent"
-          panelRef={agentPanelRef}
-          defaultSize="340px"
-          minSize="280px"
-          maxSize="50%"
-          className="hidden lg:flex flex-col relative"
-        >
-          <AgentPanel
-            projectId={activeProject.id}
-            localFiles={localFiles}
-            currentFile={activeFile}
-            currentContent={localFiles[activeFile] || ""}
-            onApplyChange={handleApplyChange}
-            onUpdateFile={(path, content) => setLocalFiles(prev => ({ ...prev, [path]: content }))}
+        <form onSubmit={handleSubmit} className="relative bg-[#141517] border border-[#2b2d31] rounded-2xl p-4 shadow-2xl focus-within:border-[#3b3d41] focus-within:ring-1 focus-within:ring-[#3b3d41] transition-all">
+          <textarea
+            value={input}
+            onChange={handleInputChange}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit(e as any);
+              }
+            }}
+            placeholder="Ask to build features, fix bugs, or work on your code"
+            className="w-full bg-transparent text-gray-200 placeholder-gray-500 text-lg resize-none outline-none min-h-[120px]"
           />
-        </Panel>
-      </Group>
+          
+          <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#2b2d31]/50">
+            {/* Left Controls */}
+            <div className="flex items-center gap-3">
+              <button className="p-1.5 text-gray-500 hover:text-gray-300 hover:bg-[#202124] rounded-md transition-colors">
+                <Add size={20} />
+              </button>
+              <button className="p-1.5 text-gray-500 hover:text-gray-300 hover:bg-[#202124] rounded-md transition-colors">
+                <Setting4 size={20} />
+              </button>
+              <div className="h-4 w-px bg-[#2b2d31] mx-1" />
+              <button className="flex items-center gap-1.5 px-2 py-1 text-sm text-gray-400 hover:text-gray-200 hover:bg-[#202124] rounded-md transition-colors">
+                Normal <ArrowDown2 size={12} />
+              </button>
+            </div>
+
+            {/* Right Controls */}
+            <div className="flex items-center gap-2">
+              <button type="button" className="p-1.5 text-gray-500 hover:text-gray-300 hover:bg-[#202124] rounded-md transition-colors">
+                <Microphone size={20} />
+              </button>
+              <button type="submit" disabled={isLoading} className="flex items-center bg-coral-500 hover:bg-coral-400 disabled:opacity-50 text-white rounded-full transition-colors cursor-pointer p-1">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center">
+                  <ArrowUp2 size={18} variant="Bold" />
+                </div>
+                <div className="pl-1 pr-2 border-l border-white/20">
+                  <ArrowDown2 size={12} />
+                </div>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      {/* Onboarding Checklist */}
+      {showChecklist && (
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-80 bg-[#141517] border border-[#2b2d31] rounded-xl shadow-xl overflow-hidden animate-fade-in-up">
+          <div className="p-3 border-b border-[#2b2d31] flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-semibold text-gray-200">Get started</span>
+              <span className="text-xs text-gray-500">4 of 6</span>
+            </div>
+            <button onClick={() => setShowChecklist(false)} className="text-gray-500 hover:text-gray-300">
+              <CloseCircle size={16} />
+            </button>
+          </div>
+          <div className="h-1 bg-[#2b2d31]">
+            <div className="h-full bg-coral-500 w-[66%]" />
+          </div>
+          <div className="flex flex-col p-2">
+            <div className="flex items-center gap-3 p-2 text-sm text-gray-400 line-through">
+              <TickCircle size={18} className="text-coral-500" variant="Bold" />
+              Connect to Git
+            </div>
+            <div className="flex items-center justify-between p-2 text-sm text-gray-400 line-through">
+              <div className="flex items-center gap-3">
+                <TickCircle size={18} className="text-coral-500" variant="Bold" />
+                Select repositories
+              </div>
+              <span className="text-xs text-green-400 border border-green-400/20 bg-green-400/10 px-1.5 py-0.5 rounded">Earned $10</span>
+            </div>
+            <div className="flex items-center gap-3 p-2 text-sm text-gray-200 cursor-pointer hover:bg-[#202124] rounded-md transition-colors">
+              <div className="w-[18px] h-[18px] rounded-full border border-gray-500" />
+              Make your first session
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

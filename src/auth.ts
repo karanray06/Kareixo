@@ -9,7 +9,9 @@ import { eq } from "drizzle-orm";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
-    GitHub,
+    GitHub({
+      authorization: { params: { scope: "read:user user:email repo" } },
+    }),
     Google,
     Credentials({
       credentials: {
@@ -37,31 +39,44 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     async signIn({ user, account }) {
       if (!user.email) return false;
-      const dbUser = await db.select().from(users).where(eq(users.email, user.email));
-      if (dbUser.length === 0) {
-        await db.insert(users).values({
-          email: user.email,
-          name: user.name || "",
-          provider: account?.provider || "oauth",
-        });
-      }
-      return true;
-    },
-    async jwt({ token, user }) {
-      if (user?.email) {
+      try {
         const dbUser = await db.select().from(users).where(eq(users.email, user.email));
-        if (dbUser.length > 0) {
-          token.id = dbUser[0].id;
-        } else if (user.id) {
-          token.id = user.id;
+        if (dbUser.length === 0) {
+          await db.insert(users).values({
+            email: user.email,
+            name: user.name || "",
+            provider: account?.provider || "oauth",
+          });
         }
+        return true;
+      } catch (e: any) {
+        console.error("\n[NextAuth Error] signIn callback failed! Is the Neon DB paused or connection string invalid?", e);
+        return false;
+      }
+    },
+    async jwt({ token, user, account }) {
+      try {
+        if (account?.access_token) {
+          token.accessToken = account.access_token;
+        }
+        if (user?.email) {
+          const dbUser = await db.select().from(users).where(eq(users.email, user.email));
+          if (dbUser.length > 0) {
+            token.id = dbUser[0].id;
+          } else if (user.id) {
+            token.id = user.id;
+          }
+        }
+      } catch (e: any) {
+        console.error("[NextAuth Error] jwt callback failed querying DB:", e);
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       if (session.user) {
         session.user.id = token.id as string;
       }
+      session.accessToken = token.accessToken as string;
       return session;
     },
   },

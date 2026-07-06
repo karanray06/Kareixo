@@ -66,37 +66,26 @@ export default function ComparisonTable() {
   }, []);
 
   return (
-    <div ref={containerRef} className="section">
-      <div className="text-center mb-12 compare-reveal opacity-0">
-        <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
-          The axis nobody else fills
-        </h2>
-        <p className="text-dusk-700 text-lg max-w-xl mx-auto">
-          Honest comparison on the three things that matter for trust and
-          accessibility. We&apos;re not saying others are bad — we&apos;re saying
-          this gap exists.
-        </p>
-      </div>
-
+    <div ref={containerRef} className="w-full text-white">
       {/* Desktop table */}
-      <div className="hidden lg:block max-w-5xl mx-auto compare-reveal opacity-0">
-        <div className="glass-strong overflow-hidden" style={{ borderRadius: "var(--radius-lg)" }}>
+      <div className="hidden lg:block w-full compare-reveal opacity-0">
+        <div className="overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-cream-300">
-                <th className="text-left py-4 px-5 text-dusk-500 font-body font-medium w-40">
-                  Axis
+              <tr className="border-b border-white/10">
+                <th className="text-left py-4 px-5 text-white/50 font-medium w-48 uppercase tracking-widest text-xs">
+                  Feature
                 </th>
-                <th className="text-left py-4 px-5 text-coral-400 font-display font-bold">
+                <th className="text-left py-4 px-5 text-[#00BFFF] font-bold text-lg" style={{ fontFamily: "var(--font-lora), serif" }}>
                   Kareixo
                 </th>
-                <th className="text-left py-4 px-5 text-dusk-700 font-display font-medium">
+                <th className="text-left py-4 px-5 text-white/70 font-medium">
                   Cursor
                 </th>
-                <th className="text-left py-4 px-5 text-dusk-700 font-display font-medium">
+                <th className="text-left py-4 px-5 text-white/70 font-medium">
                   Antigravity
                 </th>
-                <th className="text-left py-4 px-5 text-dusk-700 font-display font-medium">
+                <th className="text-left py-4 px-5 text-white/70 font-medium">
                   Codex
                 </th>
               </tr>
@@ -105,25 +94,25 @@ export default function ComparisonTable() {
               {AXES.map((row, i) => (
                 <tr
                   key={row.axis}
-                  className={`compare-row opacity-0 ${
-                    i < AXES.length - 1 ? "border-b border-cream-300/50" : ""
+                  className={`compare-row opacity-0 hover:bg-white/5 transition-colors ${
+                    i < AXES.length - 1 ? "border-b border-white/5" : ""
                   }`}
                 >
-                  <td className="py-4 px-5 text-dusk-700 font-display font-semibold text-sm">
+                  <td className="py-5 px-5 text-white/90 font-medium text-sm">
                     {row.axis}
                   </td>
-                  <td className="py-4 px-5">
-                    <span className="text-coral-300 font-medium text-sm leading-snug block">
+                  <td className="py-5 px-5">
+                    <span className="text-[#00BFFF] font-medium text-sm leading-relaxed block bg-cyan-500/10 px-3 py-1.5 rounded-lg border border-cyan-500/20">
                       {row.kareixo.text}
                     </span>
                   </td>
-                  <td className="py-4 px-5 text-dusk-500 text-sm leading-snug">
+                  <td className="py-5 px-5 text-white/50 text-sm leading-relaxed">
                     {row.cursor.text}
                   </td>
-                  <td className="py-4 px-5 text-dusk-500 text-sm leading-snug">
+                  <td className="py-5 px-5 text-white/50 text-sm leading-relaxed">
                     {row.antigravity.text}
                   </td>
-                  <td className="py-4 px-5 text-dusk-500 text-sm leading-snug">
+                  <td className="py-5 px-5 text-white/50 text-sm leading-relaxed">
                     {row.codex.text}
                   </td>
                 </tr>
@@ -134,29 +123,29 @@ export default function ComparisonTable() {
       </div>
 
       {/* Mobile cards */}
-      <div className="lg:hidden space-y-6 max-w-lg mx-auto">
+      <div className="lg:hidden space-y-6 w-full">
         {AXES.map((row) => (
-          <div key={row.axis} className="card compare-card opacity-0">
-            <h3 className="font-display text-lg font-bold text-dusk-900 mb-4">
+          <div key={row.axis} className="bg-white/5 border border-white/10 rounded-xl p-5 compare-card opacity-0">
+            <h3 className="text-lg font-bold text-white mb-4">
               {row.axis}
             </h3>
-            <div className="space-y-3">
-              <div className="glass-cyan rounded-md px-3 py-2">
-                <span className="text-xs text-coral-400 font-mono block mb-1">
+            <div className="space-y-4">
+              <div className="bg-cyan-500/10 border border-cyan-500/20 rounded-lg px-4 py-3">
+                <span className="text-xs text-[#00BFFF] font-bold tracking-widest uppercase block mb-1">
                   Kareixo
                 </span>
-                <span className="text-coral-200 text-sm">{row.kareixo.text}</span>
+                <span className="text-white text-sm">{row.kareixo.text}</span>
               </div>
               {[
                 { name: "Cursor", data: row.cursor },
                 { name: "Antigravity", data: row.antigravity },
                 { name: "Codex", data: row.codex },
               ].map((comp) => (
-                <div key={comp.name} className="px-3 py-2">
-                  <span className="text-xs text-dusk-500 font-mono block mb-1">
+                <div key={comp.name} className="px-4 py-2 border-l border-white/10 ml-2">
+                  <span className="text-xs text-white/40 tracking-widest uppercase block mb-1">
                     {comp.name}
                   </span>
-                  <span className="text-dusk-500 text-sm">
+                  <span className="text-white/60 text-sm">
                     {comp.data.text}
                   </span>
                 </div>
