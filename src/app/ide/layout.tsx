@@ -1,6 +1,6 @@
 import { auth, signOut } from "@/auth";
 import { ProjectProvider } from "@/components/ide/ProjectContext";
-import { Add, Setting2, ExportSquare, Information, NoteSquare, Automion, SecuritySafe, DocumentText, SearchNormal, TaskSquare, ArrowUp2 } from "iconsax-react";
+import { Add, Setting2, ExportSquare, Information, NoteSquare, Autonio, SecuritySafe, DocumentText, SearchNormal, TaskSquare, ArrowUp2 } from "iconsax-react";
 
 export const dynamic = "force-dynamic";
 
