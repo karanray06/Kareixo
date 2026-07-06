@@ -24,6 +24,7 @@ export default function BackgroundGradient() {
       }}
     >
       <ShaderGradientCanvas
+        // @ts-ignore - importedFiber is missing in types but required for Next.js
         importedFiber={{ ...fiber, ...drei, ...reactSpring }}
         style={{
           position: "absolute",
