@@ -6,10 +6,32 @@ import { Add, Microphone, Setting4, ArrowUp2, CloseCircle, TickCircle, ArrowDown
 
 export default function IdeClient() {
   const [showChecklist, setShowChecklist] = useState(true);
-  
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
-    api: "/api/chat",
+  const [input, setInput] = useState("");
+
+  const { messages, append, status } = useChat({
+    id: "ide-chat",
   });
+
+  const isLoading = status === "streaming" || status === "submitted";
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
+    const text = input;
+    setInput("");
+    await append({ role: "user", content: text });
+  };
+
+  // Extract text from a UIMessage
+  const getMessageText = (m: (typeof messages)[number]): string => {
+    if (m.parts && m.parts.length > 0) {
+      return m.parts
+        .filter((p) => p.type === "text")
+        .map((p) => (p as any).text)
+        .join("");
+    }
+    return "";
+  };
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden bg-[#1a1b1e] w-full">
@@ -42,7 +64,7 @@ export default function IdeClient() {
           <div className="w-full max-w-3xl flex flex-col gap-4 mb-4 overflow-y-auto max-h-[50vh] pr-2 custom-scrollbar">
             {messages.map((m, i) => (
               <div key={i} className={`p-4 rounded-xl ${m.role === 'user' ? 'bg-[#2b2d31] text-gray-200 self-end ml-12' : 'bg-[#141517] border border-[#2b2d31] text-gray-300 self-start mr-12'}`}>
-                {m.content}
+                {getMessageText(m)}
               </div>
             ))}
             {isLoading && (
@@ -53,14 +75,14 @@ export default function IdeClient() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="relative bg-[#141517] border border-[#2b2d31] rounded-2xl p-4 shadow-2xl focus-within:border-[#3b3d41] focus-within:ring-1 focus-within:ring-[#3b3d41] transition-all">
+        <form onSubmit={onSubmit} className="relative bg-[#141517] border border-[#2b2d31] rounded-2xl p-4 shadow-2xl focus-within:border-[#3b3d41] focus-within:ring-1 focus-within:ring-[#3b3d41] transition-all">
           <textarea
             value={input}
-            onChange={handleInputChange}
+            onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
-                handleSubmit(e as any);
+                onSubmit(e as any);
               }
             }}
             placeholder="Ask to build features, fix bugs, or work on your code"
@@ -70,14 +92,14 @@ export default function IdeClient() {
           <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#2b2d31]/50">
             {/* Left Controls */}
             <div className="flex items-center gap-3">
-              <button className="p-1.5 text-gray-500 hover:text-gray-300 hover:bg-[#202124] rounded-md transition-colors">
+              <button type="button" className="p-1.5 text-gray-500 hover:text-gray-300 hover:bg-[#202124] rounded-md transition-colors">
                 <Add size={20} />
               </button>
-              <button className="p-1.5 text-gray-500 hover:text-gray-300 hover:bg-[#202124] rounded-md transition-colors">
+              <button type="button" className="p-1.5 text-gray-500 hover:text-gray-300 hover:bg-[#202124] rounded-md transition-colors">
                 <Setting4 size={20} />
               </button>
               <div className="h-4 w-px bg-[#2b2d31] mx-1" />
-              <button className="flex items-center gap-1.5 px-2 py-1 text-sm text-gray-400 hover:text-gray-200 hover:bg-[#202124] rounded-md transition-colors">
+              <button type="button" className="flex items-center gap-1.5 px-2 py-1 text-sm text-gray-400 hover:text-gray-200 hover:bg-[#202124] rounded-md transition-colors">
                 Normal <ArrowDown2 size={12} />
               </button>
             </div>
