@@ -12,7 +12,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     GitHub({
       authorization: { params: { scope: "read:user user:email repo" } },
     }),
-    Google,
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+    }),
     Credentials({
       credentials: {
         email: { label: "Email", type: "email" },
@@ -37,8 +40,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: "/login",
   },
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ user, account, profile }) {
       if (!user.email) return false;
+      
+      // Harden OAuth linking: require email verification from the provider if possible
+      if (account?.provider === "google" && profile && !profile.email_verified) {
+        return false;
+      }
+      
       try {
         const dbUser = await db.select().from(users).where(eq(users.email, user.email));
         if (dbUser.length === 0) {
@@ -76,8 +85,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.id = token.id as string;
       }
-      session.accessToken = token.accessToken as string;
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      if (url === baseUrl || url === `${baseUrl}/`) {
+        return `${baseUrl}/ide`;
+      }
+      if (url.startsWith("/")) {
+        return `${baseUrl}${url}`;
+      }
+      if (new URL(url).origin === baseUrl) {
+        return url;
+      }
+      return `${baseUrl}/ide`;
     },
   },
 });

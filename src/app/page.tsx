@@ -1,9 +1,14 @@
 import HeroScene from "@/components/landing/HeroScene";
+import Navbar from "@/components/landing/Navbar";
 import FeatureCard from "@/components/landing/FeatureCard";
 import BackgroundGradient from "@/components/landing/BackgroundGradient";
 import ComparisonTable from "@/components/landing/ComparisonTable";
 import RouterVisual from "@/components/landing/RouterVisual";
 import SecurityExplainer from "@/components/landing/SecurityExplainer";
+import AudienceSection from "@/components/landing/AudienceSection";
+import HowItWorks from "@/components/landing/HowItWorks";
+import SocialProof from "@/components/landing/SocialProof";
+import CtaBand from "@/components/landing/CtaBand";
 import { FaGithub, FaTwitter } from "react-icons/fa";
 
 export default function Home() {
@@ -16,6 +21,9 @@ export default function Home() {
       
       {/* Subtle vignette / noise overlay for texture */}
       <div className="fixed inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_0%,#050505_100%)] opacity-80" />
+
+      {/* Navbar */}
+      <Navbar />
 
       {/* Section 1: Hero */}
       <HeroScene />
@@ -82,9 +90,29 @@ export default function Home() {
 
       </section>
 
+      {/* Section 2.5: Audience */}
+      <div className="relative z-10 pb-32">
+        <AudienceSection />
+      </div>
+
       {/* Section 3: Feature Card Deep Dive */}
       <div className="relative z-10 pb-32">
         <FeatureCard />
+      </div>
+
+      {/* Section 4: How It Works */}
+      <div className="relative z-10 pb-32">
+        <HowItWorks />
+      </div>
+
+      {/* Section 5: Social Proof */}
+      <div className="relative z-10">
+        <SocialProof />
+      </div>
+
+      {/* Section 6: CTA Band */}
+      <div className="relative z-10">
+        <CtaBand />
       </div>
 
       {/* Premium Dark Footer */}

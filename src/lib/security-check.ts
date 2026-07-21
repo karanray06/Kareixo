@@ -11,10 +11,7 @@ export interface SecurityResult {
 }
 
 export async function checkSecurity(diffOrCode: string): Promise<SecurityResult> {
-  // In a real implementation, this would call a secondary LLM (e.g. Llama 3 8B)
-  // specifically prompted to act as a security scanner, or use a static analysis tool.
-  // For the V1 demo, we simulate the check with simple regex heuristics.
-
+  // Pattern Scanner: uses static regex heuristics to catch common vulnerabilities before committing.
   const issues: SecurityIssue[] = [];
   const lines = diffOrCode.split('\n');
 
@@ -25,9 +22,9 @@ export async function checkSecurity(diffOrCode: string): Promise<SecurityResult>
     const text = line.replace(/^\+/, '');
 
     // 1. Hardcoded Secrets
-    if (/(api_?key|secret|token|password)\s*[:=]\s*["'][a-zA-Z0-9_-]{10,}["']/i.test(text)) {
+    if (/(api_?key|secret|token|password)\s*[:=]\s*["'][a-zA-Z0-9_\-=+]{10,}["']/i.test(text)) {
       issues.push({
-        id: `sec-${Date.now()}-1`,
+        id: crypto.randomUUID(),
         category: "secret",
         message: "Potential hardcoded secret or API key detected.",
         line: i + 1,
@@ -35,9 +32,9 @@ export async function checkSecurity(diffOrCode: string): Promise<SecurityResult>
     }
 
     // 2. Unsafe eval/exec
-    if (/(eval\(|new Function\(|child_process\.exec\()/.test(text)) {
+    if (/(eval\(|new Function\(|child_process\.exec\(|child_process\.spawn\()/.test(text)) {
       issues.push({
-        id: `sec-${Date.now()}-2`,
+        id: crypto.randomUUID(),
         category: "eval",
         message: "Unsafe dynamic code execution detected (eval/exec).",
         line: i + 1,
@@ -47,16 +44,23 @@ export async function checkSecurity(diffOrCode: string): Promise<SecurityResult>
     // 3. XSS / Injection patterns
     if (/\.innerHTML\s*=|dangerouslySetInnerHTML/.test(text)) {
       issues.push({
-        id: `sec-${Date.now()}-3`,
+        id: crypto.randomUUID(),
         category: "injection",
         message: "Direct DOM HTML injection detected, potential XSS vector.",
         line: i + 1,
       });
     }
-  });
 
-  // Simulate network delay for the LLM call
-  await new Promise(r => setTimeout(r, 1200));
+    // 4. SQL Injection Patterns
+    if (/(SELECT|UPDATE|INSERT|DELETE)\s+.*?\s+FROM\s+.*?(?:\+|`.*?\$|' \+)/i.test(text)) {
+      issues.push({
+        id: crypto.randomUUID(),
+        category: "injection",
+        message: "Potential SQL injection vector (string concatenation in query).",
+        line: i + 1,
+      });
+    }
+  });
 
   return {
     passed: issues.length === 0,

@@ -18,17 +18,8 @@ import LiveDemo from "./LiveDemo";
 export default function HeroScene() {
   return (
     <section className="relative min-h-screen flex flex-col justify-between overflow-hidden">
-      
-      {/* Top Nav */}
-      <div className="pt-8 w-full flex justify-center z-20">
-        <div className="relative inline-block pb-1">
-          <span className="text-white/80 text-sm font-medium tracking-widest uppercase">Kareixo</span>
-          <div className="absolute bottom-0 left-0 w-full h-[1px] bg-white/20 rounded-full"></div>
-        </div>
-      </div>
-
       {/* Main Content — Split Layout */}
-      <div className="relative z-10 max-w-[1400px] mx-auto w-full px-6 md:px-12 flex flex-col lg:flex-row items-center gap-16 lg:gap-8 flex-1 py-20">
+      <div className="relative z-10 max-w-[1400px] mx-auto w-full px-6 md:px-12 flex flex-col lg:flex-row items-center gap-16 lg:gap-8 flex-1 py-32">
         
         {/* Left: Text */}
         <div className="lg:w-1/2 space-y-8 select-none">

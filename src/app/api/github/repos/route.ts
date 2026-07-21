@@ -1,16 +1,21 @@
 import { NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
 import { auth } from "@/auth";
 
-export async function GET() {
+export async function GET(req: any) {
   try {
     const session: any = await auth();
-    if (!session || !session.accessToken) {
+    const token = await getToken({ req, secret: process.env.AUTH_SECRET as string, salt: process.env.NODE_ENV === "production" ? "__Secure-authjs.session-token" : "authjs.session-token" });
+    
+    const accessToken = token?.accessToken;
+    
+    if (!session || !accessToken) {
       return NextResponse.json({ error: "Unauthorized or missing GitHub access token" }, { status: 401 });
     }
 
     const response = await fetch("https://api.github.com/user/repos?sort=updated&per_page=100", {
       headers: {
-        Authorization: `token ${session.accessToken}`,
+        Authorization: `token ${accessToken}`,
         Accept: "application/vnd.github.v3+json",
       },
     });

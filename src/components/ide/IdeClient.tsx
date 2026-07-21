@@ -1,157 +1,165 @@
 "use client";
 
-import { useState } from "react";
-import { useChat } from "@ai-sdk/react";
-import { Add, Microphone, Setting4, ArrowUp2, CloseCircle, TickCircle, ArrowDown2 } from "iconsax-react";
+import { useProject } from "./ProjectContext";
+import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from "react-resizable-panels";
+import FileExplorer from "./FileExplorer";
+import MonacoWrapper from "./MonacoWrapper";
+import AgentPanel from "./AgentPanel";
+import EditorTabs from "./EditorTabs";
+import { Add, CloseCircle, TickCircle } from "iconsax-react";
+import { useState, useEffect } from "react";
 
 export default function IdeClient() {
   const [showChecklist, setShowChecklist] = useState(true);
-  const [input, setInput] = useState("");
+  const { 
+    activeProject, 
+    files, 
+    activeFile, 
+    setActiveFile, 
+    updateFile,
+    createFile,
+    deleteFile,
+    isLoading 
+  } = useProject();
 
-  const { messages, sendMessage, status } = useChat({
-    id: "ide-chat",
-  });
+  if (isLoading) {
+    return (
+      <div className="flex-1 flex items-center justify-center bg-[#1a1b1e] text-gray-500">
+        <div className="flex items-center gap-3">
+          <div className="w-5 h-5 border-2 border-dusk-400 border-t-coral-400 rounded-full animate-spin" />
+          Loading workspace...
+        </div>
+      </div>
+    );
+  }
 
-  const isLoading = status === "streaming" || status === "submitted";
-
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading) return;
-    const text = input;
-    setInput("");
-    await sendMessage({ text });
-  };
-
-  // Extract text from a UIMessage
-  const getMessageText = (m: (typeof messages)[number]): string => {
-    if (m.parts && m.parts.length > 0) {
-      return m.parts
-        .filter((p) => p.type === "text")
-        .map((p) => (p as any).text)
-        .join("");
-    }
-    return "";
-  };
+  if (!activeProject) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center bg-[#1a1b1e] text-gray-500">
+        <div className="w-16 h-16 bg-[#2b2d31] rounded-full flex items-center justify-center mb-4">
+          <Add size={32} className="text-gray-400" />
+        </div>
+        <h2 className="text-lg font-medium text-gray-300 mb-2">No active project</h2>
+        <p className="text-sm">Create or select a project from the sidebar to get started.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden bg-[#1a1b1e] w-full">
+    <div className="flex-1 flex flex-col h-full bg-[#1a1b1e] overflow-hidden">
       {/* Top Header */}
-      <div className="absolute top-0 inset-x-0 h-16 flex items-center justify-between px-6">
-        <div className="w-24"></div>
-        
-        {/* Brand Center */}
+      <div className="h-12 border-b border-[#2b2d31] flex items-center px-4 bg-[#141517] shrink-0 justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded flex items-center justify-center bg-coral-400/20 border border-coral-400/40 glow-cyan">
+          <div className="w-5 h-5 rounded flex items-center justify-center bg-coral-400/20 border border-coral-400/40 glow-cyan">
             <div className="w-2 h-2 border border-coral-300 transform rotate-45" />
           </div>
-          <span className="font-display font-bold text-lg text-gray-200">Kareixo</span>
-        </div>
-
-        {/* Toggle Right */}
-        <div className="flex bg-[#141517] p-1 rounded-lg border border-[#2b2d31]">
-          <button className="px-4 py-1.5 text-sm font-medium rounded-md bg-[#2b2d31] text-gray-200 shadow-sm transition-all">
-            Agent
-          </button>
-          <button className="px-4 py-1.5 text-sm font-medium rounded-md text-gray-500 hover:text-gray-300 transition-all">
-            Ask
-          </button>
+          <span className="font-display font-bold text-gray-200">Kareixo</span>
+          <span className="text-gray-500 ml-2 text-sm">/ {activeProject.name}</span>
         </div>
       </div>
 
-      {/* Central Command Interface */}
-      <div className="w-full max-w-3xl px-6 flex flex-col gap-4 mt-12 z-10 h-full justify-center">
-        {messages.length > 0 && (
-          <div className="w-full max-w-3xl flex flex-col gap-4 mb-4 overflow-y-auto max-h-[50vh] pr-2 custom-scrollbar">
-            {messages.map((m, i) => (
-              <div key={i} className={`p-4 rounded-xl ${m.role === 'user' ? 'bg-[#2b2d31] text-gray-200 self-end ml-12' : 'bg-[#141517] border border-[#2b2d31] text-gray-300 self-start mr-12'}`}>
-                {getMessageText(m)}
-              </div>
-            ))}
-            {isLoading && (
-              <div className="p-4 rounded-xl bg-[#141517] border border-[#2b2d31] text-gray-400 self-start animate-pulse">
-                Agent is thinking...
+      <PanelGroup orientation="horizontal" className="flex-1">
+        {/* Left Pane: File Explorer */}
+        <Panel defaultSize={20} minSize={15}>
+          <FileExplorer 
+            files={Object.keys(files)}
+            activeFile={activeFile}
+            onSelectFile={setActiveFile}
+            onNewFile={(path) => createFile(path)}
+            onDeleteFile={deleteFile}
+          />
+        </Panel>
+
+        <PanelResizeHandle className="w-1 bg-[#2b2d31] hover:bg-coral-500/50 transition-colors" />
+
+        {/* Middle Pane: Editor */}
+        <Panel defaultSize={50} minSize={30}>
+          <div className="flex flex-col h-full bg-[#1e1e1e]">
+            {activeFile ? (
+              <>
+                <EditorTabs 
+                  activeFile={activeFile}
+                  isDirty={false}
+                />
+                <div className="flex-1 relative">
+                  <MonacoWrapper
+                    file={activeFile}
+                    content={files[activeFile] || ""}
+                    onChange={(val) => updateFile(activeFile, val ?? "")}
+                  />
+                </div>
+              </>
+            ) : (
+              <div className="flex-1 flex items-center justify-center text-gray-500">
+                Select a file to edit
               </div>
             )}
           </div>
-        )}
+        </Panel>
 
-        <form onSubmit={onSubmit} className="relative bg-[#141517] border border-[#2b2d31] rounded-2xl p-4 shadow-2xl focus-within:border-[#3b3d41] focus-within:ring-1 focus-within:ring-[#3b3d41] transition-all">
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                onSubmit(e as any);
-              }
-            }}
-            placeholder="Ask to build features, fix bugs, or work on your code"
-            className="w-full bg-transparent text-gray-200 placeholder-gray-500 text-lg resize-none outline-none min-h-[120px]"
+        <PanelResizeHandle className="w-1 bg-[#2b2d31] hover:bg-coral-500/50 transition-colors" />
+
+        {/* Right Pane: Agent */}
+        <Panel defaultSize={30} minSize={20}>
+          <AgentPanel
+            projectId={activeProject.id}
+            githubRepo={activeProject.githubRepo}
+            githubBranch={activeProject.githubBranch}
+            localFiles={files}
+            currentFile={activeFile}
+            currentContent={files[activeFile] || ""}
+            onApplyChange={(content) => updateFile(activeFile, content)}
+            onUpdateFile={(path, content) => updateFile(path, content)}
           />
-          
-          <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#2b2d31]/50">
-            {/* Left Controls */}
-            <div className="flex items-center gap-3">
-              <button type="button" className="p-1.5 text-gray-500 hover:text-gray-300 hover:bg-[#202124] rounded-md transition-colors">
-                <Add size={20} />
-              </button>
-              <button type="button" className="p-1.5 text-gray-500 hover:text-gray-300 hover:bg-[#202124] rounded-md transition-colors">
-                <Setting4 size={20} />
-              </button>
-              <div className="h-4 w-px bg-[#2b2d31] mx-1" />
-              <button type="button" className="flex items-center gap-1.5 px-2 py-1 text-sm text-gray-400 hover:text-gray-200 hover:bg-[#202124] rounded-md transition-colors">
-                Normal <ArrowDown2 size={12} />
-              </button>
-            </div>
-
-            {/* Right Controls */}
-            <div className="flex items-center gap-2">
-              <button type="button" className="p-1.5 text-gray-500 hover:text-gray-300 hover:bg-[#202124] rounded-md transition-colors">
-                <Microphone size={20} />
-              </button>
-              <button type="submit" disabled={isLoading} className="flex items-center bg-coral-500 hover:bg-coral-400 disabled:opacity-50 text-white rounded-full transition-colors cursor-pointer p-1">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center">
-                  <ArrowUp2 size={18} variant="Bold" />
-                </div>
-                <div className="pl-1 pr-2 border-l border-white/20">
-                  <ArrowDown2 size={12} />
-                </div>
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
+        </Panel>
+      </PanelGroup>
 
       {/* Onboarding Checklist */}
       {showChecklist && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-80 bg-[#141517] border border-[#2b2d31] rounded-xl shadow-xl overflow-hidden animate-fade-in-up">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-96 bg-[#141517] border border-[#2b2d31] rounded-xl shadow-xl overflow-hidden animate-fade-in-up z-50">
           <div className="p-3 border-b border-[#2b2d31] flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span className="text-sm font-semibold text-gray-200">Get started</span>
-              <span className="text-xs text-gray-500">4 of 6</span>
+              <span className="text-xs text-gray-500">
+                {activeProject ? (activeProject.githubRepo ? "3 of 3" : "2 of 3") : "1 of 3"}
+              </span>
             </div>
             <button onClick={() => setShowChecklist(false)} className="text-gray-500 hover:text-gray-300">
               <CloseCircle size={16} />
             </button>
           </div>
           <div className="h-1 bg-[#2b2d31]">
-            <div className="h-full bg-coral-500 w-[66%]" />
+            <div className="h-full bg-coral-500 transition-all" style={{ width: activeProject ? (activeProject.githubRepo ? "100%" : "66%") : "33%" }} />
           </div>
           <div className="flex flex-col p-2">
-            <div className="flex items-center gap-3 p-2 text-sm text-gray-400 line-through">
-              <TickCircle size={18} className="text-coral-500" variant="Bold" />
-              Connect to Git
-            </div>
-            <div className="flex items-center justify-between p-2 text-sm text-gray-400 line-through">
-              <div className="flex items-center gap-3">
+            <div className={`flex items-center gap-3 p-2 text-sm ${activeProject ? 'text-gray-400 line-through' : 'text-gray-200'}`}>
+              {activeProject ? (
                 <TickCircle size={18} className="text-coral-500" variant="Bold" />
-                Select repositories
+              ) : (
+                <div className="w-[18px] h-[18px] rounded-full border border-gray-500" />
+              )}
+              Create your first project
+            </div>
+            
+            <div className={`flex items-center gap-3 p-2 text-sm ${Object.keys(files).length > 0 ? 'text-gray-400 line-through' : 'text-gray-200'}`}>
+              {Object.keys(files).length > 0 ? (
+                <TickCircle size={18} className="text-coral-500" variant="Bold" />
+              ) : (
+                <div className="w-[18px] h-[18px] rounded-full border border-gray-500" />
+              )}
+              Create or edit a file
+            </div>
+            
+            <div className={`flex items-center justify-between p-2 text-sm ${activeProject?.githubRepo ? 'text-gray-400 line-through' : 'text-gray-200'}`}>
+              <div className="flex items-center gap-3">
+                {activeProject?.githubRepo ? (
+                  <TickCircle size={18} className="text-coral-500" variant="Bold" />
+                ) : (
+                  <div className="w-[18px] h-[18px] rounded-full border border-gray-500" />
+                )}
+                Connect to a GitHub repository
               </div>
               <span className="text-xs text-green-400 border border-green-400/20 bg-green-400/10 px-1.5 py-0.5 rounded">Earned $10</span>
-            </div>
-            <div className="flex items-center gap-3 p-2 text-sm text-gray-200 cursor-pointer hover:bg-[#202124] rounded-md transition-colors">
-              <div className="w-[18px] h-[18px] rounded-full border border-gray-500" />
-              Make your first session
             </div>
           </div>
         </div>

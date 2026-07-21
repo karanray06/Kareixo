@@ -17,12 +17,43 @@ export default function SignupForm() {
     setIsLoading(true);
     setError("");
 
-    // In a real app, you'd want an API route to create the user first,
-    // then sign them in. Since this is a demo, we're skipping the actual
-    // signup API route implementation and just logging an error to show
-    // where it would go.
-    setError("Credential signup requires API implementation in v1.");
-    setIsLoading(false);
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || "An error occurred during signup.");
+        setIsLoading(false);
+        return;
+      }
+
+      // Success, sign in via credentials
+      const signInRes = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (signInRes?.error) {
+        setError("Account created, but automatic sign-in failed. Please log in.");
+        setIsLoading(false);
+      } else {
+        router.push("/ide");
+      }
+    } catch (err: any) {
+      setError("Network error. Please try again later.");
+      setIsLoading(false);
+    }
   };
 
   const handleOAuth = (provider: "github" | "google") => {

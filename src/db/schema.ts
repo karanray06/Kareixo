@@ -13,6 +13,8 @@ export const projects = pgTable("projects", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id).notNull(),
   name: text("name").notNull(),
+  githubRepo: text("github_repo"),
+  githubBranch: text("github_branch"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -30,6 +32,7 @@ export const files = pgTable("files", {
 export const providerStats = pgTable("provider_stats", {
   providerName: text("provider_name").primaryKey(),
   requestsToday: integer("requests_today").notNull().default(0),
+  statsDate: text("stats_date"), // YYYY-MM-DD for daily resets
   rateLimitHits: integer("rate_limit_hits").notNull().default(0),
   lastRateLimitAt: timestamp("last_rate_limit_at"),
   lastRequestAt: timestamp("last_request_at"),

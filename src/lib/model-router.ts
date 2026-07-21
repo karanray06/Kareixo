@@ -21,6 +21,7 @@ export type ProviderEntry = {
 
 export class ModelRouter {
   public providers: ProviderEntry[];
+  public allPossibleEnvVars: string[] = [];
   private lastUsedIndex = -1;
 
   constructor(providers?: ProviderEntry[]) {
@@ -51,16 +52,28 @@ export class ModelRouter {
       // ── Moonshot (Kimi direct API fallback) ──
       { name: "Moonshot", modelName: "Kimi 8k",               model: moonshot(moonshotModels.v1_8k), requiredEnvVars: ["MOONSHOT_API_KEY"] },
     ];
-  }
 
-  public get allRequiredEnvVars(): string[] {
     const vars = new Set<string>();
     for (const p of this.providers) {
       for (const v of p.requiredEnvVars) {
         vars.add(v);
       }
     }
-    return Array.from(vars);
+    this.allPossibleEnvVars = Array.from(vars);
+
+    // Only enable providers that have all their required environment variables set
+    this.providers = this.providers.filter((p) =>
+      p.requiredEnvVars.every((envVar) => !!process.env[envVar])
+    );
+    
+    // Fallback if none are configured, though the API routes usually catch this early
+    if (this.providers.length === 0) {
+      console.warn("[ModelRouter] No AI providers are configured. API requests will fail.");
+    }
+  }
+
+  public get allRequiredEnvVars(): string[] {
+    return this.allPossibleEnvVars;
   }
 
   /** Round-robin, skipping rate-limited providers */

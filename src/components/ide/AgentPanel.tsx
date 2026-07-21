@@ -13,6 +13,8 @@ import { TaskChecklist } from "./TaskChecklist";
 
 interface AgentPanelProps {
   projectId: string;
+  githubRepo?: string | null;
+  githubBranch?: string | null;
   localFiles: Record<string, string>;
   currentFile?: string;
   currentContent?: string;
@@ -59,6 +61,8 @@ type AgentPhase = "idle" | "thinking" | "diffing" | "checking" | "ready" | "appl
 
 export default function AgentPanel({
   projectId,
+  githubRepo,
+  githubBranch,
   localFiles,
   currentFile = "src/index.js",
   currentContent = "",
@@ -80,6 +84,8 @@ export default function AgentPanel({
   
   // Planner State
   const [tasks, setTasks] = useState<AgentTask[]>([]);
+  const [isPushing, setIsPushing] = useState(false);
+  const [pushResult, setPushResult] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   // ai@7 useChat: returns sendMessage, messages, status, error
@@ -264,6 +270,42 @@ export default function AgentPanel({
     }
   };
 
+  const handlePushToGithub = async () => {
+    if (!githubRepo || !githubBranch) return;
+    setIsPushing(true);
+    setPushResult(null);
+    try {
+      // Gather all files touched by tasks
+      const touchedFiles = tasks.filter(t => t.status === 'done').map(t => t.filename);
+      // Dedup
+      const uniqueFiles = Array.from(new Set(touchedFiles));
+      const filesToPush = uniqueFiles.map(path => ({
+        path,
+        content: localFiles[path] || ""
+      }));
+
+      const res = await fetch("/api/github/commit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          repo: githubRepo,
+          branch: githubBranch,
+          message: `Kareixo Agent: completed ${filesToPush.length} task(s)`,
+          files: filesToPush
+        })
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to push");
+      }
+      setPushResult("Successfully pushed to GitHub!");
+    } catch (e: any) {
+      setPushResult("Push failed: " + e.message);
+    } finally {
+      setIsPushing(false);
+    }
+  };
+
   // ─── DERIVED STATE ───────────────────────────────────────────────────
 
   const isStreaming = status === "streaming" || status === "submitted" || phase === "planning" || phase === "executing";
@@ -373,7 +415,52 @@ export default function AgentPanel({
         
         {/* Planner Task List */}
         {tasks.length > 0 && !explainMode && (
-          <TaskChecklist tasks={tasks} onRetryTask={handleRetryTask} />
+          <div className="space-y-3">
+            <TaskChecklist tasks={tasks} onRetryTask={handleRetryTask} />
+            
+            {/* Show push button when tasks are complete and project has a repo */}
+            {phase === "idle" && githubRepo && (
+              <div className="ml-11 mt-4 p-4 border border-cream-300 bg-cream-200 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-dusk-900">GitHub sync available</span>
+                    <span className="text-xs text-dusk-500 font-mono">{githubRepo} • {githubBranch}</span>
+                  </div>
+                  <button 
+                    onClick={handlePushToGithub}
+                    disabled={isPushing}
+                    className="btn btn-primary py-1.5 px-3 text-xs flex items-center gap-2"
+                  >
+                    {isPushing ? (
+                      <>
+                        <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Pushing...
+                      </>
+                    ) : (
+                      <>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M21 3v6h-6"></path>
+                          <path d="M21 3l-7 7"></path>
+                          <path d="M21 21v-6h-6"></path>
+                          <path d="M21 21l-7-7"></path>
+                          <path d="M3 21v-6h6"></path>
+                          <path d="M3 21l7-7"></path>
+                          <path d="M3 3v6h6"></path>
+                          <path d="M3 3l7 7"></path>
+                        </svg>
+                        Push changes
+                      </>
+                    )}
+                  </button>
+                </div>
+                {pushResult && (
+                  <div className={`mt-2 text-xs font-mono p-2 rounded ${pushResult.includes('failed') ? 'bg-red-400/10 text-red-400' : 'bg-green-400/10 text-green-500'}`}>
+                    {pushResult}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         )}
 
         {phase === "idle" && messages.length === 0 && tasks.length === 0 && !errorMsg && (

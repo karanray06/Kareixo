@@ -81,59 +81,59 @@ export async function planTasks(userPrompt: string, projectContext: string): Pro
       // The caller needs the FULL JSON array before it can parse, so we accumulate
       // the whole response here; the per-attempt timeout lets failover react to a
       // slow provider instead of burning the entire 60s function budget.
-      return await Promise.race([accumulate, timeout]);
+      let rawText = await Promise.race([accumulate, timeout]);
+      rawText = rawText.trim();
+      
+      // Extract JSON if the model ignored instructions and wrapped in markdown
+      let jsonString = rawText;
+      if (jsonString.startsWith("```json")) {
+        jsonString = jsonString.replace(/^```json\n/, "").replace(/\n```$/, "");
+      } else if (jsonString.startsWith("```")) {
+        jsonString = jsonString.replace(/^```\n/, "").replace(/\n```$/, "");
+      }
+
+      let parsed: any;
+      try {
+        parsed = JSON.parse(jsonString);
+      } catch (e) {
+        throw new Error("Failed to parse model output as JSON. The AI did not return a valid task list.");
+      }
+
+      if (!Array.isArray(parsed)) {
+        throw new Error("Expected a JSON array of tasks, but received something else.");
+      }
+
+      if (parsed.length === 0) {
+        throw new Error("The AI returned an empty task list.");
+      }
+
+      if (parsed.length > 20) {
+        throw new Error("The AI proposed too many tasks (maximum 20 allowed). Please narrow your request.");
+      }
+
+      const tasks: AgentTask[] = [];
+      for (let i = 0; i < parsed.length; i++) {
+        const item = parsed[i];
+        if (!item.filename || typeof item.filename !== "string") {
+          throw new Error(`Task ${i + 1} is missing a valid 'filename' string.`);
+        }
+        if (!item.description || typeof item.description !== "string") {
+          throw new Error(`Task ${i + 1} is missing a valid 'description' string.`);
+        }
+        
+        tasks.push({
+          id: crypto.randomUUID(),
+          filename: item.filename,
+          description: item.description,
+          status: "pending",
+          retries: 0
+        });
+      }
+      return tasks;
     } finally {
       if (timer) clearTimeout(timer);
     }
   }, "chat");
 
-  const rawText = result.trim();
-  
-  // Extract JSON if the model ignored instructions and wrapped in markdown
-  let jsonString = rawText;
-  if (jsonString.startsWith("```json")) {
-    jsonString = jsonString.replace(/^```json\n/, "").replace(/\n```$/, "");
-  } else if (jsonString.startsWith("```")) {
-    jsonString = jsonString.replace(/^```\n/, "").replace(/\n```$/, "");
-  }
-
-  let parsed: any;
-  try {
-    parsed = JSON.parse(jsonString);
-  } catch (e) {
-    throw new PlannerError("Failed to parse model output as JSON. The AI did not return a valid task list.");
-  }
-
-  if (!Array.isArray(parsed)) {
-    throw new PlannerError("Expected a JSON array of tasks, but received something else.");
-  }
-
-  if (parsed.length === 0) {
-    throw new PlannerError("The AI returned an empty task list.");
-  }
-
-  if (parsed.length > 20) {
-    throw new PlannerError("The AI proposed too many tasks (maximum 20 allowed). Please narrow your request.");
-  }
-
-  const tasks: AgentTask[] = [];
-  for (let i = 0; i < parsed.length; i++) {
-    const item = parsed[i];
-    if (!item.filename || typeof item.filename !== "string") {
-      throw new PlannerError(`Task ${i + 1} is missing a valid 'filename' string.`);
-    }
-    if (!item.description || typeof item.description !== "string") {
-      throw new PlannerError(`Task ${i + 1} is missing a valid 'description' string.`);
-    }
-    
-    tasks.push({
-      id: crypto.randomUUID(),
-      filename: item.filename,
-      description: item.description,
-      status: "pending",
-      retries: 0
-    });
-  }
-
-  return tasks;
+  return result;
 }

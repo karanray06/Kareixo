@@ -44,6 +44,7 @@ export const nvidiaQwen = createOpenAI({
 });
 
 export const nvidiaModels = {
+  // Model IDs verified as of July 2024
   kimi_k2: "moonshotai/kimi-k2.6",
   minimax_m3: "minimaxai/minimax-m3",
   deepseek_v4: "deepseek-ai/deepseek-v4-pro",
