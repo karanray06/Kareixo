@@ -2,7 +2,6 @@
 
 import { Suspense, useEffect, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import anime from "animejs";
 import { Key, ShieldCross, Lock, Danger, ShieldTick } from "iconsax-react";
 import { ParticleNebula, FloatingIcosahedron, GridPlane } from "./SceneElements";
 
@@ -40,33 +39,6 @@ const CHECKS = [
 export default function SecurityExplainer() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            anime({
-              targets: '.security-reveal, .security-card',
-              opacity: [0, 1],
-              translateY: [30, 0],
-              scale: [0.95, 1],
-              delay: anime.stagger(150),
-              duration: 800,
-              easing: 'easeOutCubic'
-            });
-            observer.disconnect();
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    observer.observe(containerRef.current);
-
-    return () => observer.disconnect();
-  }, []);
   return (
     <div ref={containerRef} className="relative w-full h-full flex flex-col justify-center">
 
@@ -76,7 +48,7 @@ export default function SecurityExplainer() {
           {CHECKS.map((check, i) => (
             <div
               key={check.title}
-              className="security-card bg-white/5 border border-white/10 rounded-xl p-4 md:p-5 group hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all duration-300 opacity-0"
+              className="bg-white/5 border border-white/10 rounded-xl p-4 md:p-5 group hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all duration-300"
             >
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 group-hover:shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all">

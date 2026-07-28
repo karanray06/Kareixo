@@ -71,7 +71,7 @@ export default function AgentPanel({
 }: AgentPanelProps) {
   const [explainMode, setExplainMode] = useState(false);
   const [plannerMode, setPlannerMode] = useState(true);
-  const [forceModel, setForceModel] = useState<string>("auto");
+  const [forceModel, setForceModel] = useState<string>("Llama 3 70B");
   const [phase, setPhase] = useState<AgentPhase>("idle");
   const [proposedCode, setProposedCode] = useState<string | null>(null);
   const [securityResult, setSecurityResult] = useState<SecurityResult | null>(null);
@@ -361,21 +361,31 @@ export default function AgentPanel({
 
 
   return (
-    <div className="flex flex-col h-full bg-cream-100 border-l border-cream-300">
+    <div className="flex flex-col h-full bg-[#1a1b1e] border-l border-[#2b2d31]">
       {/* Header */}
-      <div className="h-10 border-b border-cream-300 flex items-center justify-between px-3 shrink-0 bg-cream-200">
+      <div className="h-12 border-b border-[#2b2d31] flex items-center justify-between px-3 shrink-0 bg-[#141517]">
         <div className="flex items-center gap-2">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-coral-400">
             <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/>
           </svg>
-          <span className="font-display font-bold text-sm text-dusk-900">Agent</span>
+          <span className="font-display font-bold text-sm text-gray-200">Agent</span>
           {providerInfo && (
-            <span className="text-[10px] text-dusk-500 font-mono">— {providerInfo.provider}</span>
+            <span className="text-[10px] text-gray-500 font-mono">— {providerInfo.provider}</span>
           )}
         </div>
 
         <div className="flex items-center gap-3">
-          <label className="flex items-center gap-1.5 text-xs text-dusk-700 cursor-pointer">
+          <select 
+            value={forceModel}
+            onChange={(e) => setForceModel(e.target.value)}
+            className="text-xs bg-[#1a1b1e] border border-[#2b2d31] text-gray-300 rounded px-2 py-0.5 outline-none focus:border-coral-500"
+          >
+            <option value="auto">Auto Router</option>
+            <option value="Llama 3 70B">Groq — Llama 3 70B</option>
+            <option value="Llama 3 8B">Cloudflare — Llama 3 8B</option>
+          </select>
+          
+          <label className="flex items-center gap-1.5 text-xs text-gray-400 cursor-pointer">
             <input
               type="checkbox"
               checked={plannerMode && !explainMode}
@@ -387,11 +397,11 @@ export default function AgentPanel({
                   setPlannerMode(false);
                 }
               }}
-              className="rounded border-dusk-400 text-coral-400 focus:ring-coral-400 focus:ring-offset-cream-100 bg-cream-200"
+              className="rounded border-[#2b2d31] text-coral-400 focus:ring-coral-400 focus:ring-offset-[#1a1b1e] bg-[#1a1b1e]"
             />
             Multi-step
           </label>
-          <label className="flex items-center gap-1.5 text-xs text-dusk-700 cursor-pointer">
+          <label className="flex items-center gap-1.5 text-xs text-gray-400 cursor-pointer">
             <input
               type="checkbox"
               checked={explainMode}
@@ -403,7 +413,7 @@ export default function AgentPanel({
                   setExplainMode(false);
                 }
               }}
-              className="rounded border-dusk-400 text-coral-400 focus:ring-coral-400 focus:ring-offset-cream-100 bg-cream-200"
+              className="rounded border-[#2b2d31] text-coral-400 focus:ring-coral-400 focus:ring-offset-[#1a1b1e] bg-[#1a1b1e]"
             />
             Explain
           </label>
@@ -420,11 +430,11 @@ export default function AgentPanel({
             
             {/* Show push button when tasks are complete and project has a repo */}
             {phase === "idle" && githubRepo && (
-              <div className="ml-11 mt-4 p-4 border border-cream-300 bg-cream-200 rounded-lg">
+              <div className="ml-11 mt-4 p-4 border border-[#2b2d31] bg-[#141517] rounded-lg">
                 <div className="flex items-center justify-between">
                   <div className="flex flex-col">
-                    <span className="text-sm font-medium text-dusk-900">GitHub sync available</span>
-                    <span className="text-xs text-dusk-500 font-mono">{githubRepo} • {githubBranch}</span>
+                    <span className="text-sm font-medium text-gray-200">GitHub sync available</span>
+                    <span className="text-xs text-gray-500 font-mono">{githubRepo} • {githubBranch}</span>
                   </div>
                   <button 
                     onClick={handlePushToGithub}
@@ -465,13 +475,13 @@ export default function AgentPanel({
 
         {phase === "idle" && messages.length === 0 && tasks.length === 0 && !errorMsg && (
           <div className="text-center mt-10">
-            <div className="w-12 h-12 rounded-full bg-cream-200 border border-cream-300 mx-auto mb-3 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-[#141517] border border-[#2b2d31] mx-auto mb-3 flex items-center justify-center">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-coral-400">
                 <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/>
               </svg>
             </div>
-            <h3 className="text-dusk-900 font-medium mb-1">How can I help?</h3>
-            <p className="text-dusk-500 text-sm">
+            <h3 className="text-gray-200 font-medium mb-1">How can I help?</h3>
+            <p className="text-gray-500 text-sm">
               {explainMode
                 ? "Ask me to explain any code in the current file."
                 : plannerMode 
@@ -503,7 +513,7 @@ export default function AgentPanel({
         {/* Single-shot Agent Response Flow */}
         {!plannerMode && (phase === "thinking" || isStreaming) && (
           <div className="ml-11 space-y-4 relative">
-            <div className="absolute left-[-23px] top-4 bottom-4 w-px bg-cream-300 -z-10" />
+            <div className="absolute left-[-23px] top-4 bottom-4 w-px bg-[#2b2d31] -z-10" />
             <ThinkingStep
               content={lastAssistantText || ""}
               isStreaming={true}
@@ -513,13 +523,13 @@ export default function AgentPanel({
 
         {!plannerMode && phase === "diffing" && (
           <div className="ml-11">
-            <div className="text-xs text-dusk-500 font-mono animate-pulse">Computing diff...</div>
+            <div className="text-xs text-gray-500 font-mono animate-pulse">Computing diff...</div>
           </div>
         )}
 
         {!plannerMode && (phase === "checking" || phase === "ready" || phase === "applied") && proposedCode && (
           <div className="ml-11 space-y-4 relative">
-            <div className="absolute left-[-23px] top-4 bottom-4 w-px bg-cream-300 -z-10" />
+            <div className="absolute left-[-23px] top-4 bottom-4 w-px bg-[#2b2d31] -z-10" />
 
             <ThinkingStep
               content={lastAssistantText?.replace(new RegExp("```[\\\\s\\\\S]*?```", "g"), "[code block]")?.trim() || "Code generated."}
@@ -556,7 +566,7 @@ export default function AgentPanel({
             )}
 
             {phase === "applied" && (
-              <div className="text-xs text-dusk-500 font-mono mt-4 flex items-center gap-2">
+              <div className="text-xs text-gray-500 font-mono mt-4 flex items-center gap-2">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-green-400">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
@@ -568,7 +578,7 @@ export default function AgentPanel({
       </div>
 
       {/* Input Area */}
-      <div className="p-4 border-t border-cream-300 bg-cream-100 shrink-0">
+      <div className="p-4 border-t border-[#2b2d31] bg-[#1a1b1e] shrink-0">
         <div className="relative">
           <textarea
             ref={inputRef}
@@ -585,13 +595,13 @@ export default function AgentPanel({
               : plannerMode ? "Describe what to build or fix..." 
               : "Describe a change to the current file..."
             }
-            className="w-full bg-cream-200 border border-cream-300 rounded-lg pl-4 pr-12 py-3 text-sm text-dusk-900 focus:outline-none focus:border-coral-400 resize-none h-24"
+            className="w-full bg-[#141517] border border-[#2b2d31] rounded-xl pl-4 pr-12 py-3 text-sm text-gray-200 focus:outline-none focus:border-coral-400 resize-none h-24"
             disabled={isStreaming || phase === "checking"}
           />
           <button
             onClick={handleSubmit}
             disabled={isStreaming || phase === "checking" || !localInput.trim()}
-            className="absolute right-3 bottom-3 w-8 h-8 rounded-md bg-coral-500 hover:bg-coral-400 text-cream-50 flex items-center justify-center transition-colors disabled:opacity-50"
+            className="absolute right-3 bottom-3 w-8 h-8 rounded-lg bg-coral-500 hover:bg-coral-400 text-white flex items-center justify-center transition-colors disabled:opacity-50"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="22" y1="2" x2="11" y2="13" />
@@ -600,11 +610,11 @@ export default function AgentPanel({
           </button>
         </div>
         <div className="flex justify-between items-center mt-2 px-1">
-          <span className="text-[10px] text-dusk-500 font-mono">
+          <span className="text-[10px] text-gray-500 font-mono">
             Shift+Enter for new line · Enter to send
           </span>
-          <span className="text-[10px] text-dusk-500 font-mono flex items-center gap-1">
-            <div className={`w-1.5 h-1.5 rounded-full ${isStreaming ? "bg-rosegold-400 animate-pulse" : "bg-green-400"}`} />
+          <span className="text-[10px] text-gray-500 font-mono flex items-center gap-1">
+            <div className={`w-1.5 h-1.5 rounded-full ${isStreaming ? "bg-orange-400 animate-pulse" : "bg-green-400"}`} />
             {isStreaming ? "Working..." : "Router online"}
           </span>
         </div>

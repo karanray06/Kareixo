@@ -19,6 +19,7 @@ interface ProjectContextType {
   isSaving: boolean;
   setIsSaving: (val: boolean) => void;
   refreshProjects: () => Promise<void>;
+  importProject: (repo: string, branch?: string) => Promise<void>;
   
   // File state
   files: Record<string, string>;
@@ -76,6 +77,30 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     } catch (e: any) {
       console.error("Failed to load projects", e);
       setError(e.message || "Unknown network error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const importProject = async (repo: string, branch = "main") => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/projects/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ repo, branch })
+      });
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`Import failed: ${res.status} ${errText}`);
+      }
+      const newProj = await res.json();
+      await fetchProjects(); // Refresh the list
+      setActiveProjectId(newProj.id);
+    } catch (e: any) {
+      console.error("Failed to import project:", e);
+      setError(e.message || "Unknown error during import");
     } finally {
       setIsLoading(false);
     }
@@ -178,6 +203,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       isSaving,
       setIsSaving,
       refreshProjects: fetchProjects,
+      importProject,
       files,
       activeFile,
       setActiveFile,

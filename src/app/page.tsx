@@ -51,7 +51,7 @@ export default function Home() {
           
           {/* Multi-model Router */}
           <div className="lg:w-3/5 p-0.5 rounded-[2rem] bg-gradient-to-br from-white/10 to-transparent">
-            <div className="bg-black/60 backdrop-blur-3xl rounded-[calc(2rem-1px)] h-full p-8 md:p-12 border border-white/5 shadow-inner flex flex-col justify-between group">
+            <div className="bg-black/60 backdrop-blur-3xl rounded-[calc(2rem-1px)] h-full p-8 md:p-12 border border-white/5 shadow-inner flex flex-col group">
               <div className="mb-12">
                 <h3 className="text-3xl text-white font-normal mb-4" style={{ fontFamily: "var(--font-lora), serif" }}>
                   Intelligent Routing
@@ -60,7 +60,7 @@ export default function Home() {
                   Dynamically route tasks to the best model based on context, cost, and speed.
                 </p>
               </div>
-              <div className="relative transform group-hover:scale-[1.02] transition-transform duration-700">
+              <div className="relative transform group-hover:scale-[1.02] transition-transform duration-700 flex-1 flex flex-col items-center justify-center pb-8">
                 <RouterVisual />
               </div>
             </div>

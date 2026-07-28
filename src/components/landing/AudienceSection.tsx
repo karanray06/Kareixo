@@ -1,10 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useRef } from "react";
-import { Canvas } from "@react-three/fiber";
-import anime from "animejs";
 import { Book, Airplane, Hierarchy, Activity } from "iconsax-react";
-import { ParticleNebula, FloatingOctahedron, FloatingTorus } from "./SceneElements";
 
 const AUDIENCES = [
   {
@@ -34,79 +30,36 @@ const AUDIENCES = [
 ];
 
 export default function AudienceSection() {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            anime({
-              targets: '.audience-reveal',
-              opacity: [0, 1],
-              translateY: [30, 0],
-              delay: anime.stagger(150),
-              duration: 800,
-              easing: 'easeOutCubic'
-            });
-            observer.disconnect();
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    observer.observe(containerRef.current);
-
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <div className="relative overflow-hidden">
-      {/* 3D Background */}
-      <div className="absolute inset-0 opacity-40 pointer-events-none">
-        <Canvas
-          camera={{ position: [0, 0, 6], fov: 50 }}
-          gl={{ antialias: true, alpha: true }}
-          style={{ background: "transparent" }}
-          dpr={[1, 1.5]}
-        >
-          <Suspense fallback={null}>
-            <ambientLight intensity={0.3} />
-            <ParticleNebula count={300} radius={5} color="#e88a6d" size={0.015} />
-            <FloatingOctahedron position={[-3, 1, -2]} scale={0.5} color="#e88a6d" speed={0.1} />
-            <FloatingTorus position={[3, -1, -1]} scale={0.3} color="#c4583a" speed={0.08} />
-          </Suspense>
-        </Canvas>
-      </div>
-
-      <div ref={containerRef} className="section relative z-10">
-        <div className="text-center mb-12">
-          <h2 className="font-display text-3xl md:text-5xl font-bold mb-4 audience-reveal opacity-0">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-12 relative z-10">
+        <div className="text-center mb-16">
+          <h2
+            className="text-4xl md:text-5xl text-white font-normal drop-shadow-2xl"
+            style={{ fontFamily: "var(--font-lora), serif" }}
+          >
             Built for builders with{" "}
-            <span className="text-gradient-cyan">zero budget</span>
+            <span className="text-[#ff5005] italic">zero budget</span>
           </h2>
-          <p className="text-dusk-700 text-lg max-w-xl mx-auto audience-reveal opacity-0">
+          <p className="text-white/40 text-lg max-w-xl mx-auto mt-4 font-medium tracking-wide">
             We&apos;re not hiding who this is for. If you can&apos;t afford $20/month
             for AI tooling, you are exactly our user.
           </p>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-5 max-w-3xl mx-auto mb-16">
-          {AUDIENCES.map((audience, i) => (
+          {AUDIENCES.map((audience) => (
             <div
               key={audience.title}
-              className="card hover:border-coral-500/30 transition-all group audience-reveal opacity-0"
+              className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-[#ff5005]/30 transition-all group backdrop-blur-sm"
             >
-              <div className="w-10 h-10 rounded-lg bg-coral-400/10 border border-coral-400/20 flex items-center justify-center text-coral-400 mb-4 group-hover:glow-cyan transition-all">
+              <div className="w-10 h-10 rounded-lg bg-[#ff5005]/10 border border-[#ff5005]/20 flex items-center justify-center text-[#ff5005] mb-4 group-hover:shadow-[0_0_15px_rgba(255,80,5,0.3)] transition-all">
                 {audience.icon}
               </div>
-              <h3 className="font-display text-lg font-bold text-dusk-900 mb-2">
+              <h3 className="text-lg font-bold text-white mb-2">
                 {audience.title}
               </h3>
-              <p className="text-dusk-500 text-sm leading-relaxed">
+              <p className="text-white/50 text-sm leading-relaxed">
                 {audience.description}
               </p>
             </div>
@@ -116,19 +69,21 @@ export default function AudienceSection() {
         {/* Final CTA */}
         <div className="text-center">
           <div
-            className="glass-strong inline-block px-12 py-10 text-center audience-reveal opacity-0"
-            style={{ borderRadius: "var(--radius-xl)" }}
+            className="inline-block px-12 py-10 text-center bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem]"
           >
-            <h3 className="font-display text-2xl md:text-4xl font-bold mb-3">
+            <h3
+              className="text-2xl md:text-4xl font-normal text-white mb-3"
+              style={{ fontFamily: "var(--font-lora), serif" }}
+            >
               Start building — no card, no signup limits
             </h3>
-            <p className="text-dusk-500 text-base mb-6 max-w-md mx-auto">
+            <p className="text-white/40 text-base mb-6 max-w-md mx-auto">
               Your projects sync everywhere, free. See exactly what the AI does
               and why, every time.
             </p>
             <a
               href="/signup"
-              className="btn btn-primary text-lg px-10 py-3.5 inline-flex"
+              className="px-10 py-3.5 bg-[#ff5005] hover:bg-[#e64604] text-white font-semibold text-lg rounded-full transition-all shadow-[0_0_20px_rgba(255,80,5,0.3)] hover:shadow-[0_0_30px_rgba(255,80,5,0.5)] inline-flex items-center gap-2"
             >
               Create free account
               <svg
@@ -147,7 +102,7 @@ export default function AudienceSection() {
                 />
               </svg>
             </a>
-            <p className="text-dusk-500 text-xs mt-4 font-mono">
+            <p className="text-white/30 text-xs mt-4 font-mono">
               No credit card · No usage limits · Projects sync across devices
             </p>
           </div>

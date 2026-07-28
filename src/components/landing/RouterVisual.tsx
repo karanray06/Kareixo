@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import anime from "animejs";
 import { CpuSetting } from "iconsax-react";
 
 const PROVIDERS = [
@@ -18,33 +17,6 @@ export default function RouterVisual() {
   const [isRouting, setIsRouting] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            anime({
-              targets: '.router-reveal',
-              opacity: [0, 1],
-              translateY: [30, 0],
-              delay: anime.stagger(150),
-              duration: 800,
-              easing: 'easeOutCubic'
-            });
-            observer.disconnect();
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    observer.observe(containerRef.current);
-
-    return () => observer.disconnect();
-  }, []);
 
   useEffect(() => {
     const cycle = () => {
@@ -76,7 +48,7 @@ export default function RouterVisual() {
 
   return (
     <div ref={containerRef} className="w-full h-full flex flex-col justify-center">
-      <div className="w-full mx-auto router-reveal opacity-0">
+      <div className="w-full mx-auto">
         <div className="relative">
           {/* Center node - the router */}
           <div className="flex items-center justify-center mb-8">

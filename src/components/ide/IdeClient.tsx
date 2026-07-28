@@ -6,11 +6,15 @@ import FileExplorer from "./FileExplorer";
 import MonacoWrapper from "./MonacoWrapper";
 import AgentPanel from "./AgentPanel";
 import EditorTabs from "./EditorTabs";
-import { Add, CloseCircle, TickCircle } from "iconsax-react";
+import { Add, CloseCircle, TickCircle, SearchNormal1 } from "iconsax-react";
+import { FaGithub } from "react-icons/fa";
 import { useState, useEffect } from "react";
 
 export default function IdeClient() {
   const [showChecklist, setShowChecklist] = useState(true);
+  const [importRepo, setImportRepo] = useState("");
+  const [isImporting, setIsImporting] = useState(false);
+  const [importError, setImportError] = useState<string | null>(null);
   const { 
     activeProject, 
     files, 
@@ -19,7 +23,8 @@ export default function IdeClient() {
     updateFile,
     createFile,
     deleteFile,
-    isLoading 
+    isLoading,
+    importProject
   } = useProject();
 
   if (isLoading) {
@@ -35,12 +40,68 @@ export default function IdeClient() {
 
   if (!activeProject) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-[#1a1b1e] text-gray-500">
-        <div className="w-16 h-16 bg-[#2b2d31] rounded-full flex items-center justify-center mb-4">
-          <Add size={32} className="text-gray-400" />
+      <div className="flex-1 flex flex-col items-center justify-center bg-[#1a1b1e] text-gray-500 p-8">
+        <div className="max-w-md w-full bg-[#141517] border border-[#2b2d31] rounded-2xl p-8 shadow-2xl flex flex-col items-center text-center">
+          <div className="w-16 h-16 bg-[#2b2d31] rounded-2xl flex items-center justify-center mb-6 border border-white/5">
+            <FaGithub className="text-white/80" size={32} />
+          </div>
+          <h2 className="text-2xl font-medium text-gray-200 mb-3 font-display">Import from GitHub</h2>
+          <p className="text-sm text-gray-400 mb-8">
+            Enter a public repository to instantly load it into Kareixo's agentic workspace.
+          </p>
+          
+          <form 
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (!importRepo) return;
+              setIsImporting(true);
+              setImportError(null);
+              try {
+                await importProject(importRepo);
+              } catch (err: any) {
+                setImportError(err.message);
+              } finally {
+                setIsImporting(false);
+              }
+            }}
+            className="w-full space-y-4"
+          >
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <SearchNormal1 size={18} className="text-gray-500" />
+              </div>
+              <input
+                type="text"
+                placeholder="e.g. vercel/next.js"
+                value={importRepo}
+                onChange={(e) => setImportRepo(e.target.value)}
+                disabled={isImporting}
+                className="w-full bg-[#1a1b1e] border border-[#2b2d31] text-gray-200 text-sm rounded-xl focus:ring-1 focus:ring-coral-500 focus:border-coral-500 block pl-11 p-3.5 transition-colors disabled:opacity-50"
+              />
+            </div>
+            
+            {importError && (
+              <div className="text-red-400 text-sm text-left p-3 bg-red-400/10 rounded-lg border border-red-400/20">
+                {importError}
+              </div>
+            )}
+            
+            <button
+              type="submit"
+              disabled={!importRepo || isImporting}
+              className="w-full text-white bg-coral-500 hover:bg-coral-400 focus:ring-4 focus:ring-coral-500/20 font-medium rounded-xl text-sm px-5 py-3.5 text-center transition-all disabled:opacity-50 disabled:hover:bg-coral-500 flex items-center justify-center gap-2"
+            >
+              {isImporting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Importing...
+                </>
+              ) : (
+                "Import Project"
+              )}
+            </button>
+          </form>
         </div>
-        <h2 className="text-lg font-medium text-gray-300 mb-2">No active project</h2>
-        <p className="text-sm">Create or select a project from the sidebar to get started.</p>
       </div>
     );
   }

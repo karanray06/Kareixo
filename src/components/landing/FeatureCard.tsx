@@ -50,19 +50,12 @@ export default function FeatureCard() {
   const active = features[activeIndex];
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-between overflow-hidden">
-      {/* Top Nav — persistent "Kareixo" with underline */}
-      <div className="pt-8 z-20">
-        <div className="relative inline-block pb-1">
-          <span className="text-white text-sm font-medium tracking-wide">Kareixo</span>
-          <div className="absolute bottom-0 left-0 w-full h-[2px] bg-white rounded-full"></div>
-        </div>
-      </div>
+    <section className="relative min-h-[60vh] flex flex-col items-center justify-center overflow-hidden py-24">
 
       {/* Center — "Simply change [card] to create yours" */}
-      <div className="relative z-10 flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 px-6">
+      <div className="relative z-10 flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-12 px-6 w-full max-w-6xl">
         <span
-          className="text-3xl md:text-5xl text-white/80 font-normal"
+          className="text-4xl md:text-5xl lg:text-6xl text-white/90 font-normal text-center"
           style={{ fontFamily: "var(--font-lora), serif" }}
         >
           Simply change
@@ -70,7 +63,7 @@ export default function FeatureCard() {
 
         {/* Frosted glass card with cycling feature */}
         <div
-          className="relative w-72 h-48 md:w-80 md:h-52 rounded-2xl overflow-hidden cursor-pointer shadow-2xl border border-white/20"
+          className="relative w-64 h-40 md:w-80 md:h-52 rounded-3xl overflow-hidden cursor-pointer shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/20 z-20 shrink-0"
           onClick={() => setActiveIndex((prev) => (prev + 1) % features.length)}
         >
           {/* Background gradient — transitions with each feature */}
@@ -110,16 +103,11 @@ export default function FeatureCard() {
         </div>
 
         <span
-          className="text-3xl md:text-5xl text-white/80 font-normal"
+          className="text-4xl md:text-5xl lg:text-6xl text-white/90 font-normal text-center"
           style={{ fontFamily: "var(--font-lora), serif" }}
         >
           to create yours
         </span>
-      </div>
-
-      {/* Bottom pill */}
-      <div className="pb-8 z-20">
-        <div className="w-12 h-5 bg-white rounded-full opacity-90 shadow-lg"></div>
       </div>
     </section>
   );
