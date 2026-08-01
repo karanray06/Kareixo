@@ -22,7 +22,9 @@ export default function Navbar() {
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Link href="/" className="text-[var(--text-primary)] font-bold text-xl tracking-tight flex items-center gap-2" onClick={() => setMenuOpen(false)}>
-              <img src="/logo.png" alt="Kareixo Logo" className="w-8 h-8 object-contain" />
+              <div className="bg-white p-1 rounded-md flex items-center justify-center">
+                <img src="/logo.png" alt="Kareixo Logo" className="w-6 h-6 object-contain" />
+              </div>
               Kareixo
             </Link>
           </div>

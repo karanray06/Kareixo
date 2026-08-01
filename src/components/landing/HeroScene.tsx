@@ -42,7 +42,7 @@ export default function HeroScene() {
           </div>
         ) : (
           <>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-[var(--text-primary)] animate-fade-in-up">
+            <h1 className="text-5xl md:text-7xl tracking-normal text-[var(--text-primary)] animate-fade-in-up">
               Free AI code review for every pull request
             </h1>
             <p className="text-[var(--text-secondary)] text-xl max-w-2xl animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
@@ -51,7 +51,7 @@ export default function HeroScene() {
             <div className="animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
               <a
                 href="https://github.com/apps/kareixo-reviewer/installations/new"
-                className="inline-flex items-center gap-3 px-8 py-4 bg-[var(--text-primary)] text-[var(--bg-base)] rounded-full font-semibold text-lg hover:scale-105 transition-transform"
+                className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-[#2a2d3c] rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-lg"
               >
                 <FiGithub className="w-5 h-5" />
                 Install on GitHub

@@ -91,10 +91,10 @@ export default function Home() {
 
       {/* Section: CTA */}
       <section className="py-32 px-6 text-center">
-        <h2 className="text-5xl font-bold mb-8 font-display">Ready to level up your code?</h2>
+        <h2 className="text-5xl mb-8 font-display">Ready to level up your code?</h2>
         <a
           href="https://github.com/apps/kareixo-reviewer/installations/new"
-          className="inline-flex items-center gap-3 px-8 py-4 bg-[var(--text-primary)] text-[var(--bg-base)] rounded-full font-semibold text-lg hover:scale-105 transition-transform"
+          className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-[#2a2d3c] rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-lg"
         >
           <FiGithub className="w-5 h-5" />
           Install on GitHub
@@ -105,7 +105,9 @@ export default function Home() {
       <footer className="py-12 border-t border-[var(--color-outline)]/10 text-[var(--text-secondary)] text-sm">
         <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
-            <img src="/logo.png" alt="Kareixo Logo" className="w-6 h-6 object-contain" />
+            <div className="bg-white p-1 rounded-md flex items-center justify-center">
+              <img src="/logo.png" alt="Kareixo Logo" className="w-5 h-5 object-contain" />
+            </div>
             <span className="font-bold text-[var(--text-primary)]">Kareixo</span>
           </div>
           <div className="flex gap-6">

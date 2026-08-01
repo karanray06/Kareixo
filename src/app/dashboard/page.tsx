@@ -60,7 +60,7 @@ export default async function DashboardPage() {
       <Navbar />
       <div className="max-w-6xl mx-auto px-6 pt-32 pb-12">
         <header className="mb-12">
-          <h1 className="text-4xl font-bold font-display">Dashboard</h1>
+          <h1 className="text-4xl font-display">Dashboard</h1>
           <p className="text-[var(--text-secondary)] mt-2">Manage your connected repositories and view recent activity.</p>
         </header>
 
