@@ -67,6 +67,7 @@ export async function trackRateLimit(provider: ProviderName): Promise<void> {
       .onConflictDoUpdate({
         target: providerStats.providerName,
         set: {
+          rateLimitHits: sql`${providerStats.rateLimitHits} + 1`,
           lastRateLimitAt: new Date(),
           lastRequestAt: new Date(),
           updatedAt: new Date(),

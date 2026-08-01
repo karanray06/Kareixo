@@ -1,173 +1,117 @@
 import HeroScene from "@/components/landing/HeroScene";
 import Navbar from "@/components/landing/Navbar";
-import FeatureCard from "@/components/landing/FeatureCard";
-import BackgroundGradient from "@/components/landing/BackgroundGradient";
-import ComparisonTable from "@/components/landing/ComparisonTable";
-import RouterVisual from "@/components/landing/RouterVisual";
-import SecurityExplainer from "@/components/landing/SecurityExplainer";
-import AudienceSection from "@/components/landing/AudienceSection";
-import HowItWorks from "@/components/landing/HowItWorks";
-import SocialProof from "@/components/landing/SocialProof";
-import CtaBand from "@/components/landing/CtaBand";
-import { FaGithub, FaTwitter } from "react-icons/fa";
+import { FiCheckCircle, FiShield, FiZap, FiGithub, FiCpu, FiCode } from "react-icons/fi";
 
 export default function Home() {
   return (
-    <main className="min-h-screen text-white relative font-sans" style={{ background: "#050505" }}>
-      {/* Full-bleed ShaderGradient — deeply darkened for premium feel */}
-      <div className="fixed inset-0 z-0 opacity-40 mix-blend-screen pointer-events-none">
-        <BackgroundGradient />
-      </div>
-      
-      {/* Subtle vignette / noise overlay for texture */}
-      <div className="fixed inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_0%,#050505_100%)] opacity-80" />
-
-      {/* Navbar */}
+    <main className="min-h-screen text-[var(--text-primary)] font-sans bg-[var(--bg-base)]">
       <Navbar />
-
-      {/* Section 1: Hero */}
       <HeroScene />
 
-      {/* Section 2: Core Features Grid */}
-      <section className="relative z-10 py-32 max-w-[1400px] mx-auto px-6 md:px-12 space-y-32">
-        
-        {/* Why Kareixo / Comparison Table */}
-        <div className="flex flex-col items-center space-y-12">
-          <h2 
-            className="text-4xl md:text-5xl text-white font-normal text-center drop-shadow-2xl"
-            style={{ fontFamily: "var(--font-lora), serif" }}
-          >
-            The new standard for<br /><span className="text-white/50 italic">agentic workspaces</span>
-          </h2>
-          <div className="w-full max-w-5xl p-0.5 rounded-[2rem] bg-gradient-to-b from-white/10 to-transparent shadow-[0_0_100px_rgba(0,0,0,0.8)]">
-            <div className="bg-black/60 backdrop-blur-3xl rounded-[calc(2rem-1px)] p-8 md:p-12 overflow-hidden border border-white/5 shadow-inner">
-              <ComparisonTable />
+      {/* Section: How It Works */}
+      <section id="how-it-works" className="py-24 px-6 md:px-12 max-w-6xl mx-auto">
+        <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 font-display">
+          How it works
+        </h2>
+        <div className="grid md:grid-cols-3 gap-12">
+          {/* Step 1 */}
+          <div className="flex flex-col items-center text-center space-y-4">
+            <div className="w-16 h-16 rounded-full bg-[var(--bg-elevated)] border-2 border-[var(--color-outline)] flex items-center justify-center text-2xl font-bold">
+              1
             </div>
+            <h3 className="text-2xl font-bold">Install the App</h3>
+            <p className="text-[var(--text-secondary)]">Add the Kareixo GitHub App to your repositories with one click. No configuration needed.</p>
+          </div>
+          {/* Step 2 */}
+          <div className="flex flex-col items-center text-center space-y-4">
+            <div className="w-16 h-16 rounded-full bg-[var(--bg-elevated)] border-2 border-[var(--color-outline)] flex items-center justify-center text-2xl font-bold">
+              2
+            </div>
+            <h3 className="text-2xl font-bold">Open a PR</h3>
+            <p className="text-[var(--text-secondary)]">Kareixo automatically listens for new pull requests and synchronizations on your codebase.</p>
+          </div>
+          {/* Step 3 */}
+          <div className="flex flex-col items-center text-center space-y-4">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[var(--color-mint)] to-[var(--color-sky-blue)] border-2 border-[var(--color-outline)] flex items-center justify-center text-2xl font-bold">
+              3
+            </div>
+            <h3 className="text-2xl font-bold">Get Reviewed</h3>
+            <p className="text-[var(--text-secondary)]">Receive inline comments and actionable suggested changes directly in your GitHub UI in minutes.</p>
           </div>
         </div>
-
-        {/* Router & Security Split */}
-        <div className="flex flex-col lg:flex-row gap-8 items-stretch max-w-6xl mx-auto w-full">
-          
-          {/* Multi-model Router */}
-          <div className="lg:w-3/5 p-0.5 rounded-[2rem] bg-gradient-to-br from-white/10 to-transparent">
-            <div className="bg-black/60 backdrop-blur-3xl rounded-[calc(2rem-1px)] h-full p-8 md:p-12 border border-white/5 shadow-inner flex flex-col group">
-              <div className="mb-12">
-                <h3 className="text-3xl text-white font-normal mb-4" style={{ fontFamily: "var(--font-lora), serif" }}>
-                  Intelligent Routing
-                </h3>
-                <p className="text-white/50 max-w-sm font-medium tracking-wide">
-                  Dynamically route tasks to the best model based on context, cost, and speed.
-                </p>
-              </div>
-              <div className="relative transform group-hover:scale-[1.02] transition-transform duration-700 flex-1 flex flex-col items-center justify-center pb-8">
-                <RouterVisual />
-              </div>
-            </div>
-          </div>
-
-          {/* Security Pass */}
-          <div className="lg:w-2/5 p-0.5 rounded-[2rem] bg-gradient-to-br from-emerald-500/20 to-transparent">
-            <div className="bg-black/60 backdrop-blur-3xl rounded-[calc(2rem-1px)] h-full p-8 md:p-12 border border-white/5 shadow-inner flex flex-col justify-between group relative overflow-hidden">
-              {/* Subtle green glow bleed */}
-              <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-emerald-500/20 blur-[80px] rounded-full pointer-events-none group-hover:bg-emerald-500/30 transition-colors duration-700" />
-              
-              <div className="relative z-10 mb-12">
-                <h3 className="text-3xl text-white font-normal mb-4" style={{ fontFamily: "var(--font-lora), serif" }}>
-                  Secure by Design
-                </h3>
-                <p className="text-white/50 font-medium tracking-wide">
-                  Nothing executes without passing strict static analysis and your final approval.
-                </p>
-              </div>
-              <div className="relative z-10 transform group-hover:translate-y-[-5px] transition-transform duration-700">
-                <SecurityExplainer />
-              </div>
-            </div>
-          </div>
-
-        </div>
-
       </section>
 
-      {/* Section 2.5: Audience */}
-      <div className="relative z-10 pb-32">
-        <AudienceSection />
-      </div>
-
-      {/* Section 3: Feature Card Deep Dive */}
-      <div className="relative z-10 pb-32">
-        <FeatureCard />
-      </div>
-
-      {/* Section 4: How It Works */}
-      <div className="relative z-10 pb-32">
-        <HowItWorks />
-      </div>
-
-      {/* Section 5: Social Proof */}
-      <div className="relative z-10">
-        <SocialProof />
-      </div>
-
-      {/* Section 6: CTA Band */}
-      <div className="relative z-10">
-        <CtaBand />
-      </div>
-
-      {/* Premium Dark Footer */}
-      <footer className="relative z-20 border-t border-white/5 bg-[#020202] pt-24 pb-12">
-        <div className="max-w-[1200px] mx-auto px-8 md:px-16">
-          <div className="flex flex-col md:flex-row justify-between gap-16 mb-24">
-            
-            {/* Built by */}
-            <div className="space-y-6">
-              <h3
-                className="text-2xl text-[#ff5005] italic"
-                style={{ fontFamily: "var(--font-lora), serif" }}
-              >
-                Built by
-              </h3>
-              <div className="space-y-3">
-                <div className="flex items-center gap-4 text-sm font-medium tracking-wide">
-                  <a href="#" className="text-white/80 hover:text-[#ff5005] transition-colors">Karan Ray ↗</a>
-                  <span className="text-white/30">Founder & Engineer</span>
-                </div>
-                <div className="flex items-center gap-4 text-sm font-medium tracking-wide">
-                  <a href="#" className="text-white/80 hover:text-[#ff5005] transition-colors">Kareixo AI ↗</a>
-                  <span className="text-white/30">Agentic Engine</span>
-                </div>
-              </div>
+      {/* Section: What It Catches */}
+      <section className="py-24 px-6 md:px-12 bg-[var(--bg-elevated)] border-y border-[var(--color-outline)]/20">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 font-display">
+            What it catches
+          </h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="bg-[var(--bg-base)] p-8 rounded-2xl border border-[var(--color-outline)]/10 space-y-4">
+              <FiZap className="w-8 h-8 text-[var(--color-coral)]" />
+              <h3 className="text-xl font-bold">Logic Errors</h3>
+              <p className="text-[var(--text-secondary)] text-sm">Identifies edge cases, off-by-one errors, and faulty async logic before it lands.</p>
             </div>
-
-            {/* Keep in touch */}
-            <div className="space-y-6">
-              <h3
-                className="text-2xl text-white/40 italic"
-                style={{ fontFamily: "var(--font-lora), serif" }}
-              >
-                Keep in touch
-              </h3>
-              <p className="text-white/30 text-sm font-medium tracking-wide">
-                For product updates and bug reports
-              </p>
-              <div className="flex items-center gap-6 text-sm font-medium tracking-wide">
-                <a href="#" className="text-white/80 hover:text-[#ff5005] transition-colors flex items-center gap-2">
-                  <FaTwitter /> Twitter
-                </a>
-                <a href="https://github.com/karanray06/Kareixo" target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-[#ff5005] transition-colors flex items-center gap-2">
-                  <FaGithub /> GitHub
-                </a>
-              </div>
+            <div className="bg-[var(--bg-base)] p-8 rounded-2xl border border-[var(--color-outline)]/10 space-y-4">
+              <FiShield className="w-8 h-8 text-[var(--color-lavender)]" />
+              <h3 className="text-xl font-bold">Security Flaws</h3>
+              <p className="text-[var(--text-secondary)] text-sm">Spots injection vectors, unvalidated inputs, and accidental secret exposures.</p>
+            </div>
+            <div className="bg-[var(--bg-base)] p-8 rounded-2xl border border-[var(--color-outline)]/10 space-y-4">
+              <FiCpu className="w-8 h-8 text-[var(--color-sky-blue)]" />
+              <h3 className="text-xl font-bold">Performance</h3>
+              <p className="text-[var(--text-secondary)] text-sm">Flags N+1 queries, unnecessary re-renders, and memory leaks.</p>
+            </div>
+            <div className="bg-[var(--bg-base)] p-8 rounded-2xl border border-[var(--color-outline)]/10 space-y-4">
+              <FiCode className="w-8 h-8 text-[var(--color-mint)]" />
+              <h3 className="text-xl font-bold">Code Style</h3>
+              <p className="text-[var(--text-secondary)] text-sm">Ensures consistency with standard practices and improves readability.</p>
             </div>
           </div>
-          
-          <div className="flex flex-col md:flex-row justify-between items-center border-t border-white/5 pt-8 text-xs font-medium tracking-widest text-white/20 uppercase">
-            <span>© 2026 Kareixo</span>
-            <div className="flex gap-6 mt-4 md:mt-0">
-              <a href="#" className="hover:text-white/50 transition-colors">Privacy</a>
-              <a href="#" className="hover:text-white/50 transition-colors">Terms</a>
-            </div>
+        </div>
+      </section>
+
+      {/* Section: Why Free */}
+      <section className="py-24 px-6 md:px-12 max-w-6xl mx-auto text-center space-y-12">
+        <h2 className="text-4xl md:text-5xl font-bold font-display">
+          How is it free?
+        </h2>
+        <p className="text-xl text-[var(--text-secondary)] max-w-3xl mx-auto">
+          Kareixo uses a resilient multi-model router. When one free-tier API rate limits, it automatically and instantly fails over to the next. Your review never drops.
+        </p>
+        <div className="flex flex-wrap justify-center gap-4 mt-8">
+          {["NVIDIA NIM", "Groq", "OpenRouter", "Z.AI", "Cloudflare", "Moonshot"].map((provider) => (
+            <span key={provider} className="px-6 py-3 bg-[var(--bg-elevated)] border border-[var(--color-outline)]/20 rounded-full font-mono text-sm font-semibold">
+              {provider}
+            </span>
+          ))}
+        </div>
+      </section>
+
+      {/* Section: CTA */}
+      <section className="py-32 px-6 text-center">
+        <h2 className="text-5xl font-bold mb-8 font-display">Ready to level up your code?</h2>
+        <a
+          href="/dashboard"
+          className="inline-flex items-center gap-3 px-8 py-4 bg-[var(--text-primary)] text-[var(--bg-base)] rounded-full font-semibold text-lg hover:scale-105 transition-transform"
+        >
+          <FiGithub className="w-5 h-5" />
+          Install on GitHub
+        </a>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-12 border-t border-[var(--color-outline)]/10 text-[var(--text-secondary)] text-sm">
+        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-gradient-to-r from-[var(--color-mint)] to-[var(--color-sky-blue)] border-2 border-[var(--color-outline)]" />
+            <span className="font-bold text-[var(--text-primary)]">Kareixo</span>
+          </div>
+          <div className="flex gap-6">
+            <a href="https://github.com/karanray06/Kareixo" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--text-primary)] transition-colors">
+              GitHub Repository
+            </a>
           </div>
         </div>
       </footer>

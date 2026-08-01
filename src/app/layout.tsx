@@ -1,18 +1,18 @@
-import type { Metadata } from "next";
-import { Space_Grotesk, Plus_Jakarta_Sans, JetBrains_Mono, Anton, Lora } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Instrument_Serif, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
+const instrumentSerif = Instrument_Serif({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400"],
   display: "swap",
 });
 
-const plusJakarta = Plus_Jakarta_Sans({
+const inter = Inter({
   variable: "--font-body",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600"],
   display: "swap",
 });
 
@@ -23,43 +23,24 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-const anton = Anton({
-  variable: "--font-anton",
-  subsets: ["latin"],
-  weight: "400",
-  display: "swap",
-});
-
-const lora = Lora({
-  variable: "--font-lora",
-  subsets: ["latin"],
-  display: "swap",
-});
+export const viewport: Viewport = {
+  themeColor: "#606887",
+};
 
 export const metadata: Metadata = {
-  title: "Kareixo — The AI Workspace",
+  title: "Kareixo — Free AI Code Review",
   description:
-    "The AI coding IDE that shows its work and never asks for a credit card. Free multi-model routing, visible agent reasoning, and pre-commit security checks.",
-  keywords: [
-    "AI IDE",
-    "coding assistant",
-    "free AI",
-    "open source",
-    "code editor",
-    "transparent AI",
-  ],
+    "Free AI code review for every pull request. No credit card required.",
   openGraph: {
-    title: "Kareixo — The AI Workspace",
-    description:
-      "Free AI coding with full transparency. See every reasoning step, review every diff, pass every security check — before code lands.",
+    title: "Kareixo — Free AI Code Review",
+    description: "Free AI code review for every pull request.",
     type: "website",
     siteName: "Kareixo",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Kareixo — The AI Workspace",
-    description:
-      "The IDE that shows its work — and never asks for a credit card.",
+    title: "Kareixo — Free AI Code Review",
+    description: "Free AI code review for every pull request.",
   },
 };
 
@@ -71,7 +52,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${spaceGrotesk.variable} ${plusJakarta.variable} ${jetbrainsMono.variable} ${anton.variable} ${lora.variable}`}
+      className={`${instrumentSerif.variable} ${inter.variable} ${jetbrainsMono.variable}`}
     >
       <body>{children}</body>
     </html>

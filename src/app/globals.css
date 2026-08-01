@@ -6,46 +6,23 @@
    ═══════════════════════════════════════════ */
 
 :root {
-  /* ── Surface palette — immersive dark mode (dark.design / supahero inspired) ── */
-  --bg-base: hsl(240, 10%, 4%);
-  --bg-surface: hsl(240, 10%, 8%);
-  --bg-elevated: hsl(240, 10%, 12%);
-  --bg-raised: hsl(240, 10%, 16%);
+  /* ── Surface palette ── */
+  --bg-base: #f7f7f9; /* soft off-white */
+  --bg-surface: #ffffff;
+  --bg-elevated: #f0f0f4;
   
-  --text-primary: hsl(0, 0%, 98%);
-  --text-secondary: hsl(240, 5%, 65%);
-  --text-tertiary: hsl(240, 5%, 45%);
+  --text-primary: #3a3f52; /* dark slate-navy */
+  --text-secondary: #606887; /* muted slate-blue-purple */
+  --text-tertiary: #a0a6bd;
 
-  --cream-50:  var(--bg-base);
-  --cream-100: var(--bg-surface);
-  --cream-200: var(--bg-elevated);
-  --cream-300: var(--bg-raised);
-  --dusk-400:  var(--text-tertiary);
-  --dusk-500:  var(--text-secondary);
-  --dusk-700:  hsl(0, 0%, 85%);
-  --dusk-900:  var(--text-primary);
-
-  /* ── Primary accent — electric blue/cyan ── */
-  --coral-100: hsl(190, 90%, 80%);
-  --coral-200: hsl(190, 90%, 70%);
-  --coral-400: hsl(190, 90%, 55%);
-  --coral-500: hsl(190, 90%, 45%);
-  --coral-600: hsl(190, 90%, 35%);
-
-  /* ── Secondary accent — vibrant purple ── */
-  --periwinkle-200: hsl(270, 80%, 70%);
-  --periwinkle-400: hsl(270, 80%, 60%);
-  --periwinkle-600: hsl(270, 80%, 50%);
-
-  /* ── Security/trust badge — neon green ── */
-  --rosegold-400: hsl(150, 80%, 50%);
-  --rosegold-500: hsl(150, 80%, 40%);
-
-  /* ── Semantic Colors ── */
-  --red-400: hsl(350, 80%, 60%);
-  --red-500: hsl(350, 80%, 50%);
-  --green-400: hsl(150, 80%, 50%);
-  --green-500: hsl(150, 80%, 40%);
+  /* ── Accent palette (from logo) ── */
+  --color-mint: #a8e6cf;
+  --color-pale-yellow: #dcedc1;
+  --color-coral: #ff8b94;
+  --color-lavender: #cbaacb;
+  --color-sky-blue: #a3c1fe;
+  
+  --color-outline: #3a3f52;
 
   /* ── Layout Tokens ── */
   --radius-xs: 4px;
@@ -55,16 +32,10 @@
   --radius-xl: 24px;
   --radius-full: 9999px;
 
-  --sidebar-width: 260px;
-  --panel-width: 380px;
-  --header-height: 48px;
-
-  /* ── Shadows (Glows for dark mode) ── */
-  --shadow-sm: 0 1px 2px hsla(0, 0%, 0%, 0.5);
-  --shadow-md: 0 4px 12px hsla(0, 0%, 0%, 0.6);
-  --shadow-lg: 0 8px 30px hsla(0, 0%, 0%, 0.8);
-  --shadow-glow-cyan: 0 0 20px hsla(190, 90%, 55%, 0.4);
-  --shadow-glow-amber: 0 0 20px hsla(270, 80%, 60%, 0.4);
+  /* ── Shadows ── */
+  --shadow-sm: 0 1px 2px hsla(230, 15%, 20%, 0.05);
+  --shadow-md: 0 4px 12px hsla(230, 15%, 20%, 0.08);
+  --shadow-lg: 0 8px 30px hsla(230, 15%, 20%, 0.12);
 
   /* ── Transitions ── */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -73,39 +44,41 @@
   --transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-base: #2a2d3c; /* deep slate */
+    --bg-surface: #3a3f52;
+    --bg-elevated: #40465c;
+    
+    --text-primary: #f7f7f9;
+    --text-secondary: #d1d5e2;
+    --text-tertiary: #a0a6bd;
+    
+    --shadow-sm: 0 1px 2px hsla(0, 0%, 0%, 0.3);
+    --shadow-md: 0 4px 12px hsla(0, 0%, 0%, 0.4);
+    --shadow-lg: 0 8px 30px hsla(0, 0%, 0%, 0.5);
+  }
+}
+
 /* ── Tailwind v4 Theme Extension ── */
 @theme inline {
-  --color-cream-50: var(--cream-50);
-  --color-cream-100: var(--cream-100);
-  --color-cream-200: var(--cream-200);
-  --color-cream-300: var(--cream-300);
-  --color-dusk-400: var(--dusk-400);
-  --color-dusk-500: var(--dusk-500);
-  --color-dusk-700: var(--dusk-700);
-  --color-dusk-900: var(--dusk-900);
-  --color-kareixo-white: var(--white);
+  --color-bg-base: var(--bg-base);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
 
-  --color-coral-100: var(--coral-100);
-  --color-coral-200: var(--coral-200);
-  --color-coral-400: var(--coral-400);
-  --color-coral-500: var(--coral-500);
-  --color-coral-600: var(--coral-600);
+  --color-mint: var(--color-mint);
+  --color-pale-yellow: var(--color-pale-yellow);
+  --color-coral: var(--color-coral);
+  --color-lavender: var(--color-lavender);
+  --color-sky-blue: var(--color-sky-blue);
+  --color-outline: var(--color-outline);
 
-  --color-periwinkle-200: var(--periwinkle-200);
-  --color-periwinkle-400: var(--periwinkle-400);
-  --color-periwinkle-600: var(--periwinkle-600);
-
-  --color-rosegold-400: var(--rosegold-400);
-  --color-rosegold-500: var(--rosegold-500);
-
-  --color-red-400: var(--red-400);
-  --color-red-500: var(--red-500);
-  --color-green-400: var(--green-400);
-  --color-green-500: var(--green-500);
-
-  --font-display: "Space Grotesk", system-ui, sans-serif;
-  --font-body: "Plus Jakarta Sans", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
 }
 
 /* ═══════════════════════════════════════════
@@ -118,28 +91,28 @@
 
 html {
   scroll-behavior: smooth;
-  background-color: var(--cream-50);
-  color: var(--dusk-700);
+  background-color: var(--bg-base);
+  color: var(--text-primary);
 }
 
 body {
-  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  font-family: var(--font-body);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
-  background-color: var(--cream-50);
+  background-color: var(--bg-base);
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-family: var(--font-display);
   line-height: 1.15;
   font-weight: 700;
-  color: var(--dusk-900);
+  color: var(--text-primary);
 }
 
 code, pre, kbd, samp {
-  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-family: var(--font-mono);
 }
 
 a {

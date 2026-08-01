@@ -9,21 +9,30 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const projects = pgTable("projects", {
+export const github_installations = pgTable("github_installations", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id).notNull(),
-  name: text("name").notNull(),
-  githubRepo: text("github_repo"),
-  githubBranch: text("github_branch"),
+  installationId: integer("installation_id").notNull().unique(), // From GitHub webhook payload
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const files = pgTable("files", {
+export const repositories = pgTable("repositories", {
   id: uuid("id").primaryKey().defaultRandom(),
-  projectId: uuid("project_id").references(() => projects.id).notNull(),
-  path: text("path").notNull(), // e.g. '/src/index.js'
-  content: text("content").notNull(),
+  installationId: integer("installation_id").references(() => github_installations.installationId).notNull(),
+  githubRepoId: integer("github_repo_id").notNull(),
+  fullName: text("full_name").notNull(), // e.g. owner/repo
+  enabledCategories: text("enabled_categories").notNull().default('["logic", "security", "style"]'), // JSON string array
+  preferredTier: text("preferred_tier").notNull().default('fast'), // "deep" or "fast"
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const reviews = pgTable("reviews", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  repositoryId: uuid("repository_id").references(() => repositories.id).notNull(),
+  prNumber: integer("pr_number").notNull(),
+  status: text("status").notNull(), // "pending", "completed", "failed"
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
