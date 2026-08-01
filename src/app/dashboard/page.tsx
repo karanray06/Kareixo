@@ -6,6 +6,8 @@ import { eq, desc, inArray } from "drizzle-orm";
 import { requireSession } from "@/lib/auth-helpers";
 import Link from "next/link";
 
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardPage() {
   // We need to fetch real DB data.
   // In a real app with Auth, we would scope this to the logged-in user:
