@@ -22,8 +22,7 @@ export default function Navbar() {
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Link href="/" className="text-[var(--text-primary)] font-bold text-xl tracking-tight flex items-center gap-2" onClick={() => setMenuOpen(false)}>
-              {/* Logo Blob icon could go here */}
-              <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[var(--color-mint)] to-[var(--color-pale-yellow)] border-2 border-[var(--color-outline)]" />
+              <img src="/logo.png" alt="Kareixo Logo" className="w-8 h-8 object-contain" />
               Kareixo
             </Link>
           </div>
@@ -50,9 +49,9 @@ export default function Navbar() {
             <Link href="#how-it-works" onClick={() => setMenuOpen(false)} className="text-[var(--text-primary)] hover:text-[var(--text-secondary)] transition-colors">
               How it works
             </Link>
-            <Link href="/dashboard" onClick={() => setMenuOpen(false)} className="text-[var(--text-primary)] hover:text-[var(--text-secondary)] transition-colors">
+            <a href="https://github.com/apps/kareixo-reviewer/installations/new" onClick={() => setMenuOpen(false)} className="text-[var(--text-primary)] hover:text-[var(--text-secondary)] transition-colors">
               Install
-            </Link>
+            </a>
             <a href="https://github.com/karanray06/Kareixo" target="_blank" rel="noopener noreferrer" className="text-[var(--text-primary)] hover:text-[var(--text-secondary)] transition-colors flex items-center gap-2">
               <FiGithub /> GitHub
             </a>

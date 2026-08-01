@@ -49,13 +49,13 @@ export default function HeroScene() {
               Install the GitHub App once, and get instant, intelligent code reviews powered by a resilient multi-model router.
             </p>
             <div className="animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-              <Link
-                href="/dashboard"
+              <a
+                href="https://github.com/apps/kareixo-reviewer/installations/new"
                 className="inline-flex items-center gap-3 px-8 py-4 bg-[var(--text-primary)] text-[var(--bg-base)] rounded-full font-semibold text-lg hover:scale-105 transition-transform"
               >
                 <FiGithub className="w-5 h-5" />
                 Install on GitHub
-              </Link>
+              </a>
             </div>
           </>
         )}

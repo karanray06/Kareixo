@@ -93,7 +93,7 @@ export default function Home() {
       <section className="py-32 px-6 text-center">
         <h2 className="text-5xl font-bold mb-8 font-display">Ready to level up your code?</h2>
         <a
-          href="/dashboard"
+          href="https://github.com/apps/kareixo-reviewer/installations/new"
           className="inline-flex items-center gap-3 px-8 py-4 bg-[var(--text-primary)] text-[var(--bg-base)] rounded-full font-semibold text-lg hover:scale-105 transition-transform"
         >
           <FiGithub className="w-5 h-5" />
@@ -105,7 +105,7 @@ export default function Home() {
       <footer className="py-12 border-t border-[var(--color-outline)]/10 text-[var(--text-secondary)] text-sm">
         <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-gradient-to-r from-[var(--color-mint)] to-[var(--color-sky-blue)] border-2 border-[var(--color-outline)]" />
+            <img src="/logo.png" alt="Kareixo Logo" className="w-6 h-6 object-contain" />
             <span className="font-bold text-[var(--text-primary)]">Kareixo</span>
           </div>
           <div className="flex gap-6">

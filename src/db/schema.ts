@@ -11,8 +11,9 @@ export const users = pgTable("users", {
 
 export const github_installations = pgTable("github_installations", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id").references(() => users.id).notNull(),
-  installationId: integer("installation_id").notNull().unique(), // From GitHub webhook payload
+  userId: uuid("user_id").references(() => users.id), // nullable — webhook creates before user links
+  installationId: integer("installation_id").notNull().unique(),
+  accountLogin: text("account_login").notNull(), // GitHub account login from webhook
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -33,6 +34,8 @@ export const reviews = pgTable("reviews", {
   repositoryId: uuid("repository_id").references(() => repositories.id).notNull(),
   prNumber: integer("pr_number").notNull(),
   status: text("status").notNull(), // "pending", "completed", "failed"
+  summary: text("summary"),
+  findingCount: integer("finding_count").default(0),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
