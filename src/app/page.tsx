@@ -94,7 +94,7 @@ export default function Home() {
         <h2 className="text-5xl mb-8 font-display">Ready to level up your code?</h2>
         <a
           href="https://github.com/apps/kareixo-reviewer/installations/new"
-          className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-[#2a2d3c] rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-lg"
+          className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white !text-slate-900 rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-lg"
         >
           <FiGithub className="w-5 h-5" />
           Install on GitHub

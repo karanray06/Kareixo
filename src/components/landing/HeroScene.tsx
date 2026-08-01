@@ -51,7 +51,7 @@ export default function HeroScene() {
             <div className="animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
               <a
                 href="https://github.com/apps/kareixo-reviewer/installations/new"
-                className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-[#2a2d3c] rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-lg"
+                className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white !text-slate-900 rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-lg"
               >
                 <FiGithub className="w-5 h-5" />
                 Install on GitHub
