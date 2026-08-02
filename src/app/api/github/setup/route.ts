@@ -8,9 +8,11 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const installationId = url.searchParams.get("installation_id");
 
+  const relativeCallback = `/api/github/setup${url.search}`;
+
   if (!session?.user?.id) {
     return NextResponse.redirect(
-      new URL(`/login?callbackUrl=${encodeURIComponent(req.url)}`, req.url)
+      new URL(`/login?callbackUrl=${encodeURIComponent(relativeCallback)}`, req.url)
     );
   }
 

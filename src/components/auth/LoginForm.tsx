@@ -49,7 +49,7 @@ export default function LoginForm() {
           Sign in to Kareixo
         </h2>
         <p className="text-dusk-500 text-sm">
-          Welcome back to the Glass Box IDE.
+          Welcome back to Kareixo.
         </p>
       </div>
 
