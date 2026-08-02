@@ -2,10 +2,13 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const requestedCallback = searchParams.get("callbackUrl");
+  const callbackUrl = requestedCallback && requestedCallback.startsWith("/") ? requestedCallback : "/ide";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -26,9 +29,9 @@ export default function LoginForm() {
       if (res?.error) {
         setError("Invalid email or password");
       } else {
-        router.push("/ide");
+        router.push(callbackUrl);
       }
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred");
     } finally {
       setIsLoading(false);
@@ -36,7 +39,7 @@ export default function LoginForm() {
   };
 
   const handleOAuth = (provider: "github" | "google") => {
-    signIn(provider, { callbackUrl: "/ide" });
+    signIn(provider, { callbackUrl });
   };
 
   return (

@@ -1,24 +1,23 @@
 import Navbar from "@/components/landing/Navbar";
 import { FiGithub, FiCheckCircle, FiActivity, FiXCircle } from "react-icons/fi";
+import { auth } from "@/auth";
 import { getDb } from "@/db";
 import { github_installations, repositories, reviews } from "@/db/schema";
-import { eq, desc, inArray } from "drizzle-orm";
-import { requireSession } from "@/lib/auth-helpers";
-import Link from "next/link";
+import { eq, desc } from "drizzle-orm";
+import { redirect } from "next/navigation";
 
 export const dynamic = 'force-dynamic';
 
 export default async function DashboardPage() {
-  // We need to fetch real DB data.
-  // In a real app with Auth, we would scope this to the logged-in user:
-  // const session = await requireSession();
-  // const db = getDb();
-  // const userInstalls = await db.select().from(github_installations).where(eq(github_installations.userId, session.user.id));
-  
-  // For Kareixo v2 demo, we'll fetch all installations or we can fetch a specific one if there's no auth
-  // Let's fetch all repositories and recent reviews for the demo to prove it works.
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    redirect("/login?callbackUrl=/dashboard");
+  }
+
   const db = getDb();
-  
+  const userId = session.user.id;
+
   // 1. Fetch Connected Repositories (Joined with installations)
   const repos = await db
     .select({
@@ -26,7 +25,8 @@ export default async function DashboardPage() {
       install: github_installations,
     })
     .from(repositories)
-    .innerJoin(github_installations, eq(repositories.installationId, github_installations.installationId));
+    .innerJoin(github_installations, eq(repositories.installationId, github_installations.installationId))
+    .where(eq(github_installations.userId, userId));
 
   // 2. Fetch Recent Activity (Reviews)
   const recentReviews = await db
@@ -36,6 +36,8 @@ export default async function DashboardPage() {
     })
     .from(reviews)
     .innerJoin(repositories, eq(reviews.repositoryId, repositories.id))
+    .innerJoin(github_installations, eq(repositories.installationId, github_installations.installationId))
+    .where(eq(github_installations.userId, userId))
     .orderBy(desc(reviews.createdAt))
     .limit(10);
 
@@ -43,11 +45,12 @@ export default async function DashboardPage() {
   const getRelativeTime = (date: Date | null) => {
     if (!date) return "Unknown time";
     const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
-    const daysDifference = Math.round((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+    const now = new Date();
+    const daysDifference = Math.round((date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
     if (daysDifference === 0) {
-      const hoursDifference = Math.round((date.getTime() - Date.now()) / (1000 * 60 * 60));
+      const hoursDifference = Math.round((date.getTime() - now.getTime()) / (1000 * 60 * 60));
       if (hoursDifference === 0) {
-        const mins = Math.round((date.getTime() - Date.now()) / (1000 * 60));
+        const mins = Math.round((date.getTime() - now.getTime()) / (1000 * 60));
         return rtf.format(mins, "minute");
       }
       return rtf.format(hoursDifference, "hour");

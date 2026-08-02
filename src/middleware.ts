@@ -3,10 +3,12 @@ import { NextResponse } from "next/server";
 
 export default auth((req) => {
   const isLoggedIn = !!req.auth;
-  const isIdeRoute = req.nextUrl.pathname.startsWith("/ide");
+  const isProtectedRoute = req.nextUrl.pathname.startsWith("/ide") || req.nextUrl.pathname.startsWith("/dashboard");
 
-  if (isIdeRoute && !isLoggedIn) {
-    return NextResponse.redirect(new URL("/login", req.nextUrl));
+  if (isProtectedRoute && !isLoggedIn) {
+    const loginUrl = new URL("/login", req.nextUrl);
+    loginUrl.searchParams.set("callbackUrl", `${req.nextUrl.pathname}${req.nextUrl.search}`);
+    return NextResponse.redirect(loginUrl);
   }
   
   if ((req.nextUrl.pathname === "/login" || req.nextUrl.pathname === "/signup") && isLoggedIn) {

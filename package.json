@@ -29,6 +29,7 @@
     "ai": "^7.0.3",
     "animejs": "^3.2.2",
     "bcryptjs": "^3.0.3",
+    "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "framer-motion": "^12.42.2",
     "iconsax-react": "^0.0.8",

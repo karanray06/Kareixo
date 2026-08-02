@@ -1,4 +1,5 @@
 import LoginForm from "@/components/auth/LoginForm";
+import { Suspense } from "react";
 
 export default function LoginPage() {
   return (
@@ -13,7 +14,9 @@ export default function LoginPage() {
           </span>
         </a>
       </div>
-      <LoginForm />
+      <Suspense fallback={<div className="text-center text-sm text-dusk-500">Loading…</div>}>
+        <LoginForm />
+      </Suspense>
     </main>
   );
 }
