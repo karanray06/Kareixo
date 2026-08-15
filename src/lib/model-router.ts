@@ -1,16 +1,11 @@
 import { LanguageModel } from "ai";
 import { quotaTracker, ProviderName } from "./quota-tracker";
 
-import { moonshot, moonshotModels } from "./providers/moonshot";
-import { openRouter, openRouterModels } from "./providers/openrouter";
-import { cloudflare, cloudflareModels } from "./providers/cloudflare";
-import { zai, zaiModels } from "./providers/zai";
 import {
   nvidia, nvidiaModels,
   nvidiaMinimax, nvidiaKimi, nvidiaMistral,
   nvidiaDeepseek, nvidiaGlm, nvidiaGemma, nvidiaQwen,
 } from "./providers/nvidia";
-import { groq, groqModels } from "./providers/groq";
 
 export type ProviderEntry = {
   name: ProviderName;
@@ -19,6 +14,15 @@ export type ProviderEntry = {
   requiredEnvVars: string[];
 };
 
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(`Provider timed out after ${ms}ms`)), ms)
+    ),
+  ]);
+}
+
 export class ModelRouter {
   public providers: ProviderEntry[];
   public allPossibleEnvVars: string[] = [];
@@ -26,8 +30,6 @@ export class ModelRouter {
 
   constructor(providers?: ProviderEntry[]) {
     this.providers = providers ?? [
-      // ── OpenRouter (Broadest fallback) ──
-      { name: "OpenRouter", modelName: "Qwen OpenRouter",       model: openRouter(openRouterModels.qwen), requiredEnvVars: ["OPENROUTER_API_KEY"] },
 
       // ── NVIDIA NIM Free Endpoints (best models first) ──
       { name: "NVIDIA", modelName: "Kimi K2.6",               model: nvidiaKimi(nvidiaModels.kimi_k2), requiredEnvVars: ["NVIDIA_KEY_KIMI"] },
@@ -37,20 +39,6 @@ export class ModelRouter {
       { name: "NVIDIA", modelName: "MiniMax M3",              model: nvidiaMinimax(nvidiaModels.minimax_m3), requiredEnvVars: ["NVIDIA_KEY_MINIMAX"] },
       { name: "NVIDIA", modelName: "GLM 5.1",                 model: nvidiaGlm(nvidiaModels.glm_5_1), requiredEnvVars: ["NVIDIA_KEY_GLM"] },
       { name: "NVIDIA", modelName: "Gemma 4 31B",             model: nvidiaGemma(nvidiaModels.gemma_4), requiredEnvVars: ["NVIDIA_KEY_GEMMA"] },
-
-      // ── Groq (blazing fast) ──
-      { name: "Groq", modelName: "Llama 3 70B",               model: groq(groqModels.llama3), requiredEnvVars: ["GROQ_API_KEY"] },
-      { name: "Groq", modelName: "Llama 3 8B",                model: groq(groqModels.llama3_8b), requiredEnvVars: ["GROQ_API_KEY"] },
-      { name: "Groq", modelName: "Mixtral 8x7B",              model: groq(groqModels.mixtral), requiredEnvVars: ["GROQ_API_KEY"] },
-      
-      // ── Z.AI (Fast open-weight models) ──
-      { name: "Z.AI", modelName: "GLM-4 Flash",               model: zai(zaiModels.glm4_flash), requiredEnvVars: ["ZAI_API_KEY"] },
-
-      // ── Cloudflare (Workers AI) ──
-      { name: "Cloudflare", modelName: "Llama 3 8B",          model: cloudflare(cloudflareModels.llama3), requiredEnvVars: ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID"] },
-
-      // ── Moonshot (Kimi direct API fallback) ──
-      { name: "Moonshot", modelName: "Kimi 8k",               model: moonshot(moonshotModels.v1_8k), requiredEnvVars: ["MOONSHOT_API_KEY"] },
     ];
 
     const vars = new Set<string>();
@@ -95,15 +83,23 @@ export class ModelRouter {
    */
   public async executeWithFailover<T>(
     operation: (provider: ProviderEntry) => Promise<T>,
-    taskType: "code" | "chat" = "chat"
+    taskType: "code" | "chat" = "chat",
+    tier?: "fast" | "deep"
   ): Promise<{ result: T; provider: ProviderEntry }> {
     const maxAttempts = this.providers.length;
     let attempts = 0;
 
     while (attempts < maxAttempts) {
-      const provider = this.getNextProvider(taskType);
+      let provider: ProviderEntry | undefined;
+      if (tier === "deep" && attempts === 0) {
+        provider = this.providers.find(p => !quotaTracker.shouldSkip(p.name) && (p.modelName.includes("DeepSeek") || p.modelName.includes("Qwen")));
+      }
+      if (!provider) {
+        provider = this.getNextProvider(taskType);
+      }
       try {
-        const result = await operation(provider);
+        const PER_ATTEMPT_TIMEOUT_MS = 20_000;
+        const result = await withTimeout(operation(provider), PER_ATTEMPT_TIMEOUT_MS);
         quotaTracker.trackSuccess(provider.name);
         return { result, provider };
       } catch (error: any) {

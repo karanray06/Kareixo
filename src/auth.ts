@@ -10,7 +10,7 @@ import { eq } from "drizzle-orm";
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     GitHub({
-      authorization: { params: { scope: "read:user user:email repo" } },
+      authorization: { params: { scope: "read:user user:email" } },
     }),
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
@@ -65,9 +65,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     async jwt({ token, user, account }) {
       try {
-        if (account?.access_token) {
-          token.accessToken = account.access_token;
-        }
         if (user?.email) {
           const dbUser = await db.select().from(users).where(eq(users.email, user.email));
           if (dbUser.length > 0) {
@@ -89,7 +86,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     async redirect({ url, baseUrl }) {
       if (url === baseUrl || url === `${baseUrl}/`) {
-        return `${baseUrl}/ide`;
+        return `${baseUrl}/dashboard`;
       }
       if (url.startsWith("/")) {
         return `${baseUrl}${url}`;
@@ -97,7 +94,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (new URL(url).origin === baseUrl) {
         return url;
       }
-      return `${baseUrl}/ide`;
+      return `${baseUrl}/dashboard`;
     },
   },
 });

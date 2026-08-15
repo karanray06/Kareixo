@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
+import { waitUntil } from "@vercel/functions";
 import crypto from "crypto";
 import { getDb } from "@/db";
-import { github_installations, repositories, reviews } from "@/db/schema";
+import { github_installations, repositories, reviews, feedback } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 import { queueReview } from "@/lib/review-generator";
@@ -92,9 +93,54 @@ export async function POST(req: Request) {
         const installationId = payload.installation.id;
 
         // Queue review asynchronously
-        queueReview(installationId, repoFullName, prNumber).catch(console.error);
+        waitUntil(queueReview(installationId, repoFullName, prNumber).catch((err) => {
+          console.error(`Unhandled error in queueReview for ${repoFullName}#${prNumber}`, err);
+        }));
         
         return NextResponse.json({ queued: true });
+      }
+    }
+
+    if (event === "issue_comment") {
+      const action = payload.action;
+      if (action === "created") {
+        const commentBody = payload.comment.body?.trim();
+        const isFeedback = commentBody?.startsWith("/kareixo useful") || commentBody?.startsWith("/kareixo not-useful");
+        
+        if (isFeedback) {
+          const signal = commentBody.startsWith("/kareixo useful") ? "useful" : "not-useful";
+          const repoFullName = payload.repository.full_name;
+          const prNumber = payload.issue.number;
+          const installationId = payload.installation.id;
+          const commentId = payload.comment.in_reply_to_id || payload.comment.id; // Best effort
+
+          waitUntil((async () => {
+            const [repository] = await db.select().from(repositories).where(
+              eq(repositories.fullName, repoFullName)
+            );
+            if (repository) {
+              await db.insert(feedback).values({
+                repositoryId: repository.id,
+                prNumber,
+                commentId,
+                signal,
+              });
+              
+              // Acknowledge the feedback
+              const { getInstallationOctokit } = await import("@/lib/github-app");
+              const octokit = await getInstallationOctokit(installationId);
+              const [owner, repo] = repoFullName.split("/");
+              await octokit.rest.reactions.createForIssueComment({
+                owner,
+                repo,
+                comment_id: payload.comment.id,
+                content: "+1"
+              });
+            }
+          })().catch(console.error));
+          
+          return NextResponse.json({ feedback_logged: true });
+        }
       }
     }
 

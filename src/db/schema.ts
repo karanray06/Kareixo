@@ -6,6 +6,7 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   passwordHash: text("password_hash"),
   provider: text("provider"), // e.g. 'github', 'google', 'credentials'
+  plan: text("plan").notNull().default("free"), // "free", "pro", "team"
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -14,6 +15,7 @@ export const github_installations = pgTable("github_installations", {
   userId: uuid("user_id").references(() => users.id), // nullable — webhook creates before user links
   installationId: integer("installation_id").notNull().unique(),
   accountLogin: text("account_login").notNull(), // GitHub account login from webhook
+  digestWebhookUrl: text("digest_webhook_url"), // For Slack/Discord digests
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -25,6 +27,7 @@ export const repositories = pgTable("repositories", {
   fullName: text("full_name").notNull(), // e.g. owner/repo
   enabledCategories: text("enabled_categories").notNull().default('["logic", "security", "style"]'), // JSON string array
   preferredTier: text("preferred_tier").notNull().default('fast'), // "deep" or "fast"
+  customInstructions: text("custom_instructions"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -38,6 +41,15 @@ export const reviews = pgTable("reviews", {
   findingCount: integer("finding_count").default(0),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const feedback = pgTable("feedback", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  repositoryId: uuid("repository_id").references(() => repositories.id).notNull(),
+  prNumber: integer("pr_number").notNull(),
+  commentId: integer("comment_id"), // GitHub comment ID
+  signal: text("signal").notNull(), // "useful", "not-useful"
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 /** Persisted per-provider quota state — survives cold starts & is shared across instances */

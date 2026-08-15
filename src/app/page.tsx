@@ -72,16 +72,24 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Section: Trust & Data */}
+      <section className="py-24 px-6 md:px-12 max-w-6xl mx-auto text-center space-y-8">
+        <h2 className="text-4xl md:text-5xl font-bold font-display">Trust & Data</h2>
+        <p className="text-xl text-[var(--text-secondary)] max-w-3xl mx-auto">
+          We never store your code. Diffs are securely sent to our LLM providers and immediately discarded after the review is generated. Our providers are strictly prohibited from using your data to train their models.
+        </p>
+      </section>
+
       {/* Section: Why Free */}
       <section className="py-24 px-6 md:px-12 max-w-6xl mx-auto text-center space-y-12">
         <h2 className="text-4xl md:text-5xl font-bold font-display">
           How is it free?
         </h2>
         <p className="text-xl text-[var(--text-secondary)] max-w-3xl mx-auto">
-          Kareixo uses a resilient multi-model router. When one free-tier API rate limits, it automatically and instantly fails over to the next. Your review never drops.
+          Kareixo relies entirely on NVIDIA's powerful NIM APIs. When you connect a repository, your reviews are powered by the fastest and most capable models hosted directly by NVIDIA.
         </p>
         <div className="flex flex-wrap justify-center gap-4 mt-8">
-          {["NVIDIA NIM", "Groq", "OpenRouter", "Z.AI", "Cloudflare", "Moonshot"].map((provider) => (
+          {["NVIDIA NIM", "Llama 3.1 405B", "Nemotron", "Mistral Large"].map((provider) => (
             <span key={provider} className="px-6 py-3 bg-[var(--bg-elevated)] border border-[var(--color-outline)]/20 rounded-full font-mono text-sm font-semibold">
               {provider}
             </span>
@@ -110,9 +118,12 @@ export default function Home() {
             </div>
             <span className="font-bold text-[var(--text-primary)]">Kareixo</span>
           </div>
-          <div className="flex gap-6">
+          <div className="flex gap-6 flex-wrap justify-center mt-6 md:mt-0">
+            <a href="/pricing" className="hover:text-[var(--text-primary)] transition-colors">Pricing</a>
+            <a href="/privacy" className="hover:text-[var(--text-primary)] transition-colors">Privacy</a>
+            <a href="/terms" className="hover:text-[var(--text-primary)] transition-colors">Terms</a>
             <a href="https://github.com/karanray06/Kareixo" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--text-primary)] transition-colors">
-              GitHub Repository
+              GitHub
             </a>
           </div>
         </div>

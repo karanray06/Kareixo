@@ -2,8 +2,8 @@ import { getDb } from "@/db";
 import { generateObject } from "ai";
 import { router } from "./model-router";
 import { getInstallationOctokit } from "./github-app";
-import { repositories, reviews } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
+import { repositories, reviews, github_installations, users } from "@/db/schema";
+import { eq, and, sql, gte } from "drizzle-orm";
 import { z } from "zod";
 
 const ReviewOutputSchema = z.object({
@@ -20,14 +20,83 @@ const ReviewOutputSchema = z.object({
 });
 
 export async function queueReview(installationId: number, repoFullName: string, prNumber: number) {
+  const db = getDb();
+  console.log(`Starting real review for ${repoFullName}#${prNumber}`);
+
+  let pendingReviewId: string | null = null;
+
   try {
-    const db = getDb();
-    console.log(`Starting real review for ${repoFullName}#${prNumber}`);
+    const [repository] = await db.select().from(repositories).where(
+      and(
+        eq(repositories.installationId, installationId),
+        eq(repositories.fullName, repoFullName)
+      )
+    );
+
+    if (!repository) {
+      console.warn(`Repository not found in DB: ${repoFullName}`);
+      return;
+    }
+
+    const [pendingReview] = await db.insert(reviews).values({
+      repositoryId: repository.id,
+      prNumber,
+      status: "pending",
+    }).returning({ id: reviews.id });
     
+    pendingReviewId = pendingReview.id;
+
     const [owner, repo] = repoFullName.split("/");
     const octokit = await getInstallationOctokit(installationId);
 
+    // 0. Enforce Monetization Cap
+    const [installRecord] = await db.select({
+      user: users
+    })
+    .from(github_installations)
+    .innerJoin(users, eq(github_installations.userId, users.id))
+    .where(eq(github_installations.installationId, installationId));
+
+    if (installRecord?.user.plan === "free") {
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
+
+      const usageResult = await db.select({ count: sql<number>`count(*)` })
+        .from(reviews)
+        .innerJoin(repositories, eq(reviews.repositoryId, repositories.id))
+        .innerJoin(github_installations, eq(repositories.installationId, github_installations.installationId))
+        .where(
+          and(
+            eq(github_installations.userId, installRecord.user.id),
+            gte(reviews.createdAt, startOfMonth)
+          )
+        );
+      
+      const count = Number(usageResult[0]?.count || 0);
+      if (count >= 50) {
+        await octokit.rest.issues.createComment({
+          owner,
+          repo,
+          issue_number: prNumber,
+          body: "Kareixo has reached the monthly free-tier limit (50 reviews) for this account. Please upgrade to Pro or Team to continue receiving automatic reviews."
+        });
+        
+        await db.update(reviews)
+          .set({ status: "failed", summary: "Free tier limit reached" })
+          .where(eq(reviews.id, pendingReviewId));
+        return;
+      }
+    }
+
     // 1. Fetch real PR details and diff
+    const { data: prData } = await octokit.rest.pulls.get({
+      owner,
+      repo,
+      pull_number: prNumber,
+    });
+    const headSha = prData.head.sha;
+
     const { data: diff } = await octokit.rest.pulls.get({
       owner,
       repo,
@@ -43,8 +112,21 @@ export async function queueReview(installationId: number, repoFullName: string, 
     const diffContext = isTruncated ? diffString.slice(0, MAX_DIFF_LENGTH) + "\n... (diff truncated)" : diffString;
 
     // 2. Generate structured review
-    const systemPrompt = `You are Kareixo, an expert code reviewer. Analyze the following pull request diff. Identify logic errors, security flaws, performance issues, and code style improvements. Return structured JSON with your findings. Ensure line numbers match the diff correctly.`;
+    let categories: string[];
+    try {
+      categories = JSON.parse(repository.enabledCategories);
+    } catch {
+      categories = ["logic", "security", "style"];
+    }
     
+    let systemPrompt = `You are Kareixo, an expert code reviewer. Analyze the following pull request diff. Identify logic errors, security flaws, performance issues, and code style improvements. Return structured JSON with your findings. Ensure line numbers match the diff correctly.\n\nOnly flag issues in these categories: ${categories.join(", ")}.`;
+    
+    if (repository.customInstructions) {
+      systemPrompt += `\n\nAdditional Team Rules:\n${repository.customInstructions}`;
+    }
+    
+    const tier = (repository.preferredTier === "deep") ? "deep" : "fast";
+
     const { result, provider } = await router.executeWithFailover(async (provider) => {
       const response = await generateObject({
         model: provider.model,
@@ -53,7 +135,7 @@ export async function queueReview(installationId: number, repoFullName: string, 
         schema: ReviewOutputSchema,
       });
       return response.object;
-    });
+    }, "chat", tier);
     
     console.log(`Generated review successfully via ${provider.name}`);
 
@@ -92,27 +174,38 @@ export async function queueReview(installationId: number, repoFullName: string, 
       });
     }
 
-    // 4. Write to DB
-    const [repository] = await db.select().from(repositories).where(
-      and(
-        eq(repositories.installationId, installationId),
-        eq(repositories.fullName, repoFullName)
-      )
-    );
+    const hasHighSeverity = result.findings.some(f => f.severity.toLowerCase() === 'high');
 
-    if (repository) {
-      await db.insert(reviews).values({
-        repositoryId: repository.id,
-        prNumber,
+    await octokit.rest.checks.create({
+      owner,
+      repo,
+      name: "Kareixo Code Review",
+      head_sha: headSha,
+      status: "completed",
+      conclusion: hasHighSeverity ? "failure" : "success",
+      output: {
+        title: hasHighSeverity ? "High-severity issues found" : "Review passed",
+        summary: finalSummary,
+      }
+    });
+
+    // Update status to completed
+    await db.update(reviews)
+      .set({
         status: "completed",
         summary: result.summary,
         findingCount: result.findings.length,
-      });
-    }
-    
+      })
+      .where(eq(reviews.id, pendingReviewId));
+
     console.log(`Successfully completed and logged review for ${repoFullName}#${prNumber}`);
     
   } catch (error) {
     console.error(`Failed to generate review for ${repoFullName}#${prNumber}`, error);
+    if (pendingReviewId) {
+      await db.update(reviews)
+        .set({ status: "failed" })
+        .where(eq(reviews.id, pendingReviewId));
+    }
   }
 }

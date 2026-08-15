@@ -3,7 +3,7 @@ import { FiGithub, FiCheckCircle, FiActivity, FiXCircle } from "react-icons/fi";
 import { auth } from "@/auth";
 import { getDb } from "@/db";
 import { github_installations, repositories, reviews } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
 export const dynamic = 'force-dynamic';
@@ -17,6 +17,10 @@ export default async function DashboardPage() {
 
   const db = getDb();
   const userId = session.user.id;
+
+  const { users } = await import("@/db/schema");
+  const [dbUser] = await db.select().from(users).where(eq(users.id, userId));
+  const planName = dbUser?.plan || "free";
 
   // 1. Fetch Connected Repositories (Joined with installations)
   const repos = await db
@@ -40,6 +44,20 @@ export default async function DashboardPage() {
     .where(eq(github_installations.userId, userId))
     .orderBy(desc(reviews.createdAt))
     .limit(10);
+
+  // 3. Aggregate Stats
+  const [stats] = await db
+    .select({
+      totalReviews: sql<number>`count(*)`,
+      totalFindings: sql<number>`sum(${reviews.findingCount})`,
+    })
+    .from(reviews)
+    .innerJoin(repositories, eq(reviews.repositoryId, repositories.id))
+    .innerJoin(github_installations, eq(repositories.installationId, github_installations.installationId))
+    .where(eq(github_installations.userId, userId));
+
+  const totalReviews = Number(stats?.totalReviews || 0);
+  const totalFindings = Number(stats?.totalFindings || 0);
 
   // Compute relative time string
   const getRelativeTime = (date: Date | null) => {
@@ -67,6 +85,28 @@ export default async function DashboardPage() {
           <p className="text-[var(--text-secondary)] mt-2">Manage your connected repositories and view recent activity.</p>
         </header>
 
+        {/* Aggregate Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="bg-[var(--bg-elevated)] border border-[var(--color-outline)]/20 rounded-2xl p-6">
+            <h3 className="text-[var(--text-secondary)] text-sm font-semibold mb-1">Total PRs Reviewed</h3>
+            <p className="text-3xl font-display font-bold">{totalReviews}</p>
+          </div>
+          <div className="bg-[var(--bg-elevated)] border border-[var(--color-outline)]/20 rounded-2xl p-6">
+            <h3 className="text-[var(--text-secondary)] text-sm font-semibold mb-1">Total Issues Flagged</h3>
+            <p className="text-3xl font-display font-bold text-[var(--color-coral)]">{totalFindings}</p>
+          </div>
+          <div className="bg-[var(--bg-elevated)] border border-[var(--color-outline)]/20 rounded-2xl p-6">
+            <h3 className="text-[var(--text-secondary)] text-sm font-semibold mb-1">Active Repositories</h3>
+            <p className="text-3xl font-display font-bold">{repos.length}</p>
+          </div>
+          <div className="bg-[var(--bg-elevated)] border border-[var(--color-outline)]/20 rounded-2xl p-6">
+            <h3 className="text-[var(--text-secondary)] text-sm font-semibold mb-1">Current Plan</h3>
+            <p className="text-3xl font-display font-bold text-[var(--color-sky-blue)] capitalize">
+              {planName}
+            </p>
+          </div>
+        </div>
+
         <div className="grid md:grid-cols-3 gap-8">
           {/* Connected Repositories */}
           <div className="md:col-span-2 space-y-6">
@@ -91,7 +131,9 @@ export default async function DashboardPage() {
                       <div className="flex items-center gap-4">
                         <FiGithub className="w-6 h-6 text-[var(--text-secondary)]" />
                         <div>
-                          <h3 className="font-bold">{repo.fullName}</h3>
+                          <h3 className="font-bold">
+                            <a href={`/dashboard/${repo.id}`} className="hover:underline hover:text-[var(--color-sky-blue)] transition-colors">{repo.fullName}</a>
+                          </h3>
                           <p className="text-sm text-[var(--text-secondary)]">Installed via {install.accountLogin}</p>
                         </div>
                       </div>
