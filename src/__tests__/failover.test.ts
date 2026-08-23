@@ -62,7 +62,7 @@ async function testFailover() {
 
   // Build a router with provider 0 failing (429) and provider 1 succeeding
   const testRouter = new ModelRouter([
-    { name: "OpenRouter" as ProviderName, modelName: "Mock-Fail", model: makeMockModel("Mock-Fail", true), requiredEnvVars: [] },
+    { name: "NVIDIA" as ProviderName, modelName: "Mock-Fail", model: makeMockModel("Mock-Fail", true), requiredEnvVars: [] },
     { name: "NVIDIA" as ProviderName, modelName: "Mock-OK", model: makeMockModel("Mock-OK", false), requiredEnvVars: [] },
   ]);
 

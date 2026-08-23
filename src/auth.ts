@@ -12,29 +12,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     GitHub({
       authorization: { params: { scope: "read:user user:email" } },
     }),
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
-    }),
-    Credentials({
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
-
-        const result = await db.select().from(users).where(eq(users.email, credentials.email as string));
-        const user = result[0];
-
-        if (!user || !user.passwordHash) return null;
-
-        const isValid = await compare(credentials.password as string, user.passwordHash);
-        if (!isValid) return null;
-
-        return { id: user.id, email: user.email, name: user.name };
-      },
-    }),
   ],
   pages: {
     signIn: "/login",

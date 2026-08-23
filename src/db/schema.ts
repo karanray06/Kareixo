@@ -62,3 +62,20 @@ export const providerStats = pgTable("provider_stats", {
   lastRequestAt: timestamp("last_request_at"),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
+
+export const chatConversations = pgTable("chat_conversations", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id).notNull(),
+  title: text("title").notNull().default("New Conversation"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const chatMessages = pgTable("chat_messages", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  conversationId: uuid("conversation_id").references(() => chatConversations.id).notNull(),
+  role: text("role").notNull(), // 'user', 'assistant', 'system'
+  content: text("content").notNull(),
+  model: text("model"), // track which NVIDIA model answered
+  createdAt: timestamp("created_at").defaultNow(),
+});

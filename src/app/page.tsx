@@ -86,14 +86,32 @@ export default function Home() {
           How is it free?
         </h2>
         <p className="text-xl text-[var(--text-secondary)] max-w-3xl mx-auto">
-          Kareixo relies entirely on NVIDIA's powerful NIM APIs. When you connect a repository, your reviews are powered by the fastest and most capable models hosted directly by NVIDIA.
+          Kareixo relies entirely on NVIDIA's powerful NIM APIs. When you connect a repository, your reviews are powered by the fastest and most capable models hosted directly by NVIDIA, with automatic failover to guarantee uptime.
         </p>
         <div className="flex flex-wrap justify-center gap-4 mt-8">
-          {["NVIDIA NIM", "Llama 3.1 405B", "Nemotron", "Mistral Large"].map((provider) => (
+          {["Kimi", "DeepSeek", "Qwen", "Mistral", "MiniMax", "GLM", "Gemma"].map((provider) => (
             <span key={provider} className="px-6 py-3 bg-[var(--bg-elevated)] border border-[var(--color-outline)]/20 rounded-full font-mono text-sm font-semibold">
               {provider}
             </span>
           ))}
+        </div>
+      </section>
+
+      {/* Section: Kareixo Chat */}
+      <section className="py-24 px-6 md:px-12 bg-[var(--bg-elevated)] border-t border-[var(--color-outline)]/20 text-center space-y-8">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 font-display">
+            Meet Kareixo Chat
+          </h2>
+          <p className="text-xl text-[var(--text-secondary)] mb-8">
+            The same resilient, NVIDIA-powered multi-model architecture, now available as a general-purpose AI chat assistant. Seamlessly fall back across the best models available.
+          </p>
+          <a
+            href="/chat"
+            className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-[var(--text-primary)] text-[var(--bg-base)] rounded-full font-bold text-lg hover:scale-105 transition-transform"
+          >
+            Try Kareixo Chat
+          </a>
         </div>
       </section>
 

@@ -51,6 +51,9 @@ export default function Navbar() {
             <Link href="#how-it-works" onClick={() => setMenuOpen(false)} className="text-[var(--text-primary)] hover:text-[var(--text-secondary)] transition-colors">
               How it works
             </Link>
+            <Link href="/chat" onClick={() => setMenuOpen(false)} className="text-[var(--text-primary)] hover:text-[var(--text-secondary)] transition-colors">
+              Chat
+            </Link>
             <Link href="/pricing" onClick={() => setMenuOpen(false)} className="text-[var(--text-primary)] hover:text-[var(--text-secondary)] transition-colors">
               Pricing
             </Link>

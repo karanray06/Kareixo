@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export default auth((req) => {
   const isLoggedIn = !!req.auth;
-  const isProtectedRoute = req.nextUrl.pathname.startsWith("/ide") || req.nextUrl.pathname.startsWith("/dashboard");
+  const isProtectedRoute = req.nextUrl.pathname.startsWith("/chat") || req.nextUrl.pathname.startsWith("/dashboard");
 
   if (isProtectedRoute && !isLoggedIn) {
     const loginUrl = new URL("/login", req.nextUrl);
@@ -12,7 +12,7 @@ export default auth((req) => {
   }
   
   if ((req.nextUrl.pathname === "/login" || req.nextUrl.pathname === "/signup") && isLoggedIn) {
-    return NextResponse.redirect(new URL("/ide", req.nextUrl));
+    return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
   }
 
   return NextResponse.next();
