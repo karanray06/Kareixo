@@ -82,7 +82,7 @@ export async function POST(req: Request) {
     }, taskType as "code" | "chat");
 
     // return the response to the client
-    return result.toDataStreamResponse({
+    return result.toTextStreamResponse({
       headers: {
         "X-Kareixo-Provider": provider.name,
         "X-Kareixo-Model": provider.modelName,
