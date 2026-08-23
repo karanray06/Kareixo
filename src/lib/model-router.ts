@@ -33,12 +33,12 @@ export class ModelRouter {
 
       // ── NVIDIA NIM Free Endpoints (best models first) ──
       { name: "NVIDIA", modelName: "Kimi K2.6",               model: nvidiaKimi(nvidiaModels.kimi_k2), requiredEnvVars: ["NVIDIA_KEY_KIMI"] },
-      { name: "NVIDIA", modelName: "DeepSeek V4 Pro",         model: nvidiaDeepseek(nvidiaModels.deepseek_v4), requiredEnvVars: ["NVIDIA_KEY_DEEPSEEK"] },
-      { name: "NVIDIA", modelName: "Qwen 3.5 397B",           model: nvidiaQwen(nvidiaModels.qwen_3_5), requiredEnvVars: ["NVIDIA_KEY_QWEN"] },
-      { name: "NVIDIA", modelName: "Mistral Medium 3.5",      model: nvidiaMistral(nvidiaModels.mistral_medium), requiredEnvVars: ["NVIDIA_KEY_MISTRAL"] },
+      { name: "NVIDIA", modelName: "Llama 3.1 70B",           model: nvidiaDeepseek(nvidiaModels.llama3_70b), requiredEnvVars: ["NVIDIA_KEY_DEEPSEEK"] },
+      { name: "NVIDIA", modelName: "Nemotron 70B",            model: nvidiaQwen(nvidiaModels.nemotron_70b), requiredEnvVars: ["NVIDIA_KEY_QWEN"] },
+      { name: "NVIDIA", modelName: "Mistral Large 2",         model: nvidiaMistral(nvidiaModels.mistral_large), requiredEnvVars: ["NVIDIA_KEY_MISTRAL"] },
       { name: "NVIDIA", modelName: "MiniMax M3",              model: nvidiaMinimax(nvidiaModels.minimax_m3), requiredEnvVars: ["NVIDIA_KEY_MINIMAX"] },
-      { name: "NVIDIA", modelName: "GLM 5.1",                 model: nvidiaGlm(nvidiaModels.glm_5_1), requiredEnvVars: ["NVIDIA_KEY_GLM"] },
-      { name: "NVIDIA", modelName: "Gemma 4 31B",             model: nvidiaGemma(nvidiaModels.gemma_4), requiredEnvVars: ["NVIDIA_KEY_GEMMA"] },
+      { name: "NVIDIA", modelName: "Granite 3.0 8B",          model: nvidiaGlm(nvidiaModels.granite_8b), requiredEnvVars: ["NVIDIA_KEY_GLM"] },
+      { name: "NVIDIA", modelName: "Nemotron 340B",           model: nvidiaGemma(nvidiaModels.nemotron_340b), requiredEnvVars: ["NVIDIA_KEY_GEMMA"] },
     ];
 
     const vars = new Set<string>();

@@ -44,12 +44,11 @@ export const nvidiaQwen = createOpenAI({
 });
 
 export const nvidiaModels = {
-  // Model IDs verified as of July 2024
   kimi_k2: "moonshotai/kimi-k2.6",
   minimax_m3: "minimaxai/minimax-m3",
-  deepseek_v4: "deepseek-ai/deepseek-v4-pro",
-  mistral_medium: "mistralai/mistral-medium-3.5-128b",
-  qwen_3_5: "qwen/qwen3.5-397b-a17b",
-  glm_5_1: "z-ai/glm-5.1",
-  gemma_4: "google/gemma-4-31b-it",
+  llama3_70b: "meta/llama-3.1-70b-instruct",
+  mistral_large: "mistralai/mistral-large-2-instruct",
+  nemotron_70b: "nvidia/llama-3.1-nemotron-70b-instruct",
+  granite_8b: "ibm/granite-3.0-8b-instruct",
+  nemotron_340b: "nvidia/nemotron-4-340b-instruct",
 };

@@ -89,7 +89,7 @@ export default function Home() {
           Kareixo relies entirely on NVIDIA's powerful NIM APIs. When you connect a repository, your reviews are powered by the fastest and most capable models hosted directly by NVIDIA, with automatic failover to guarantee uptime.
         </p>
         <div className="flex flex-wrap justify-center gap-4 mt-8">
-          {["Kimi", "DeepSeek", "Qwen", "Mistral", "MiniMax", "GLM", "Gemma"].map((provider) => (
+          {["Kimi", "Llama 3.1", "Nemotron", "Mistral Large", "MiniMax", "Granite", "Nemotron 340B"].map((provider) => (
             <span key={provider} className="px-6 py-3 bg-[var(--bg-elevated)] border border-[var(--color-outline)]/20 rounded-full font-mono text-sm font-semibold">
               {provider}
             </span>
@@ -108,7 +108,7 @@ export default function Home() {
           </p>
           <a
             href="/chat"
-            className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-[var(--text-primary)] text-[var(--bg-base)] rounded-full font-bold text-lg hover:scale-105 transition-transform"
+            className="btn btn-primary rounded-full px-8 py-4 text-lg"
           >
             Try Kareixo Chat
           </a>
