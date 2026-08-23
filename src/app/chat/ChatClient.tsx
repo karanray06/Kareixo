@@ -5,10 +5,8 @@ import { useState } from "react";
 import { FiSend, FiUser, FiCpu } from "react-icons/fi";
 
 export default function ChatClient() {
-  // @ts-expect-error - AI SDK v4 types are transitional
-  const { messages, append, isLoading, error } = useChat({
-    api: "/api/chat",
-  } as any);
+  const { messages, sendMessage, status, error } = useChat();
+  const isLoading = status === "streaming" || status === "submitted";
   const [input, setInput] = useState("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,7 +19,7 @@ export default function ChatClient() {
     const currentInput = input;
     setInput("");
     try {
-      await append({ role: 'user', content: currentInput });
+      await sendMessage({ role: 'user', parts: [{ type: 'text', text: currentInput }] });
     } catch (err) {
       console.error(err);
     }
@@ -58,7 +56,11 @@ export default function ChatClient() {
                   ? 'bg-[var(--text-primary)] text-[var(--bg-base)]' 
                   : 'bg-[var(--bg-elevated)] border border-[var(--color-outline)]/20'
               }`}>
-                <div className="whitespace-pre-wrap">{m.content || m.text || ""}</div>
+                <div className="whitespace-pre-wrap">
+                  {m.parts
+                    ? m.parts.filter((p: any) => p.type === "text").map((p: any) => p.text).join("")
+                    : m.content || ""}
+                </div>
               </div>
 
               {m.role === 'user' && (

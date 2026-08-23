@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.1",
-    "@ai-sdk/react": "^4.0.5",
+    "@ai-sdk/react": "^4.0.80",
     "@monaco-editor/react": "^4.7.0",
     "@neondatabase/serverless": "^1.1.0",
     "@octokit/auth-app": "^8.2.0",
