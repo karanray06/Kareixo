@@ -7,40 +7,40 @@ export const nvidia = createOpenAI({
   apiKey: process.env.NVIDIA_API_KEY,
 });
 
-// Provider instances with per-model keys for free endpoint models
+// Provider instances with per-model keys for free endpoint models (currently all mapped to main key due to scoped key EOL)
 export const nvidiaMinimax = createOpenAI({
   baseURL: "https://integrate.api.nvidia.com/v1",
-  apiKey: process.env.NVIDIA_KEY_MINIMAX,
+  apiKey: process.env.NVIDIA_API_KEY,
 });
 
 export const nvidiaKimi = createOpenAI({
   baseURL: "https://integrate.api.nvidia.com/v1",
-  apiKey: process.env.NVIDIA_KEY_KIMI,
+  apiKey: process.env.NVIDIA_API_KEY,
 });
 
 export const nvidiaMistral = createOpenAI({
   baseURL: "https://integrate.api.nvidia.com/v1",
-  apiKey: process.env.NVIDIA_KEY_MISTRAL,
+  apiKey: process.env.NVIDIA_API_KEY,
 });
 
 export const nvidiaDeepseek = createOpenAI({
   baseURL: "https://integrate.api.nvidia.com/v1",
-  apiKey: process.env.NVIDIA_KEY_DEEPSEEK,
+  apiKey: process.env.NVIDIA_API_KEY,
 });
 
 export const nvidiaGlm = createOpenAI({
   baseURL: "https://integrate.api.nvidia.com/v1",
-  apiKey: process.env.NVIDIA_KEY_GLM,
+  apiKey: process.env.NVIDIA_API_KEY,
 });
 
 export const nvidiaGemma = createOpenAI({
   baseURL: "https://integrate.api.nvidia.com/v1",
-  apiKey: process.env.NVIDIA_KEY_GEMMA,
+  apiKey: process.env.NVIDIA_API_KEY,
 });
 
 export const nvidiaQwen = createOpenAI({
   baseURL: "https://integrate.api.nvidia.com/v1",
-  apiKey: process.env.NVIDIA_KEY_QWEN,
+  apiKey: process.env.NVIDIA_API_KEY,
 });
 
 export const nvidiaModels = {

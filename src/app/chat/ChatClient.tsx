@@ -6,7 +6,7 @@ import { FiSend, FiUser, FiCpu } from "react-icons/fi";
 
 export default function ChatClient() {
   // @ts-expect-error - AI SDK v4 types are transitional
-  const { messages, sendMessage, isLoading, error } = useChat({
+  const { messages, append, isLoading, error } = useChat({
     api: "/api/chat",
   } as any);
   const [input, setInput] = useState("");
@@ -21,8 +21,7 @@ export default function ChatClient() {
     const currentInput = input;
     setInput("");
     try {
-      // @ts-expect-error - AI SDK v4 message typing is strict about parts vs content
-      await sendMessage({ role: 'user', content: currentInput });
+      await append({ role: 'user', content: currentInput });
     } catch (err) {
       console.error(err);
     }

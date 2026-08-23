@@ -32,13 +32,13 @@ export class ModelRouter {
     this.providers = providers ?? [
 
       // ── NVIDIA NIM Free Endpoints (best models first) ──
-      { name: "NVIDIA", modelName: "Kimi K2.6",               model: nvidiaKimi(nvidiaModels.kimi_k2), requiredEnvVars: ["NVIDIA_KEY_KIMI"] },
-      { name: "NVIDIA", modelName: "Llama 3.1 70B",           model: nvidiaDeepseek(nvidiaModels.llama3_70b), requiredEnvVars: ["NVIDIA_KEY_DEEPSEEK"] },
-      { name: "NVIDIA", modelName: "Nemotron 70B",            model: nvidiaQwen(nvidiaModels.nemotron_70b), requiredEnvVars: ["NVIDIA_KEY_QWEN"] },
-      { name: "NVIDIA", modelName: "Mistral Large 2",         model: nvidiaMistral(nvidiaModels.mistral_large), requiredEnvVars: ["NVIDIA_KEY_MISTRAL"] },
-      { name: "NVIDIA", modelName: "MiniMax M3",              model: nvidiaMinimax(nvidiaModels.minimax_m3), requiredEnvVars: ["NVIDIA_KEY_MINIMAX"] },
-      { name: "NVIDIA", modelName: "Granite 3.0 8B",          model: nvidiaGlm(nvidiaModels.granite_8b), requiredEnvVars: ["NVIDIA_KEY_GLM"] },
-      { name: "NVIDIA", modelName: "Nemotron 340B",           model: nvidiaGemma(nvidiaModels.nemotron_340b), requiredEnvVars: ["NVIDIA_KEY_GEMMA"] },
+      { name: "NVIDIA", modelName: "Kimi K2.6",               model: nvidiaKimi(nvidiaModels.kimi_k2), requiredEnvVars: ["NVIDIA_API_KEY"] },
+      { name: "NVIDIA", modelName: "Llama 3.1 70B",           model: nvidiaDeepseek(nvidiaModels.llama3_70b), requiredEnvVars: ["NVIDIA_API_KEY"] },
+      { name: "NVIDIA", modelName: "Nemotron 70B",            model: nvidiaQwen(nvidiaModels.nemotron_70b), requiredEnvVars: ["NVIDIA_API_KEY"] },
+      { name: "NVIDIA", modelName: "Mistral Large 2",         model: nvidiaMistral(nvidiaModels.mistral_large), requiredEnvVars: ["NVIDIA_API_KEY"] },
+      { name: "NVIDIA", modelName: "MiniMax M3",              model: nvidiaMinimax(nvidiaModels.minimax_m3), requiredEnvVars: ["NVIDIA_API_KEY"] },
+      { name: "NVIDIA", modelName: "Granite 3.0 8B",          model: nvidiaGlm(nvidiaModels.granite_8b), requiredEnvVars: ["NVIDIA_API_KEY"] },
+      { name: "NVIDIA", modelName: "Nemotron 340B",           model: nvidiaGemma(nvidiaModels.nemotron_340b), requiredEnvVars: ["NVIDIA_API_KEY"] },
     ];
 
     const vars = new Set<string>();
