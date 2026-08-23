@@ -5,10 +5,10 @@ import { useState } from "react";
 import { FiSend, FiUser, FiCpu } from "react-icons/fi";
 
 export default function ChatClient() {
-  // @ts-expect-error - AI SDK v4 types are transitional and don't export isLoading/api properly
+  // @ts-expect-error - AI SDK v4 types are transitional
   const { messages, sendMessage, isLoading, error } = useChat({
     api: "/api/chat",
-  });
+  } as any);
   const [input, setInput] = useState("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
