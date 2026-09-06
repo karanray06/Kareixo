@@ -20,8 +20,8 @@ export type NvidiaModelId = (typeof nvidiaModels)[keyof typeof nvidiaModels];
 
 /** All available NVIDIA model entries in priority order (best first). */
 export const NVIDIA_MODEL_CATALOG = [
-  { modelName: "DeepSeek V4 Pro",   modelId: nvidiaModels.deepseek_v4_pro },
-  { modelName: "Gemma 4 31B",       modelId: nvidiaModels.gemma4_31b },
+  { modelName: "DeepSeek V4 Pro",   modelId: nvidiaModels.deepseek_v4_pro, extraBody: { chat_template_kwargs: { thinking: false } } },
+  { modelName: "Gemma 4 31B",       modelId: nvidiaModels.gemma4_31b, extraBody: { chat_template_kwargs: { enable_thinking: true } } },
 ] as const;
 
 /**

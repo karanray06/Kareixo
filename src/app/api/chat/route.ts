@@ -37,6 +37,7 @@ export async function POST(req: Request) {
       const res = streamText({
         model: p.model,
         messages,
+        ...(p.extraBody ? { providerOptions: { openaicompat: p.extraBody } } : {}),
       });
 
       // Intercept the stream to catch immediate failures (e.g. 401/429) before streaming

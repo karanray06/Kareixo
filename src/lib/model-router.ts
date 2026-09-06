@@ -8,6 +8,7 @@ export type ProviderEntry = {
   modelId: NvidiaModelId;
   model: LanguageModel;
   keyState: KeyState;
+  extraBody?: Record<string, any>;
 };
 
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
@@ -31,10 +32,10 @@ function getStatusCode(error: any): number | undefined {
  */
 function isRetryableError(error: any): boolean {
   const status = getStatusCode(error);
-  if (status === 429) return true;
+  if (status === 429 || status === 404) return true;
   if (status !== undefined && status >= 500) return true;
   const msg = error?.message?.toLowerCase() ?? "";
-  return msg.includes("429") || msg.includes("rate limit") || msg.includes("timeout");
+  return msg.includes("429") || msg.includes("rate limit") || msg.includes("timeout") || msg.includes("not found");
 }
 
 export class ModelRouter {
@@ -65,6 +66,7 @@ export class ModelRouter {
       modelId: modelEntry.modelId,
       model: provider(modelEntry.modelId),
       keyState,
+      extraBody: modelEntry.extraBody as Record<string, any> | undefined,
     };
   }
 
