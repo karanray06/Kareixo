@@ -30,8 +30,12 @@ export type KeyState = {
 class NvidiaKeyPool {
   private keys: KeyState[] = [];
   private roundRobinIndex = -1;
+  private initialized = false;
 
-  constructor() {
+  /** Lazy init — only loads keys on first use, not at import/build time. */
+  private ensureInitialized(): void {
+    if (this.initialized) return;
+    this.initialized = true;
     this.loadKeys();
   }
 
@@ -77,11 +81,13 @@ class NvidiaKeyPool {
 
   /** Get the number of keys in the pool. */
   get size(): number {
+    this.ensureInitialized();
     return this.keys.length;
   }
 
   /** Get the next available key via round-robin, skipping cooled-down/circuit-broken keys. */
   getNextKey(): KeyState {
+    this.ensureInitialized();
     const now = Date.now();
     const total = this.keys.length;
 
@@ -172,6 +178,7 @@ class NvidiaKeyPool {
     totalRequests: number;
     totalFailures: number;
   }> {
+    if (!this.initialized) return []; // Safe during build — no keys loaded yet
     const now = Date.now();
     return this.keys.map((k) => ({
       index: k.index,
