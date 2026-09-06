@@ -167,7 +167,6 @@ export async function POST(req: Request) {
         system: systemPrompt,
         messages,
         ...(hasTools ? { tools, stopWhen: isStepCount(5) } : {}),
-        ...(p.extraBody ? { providerOptions: { openaicompat: p.extraBody } } : {}),
       });
 
       // Probe the stream for immediate failures

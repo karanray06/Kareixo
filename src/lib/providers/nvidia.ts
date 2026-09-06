@@ -24,13 +24,24 @@ export const NVIDIA_MODEL_CATALOG = [
   { modelName: "Gemma 4 31B",       modelId: nvidiaModels.gemma4_31b, extraBody: { chat_template_kwargs: { enable_thinking: true } } },
 ] as const;
 
-/**
- * Create an NVIDIA provider instance with a specific API key.
- * Called per-request by the model router with the key selected from the pool.
- */
 export function createNvidiaProvider(apiKey: string) {
   return createOpenAI({
     baseURL: NVIDIA_BASE_URL,
     apiKey,
+    fetch: async (url, options) => {
+      if (options?.body && typeof options.body === "string") {
+        try {
+          const bodyObj = JSON.parse(options.body);
+          const modelEntry = NVIDIA_MODEL_CATALOG.find((m) => m.modelId === bodyObj.model);
+          if (modelEntry?.extraBody) {
+            Object.assign(bodyObj, modelEntry.extraBody);
+            options.body = JSON.stringify(bodyObj);
+          }
+        } catch (e) {
+          console.error("Error intercepting NVIDIA request body", e);
+        }
+      }
+      return fetch(url, options);
+    },
   });
 }
