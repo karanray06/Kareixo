@@ -12,7 +12,8 @@ import { createOpenAI } from "@ai-sdk/openai";
 export const NVIDIA_BASE_URL = "https://integrate.api.nvidia.com/v1";
 
 export const nvidiaModels = {
-  llama_vision: "meta/llama-3.2-11b-vision-instruct",
+  deepseek_v4: "deepseek-ai/deepseek-v4-flash-0731",
+  gemma_4: "google/gemma-4-31b-it",
 } as const;
 
 export type NvidiaModelId = (typeof nvidiaModels)[keyof typeof nvidiaModels];
@@ -25,7 +26,8 @@ export interface NvidiaModelEntry {
 
 /** All available NVIDIA model entries in priority order (best first). */
 export const NVIDIA_MODEL_CATALOG: readonly NvidiaModelEntry[] = [
-  { modelName: "Llama 3.2 Vision", modelId: nvidiaModels.llama_vision },
+  { modelName: "DeepSeek V4 Flash", modelId: nvidiaModels.deepseek_v4 },
+  { modelName: "Gemma 4 31B", modelId: nvidiaModels.gemma_4 },
 ];
 
 export function createNvidiaProvider(apiKey: string) {
