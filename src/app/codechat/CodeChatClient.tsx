@@ -264,7 +264,7 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
                     <p className="text-xs text-[var(--text-secondary)] mt-1">
                       {selectedRepo 
                         ? `Ask questions about ${selectedRepo.fullName} — I can read files directly from the repo.`
-                        : "Select a repository to start a code conversation."}
+                        : "Ask any coding question, or connect a repo for file access."}
                     </p>
                   </div>
                 </div>
@@ -336,14 +336,14 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
                       handleSubmit();
                     }
                   }}
-                  placeholder={selectedRepo ? "Ask about this codebase..." : "Select a repository first"}
+                  placeholder={selectedRepo ? "Ask about this codebase..." : "Ask any coding question..."}
                   className="w-full bg-[var(--bg-base)] border border-[var(--color-outline)]/20 rounded-xl py-3 pl-4 pr-12 text-sm focus:outline-none focus:border-[var(--color-sky-blue)] resize-none transition-colors"
                   rows={2}
-                  disabled={isLoading || !selectedRepo}
+                  disabled={isLoading}
                 />
                 <button
                   type="submit"
-                  disabled={isLoading || !input.trim() || !selectedRepo}
+                  disabled={isLoading || !input.trim()}
                   className="absolute right-3 bottom-3 w-8 h-8 bg-[var(--text-primary)] text-[var(--bg-base)] rounded-lg flex items-center justify-center disabled:opacity-30 transition-all hover:scale-105"
                 >
                   <FiSend className="w-3.5 h-3.5" />
