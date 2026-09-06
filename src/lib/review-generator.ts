@@ -162,7 +162,7 @@ export async function queueReview(installationId: number, repoFullName: string, 
     }, "chat", tier);
     
     console.log(
-      `${logPrefix} Step 6: ✅ Review generated via ${provider.name} (${provider.modelName}, key=#${provider.keyState.index}). ` +
+      `${logPrefix} Step 6: ✅ Review generated via ${provider.name} (${provider.modelName}, key for ${provider.keyState.task}). ` +
       `Findings: ${result.findings.length}`
     );
 

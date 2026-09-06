@@ -1,14 +1,13 @@
 import { LanguageModel } from "ai";
-import { keyPool, KeyState, PER_ATTEMPT_TIMEOUT_MS } from "./nvidia-key-pool";
-import { createNvidiaProvider, NVIDIA_MODEL_CATALOG, NvidiaModelId } from "./providers/nvidia";
+import { keyPool, KeyState, PER_ATTEMPT_TIMEOUT_MS } from "./gemini-key-pool";
+import { createGeminiProvider, GEMINI_MODEL_CATALOG, GeminiModelId } from "./providers/gemini";
 
 export type ProviderEntry = {
-  name: "NVIDIA";
+  name: "GEMINI";
   modelName: string;
-  modelId: NvidiaModelId;
+  modelId: GeminiModelId;
   model: LanguageModel;
   keyState: KeyState;
-  extraBody?: Record<string, any>;
 };
 
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
@@ -39,63 +38,51 @@ function isRetryableError(error: any): boolean {
 }
 
 export class ModelRouter {
-  private modelCatalog = NVIDIA_MODEL_CATALOG;
-  private lastModelIndex = -1;
+  private modelCatalog = GEMINI_MODEL_CATALOG;
 
   /**
-   * Get the next model + key pair for a request.
-   * Rotates through models round-robin, gets a key from the pool.
+   * Get the provider configured for the specific task and tier.
    */
-  private getNextProvider(tier?: "fast" | "deep"): ProviderEntry {
-    const keyState = keyPool.getNextKey();
-    const provider = createNvidiaProvider(keyState.key);
+  private getProviderForTask(taskType: "chat" | "code", tier?: "fast" | "deep"): ProviderEntry {
+    const keyState = keyPool.getKeyForTask(taskType);
+    const provider = createGeminiProvider(keyState.key);
 
-    // Select model (round-robin through catalog)
     let modelEntry;
     if (tier === "deep") {
-      // For deep analysis, prefer the best model
-      modelEntry = this.modelCatalog[0];
+      modelEntry = this.modelCatalog.find(m => m.modelId === "gemini-2.5-pro") || this.modelCatalog[1];
     } else {
-      this.lastModelIndex = (this.lastModelIndex + 1) % this.modelCatalog.length;
-      modelEntry = this.modelCatalog[this.lastModelIndex];
+      modelEntry = this.modelCatalog.find(m => m.modelId === "gemini-2.5-flash") || this.modelCatalog[0];
     }
 
     return {
-      name: "NVIDIA",
+      name: "GEMINI",
       modelName: modelEntry.modelName,
       modelId: modelEntry.modelId,
       model: provider(modelEntry.modelId),
       keyState,
-      extraBody: modelEntry.extraBody as Record<string, any> | undefined,
     };
   }
 
   /**
-   * Execute an operation with automatic failover across keys and models.
-   * 
-   * On failure (429, 5xx, timeout):
-   * 1. Reports failure to the key pool (triggers cooldown/circuit breaker)
-   * 2. Retries with the next available key
-   * 3. Continues until all keys exhausted or max attempts reached
+   * Execute an operation with automatic retries on rate limits.
    */
   public async executeWithFailover<T>(
     operation: (provider: ProviderEntry) => Promise<T>,
     taskType: "code" | "chat" = "chat",
     tier?: "fast" | "deep"
   ): Promise<{ result: T; provider: ProviderEntry }> {
-    // Max attempts = keys × 2 (allow some keys to be retried after cooldown probe)
-    const maxAttempts = Math.max(keyPool.size * 2, 3);
+    const maxAttempts = 3;
     let attempts = 0;
     let lastError: Error | null = null;
 
     while (attempts < maxAttempts) {
-      const provider = this.getNextProvider(tier);
+      const provider = this.getProviderForTask(taskType, tier);
       attempts++;
 
       try {
         console.log(
           `[ModelRouter] Attempt ${attempts}/${maxAttempts}: ` +
-          `model=${provider.modelName}, key=#${provider.keyState.index}`
+          `model=${provider.modelName}, task=${provider.keyState.task}`
         );
 
         const result = await withTimeout(
@@ -103,7 +90,6 @@ export class ModelRouter {
           PER_ATTEMPT_TIMEOUT_MS
         );
 
-        // Success — report to pool and return
         keyPool.reportSuccess(provider.keyState);
         return { result, provider };
 
@@ -112,24 +98,21 @@ export class ModelRouter {
         const statusCode = getStatusCode(error);
 
         console.warn(
-          `[ModelRouter] Key #${provider.keyState.index} (${provider.modelName}) ` +
+          `[ModelRouter] Key for ${provider.keyState.task} (${provider.modelName}) ` +
           `failed on attempt ${attempts}/${maxAttempts}: ` +
           `status=${statusCode || "N/A"}, message=${error?.message?.slice(0, 200)}`
         );
 
         if (isRetryableError(error)) {
           keyPool.reportFailure(provider.keyState, statusCode);
-          // Continue to next attempt with a different key
           continue;
         }
 
-        // Non-retryable error (e.g., 400 bad request, schema error) — don't burn more keys
         keyPool.reportFailure(provider.keyState, statusCode);
         throw error;
       }
     }
 
-    // All attempts exhausted
     const healthSummary = keyPool.getHealthSummary();
     console.error(
       `[ModelRouter] All ${maxAttempts} attempts exhausted. Pool health:`,
@@ -137,16 +120,14 @@ export class ModelRouter {
     );
 
     throw new Error(
-      `All NVIDIA API keys are currently exhausted or rate-limited after ${maxAttempts} attempts. ` +
+      `Gemini API key for task '${taskType}' is exhausted or rate-limited after ${maxAttempts} attempts. ` +
       `Please try again in a few minutes. Last error: ${lastError?.message}`
     );
   }
 
-  /** Get pool health for monitoring/dashboard. */
   public getPoolHealth() {
     return keyPool.getHealthSummary();
   }
 }
 
-// Singleton for use in API routes
 export const router = new ModelRouter();

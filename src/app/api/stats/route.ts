@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { keyPool } from "@/lib/nvidia-key-pool";
+import { keyPool } from "@/lib/gemini-key-pool";
 
 /**
  * Returns key pool health summary.
