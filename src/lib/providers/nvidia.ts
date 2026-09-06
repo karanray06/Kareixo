@@ -17,10 +17,16 @@ export const nvidiaModels = {
 
 export type NvidiaModelId = (typeof nvidiaModels)[keyof typeof nvidiaModels];
 
+export interface NvidiaModelEntry {
+  modelName: string;
+  modelId: NvidiaModelId;
+  extraBody?: Record<string, unknown>;
+}
+
 /** All available NVIDIA model entries in priority order (best first). */
-export const NVIDIA_MODEL_CATALOG = [
+export const NVIDIA_MODEL_CATALOG: readonly NvidiaModelEntry[] = [
   { modelName: "Llama 3.2 Vision", modelId: nvidiaModels.llama_vision },
-] as const;
+];
 
 export function createNvidiaProvider(apiKey: string) {
   return createOpenAI({
