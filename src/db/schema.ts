@@ -67,6 +67,9 @@ export const chatConversations = pgTable("chat_conversations", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id).notNull(),
   title: text("title").notNull().default("New Conversation"),
+  repoFullName: text("repo_full_name"), // e.g. "owner/repo" — null for general chat
+  branch: text("branch"),               // optional branch context
+  preloadedContext: text("preloaded_context"), // JSON context for incident tracer handoff
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

@@ -54,6 +54,12 @@ export default function Navbar() {
             <Link href="/chat" onClick={() => setMenuOpen(false)} className="text-[var(--text-primary)] hover:text-[var(--text-secondary)] transition-colors">
               Chat
             </Link>
+            <Link href="/codechat" onClick={() => setMenuOpen(false)} className="text-[var(--text-primary)] hover:text-[var(--text-secondary)] transition-colors">
+              CodeChat
+            </Link>
+            <Link href="/incident" onClick={() => setMenuOpen(false)} className="text-[var(--text-primary)] hover:text-[var(--text-secondary)] transition-colors">
+              Incident Tracer
+            </Link>
             <Link href="/pricing" onClick={() => setMenuOpen(false)} className="text-[var(--text-primary)] hover:text-[var(--text-secondary)] transition-colors">
               Pricing
             </Link>

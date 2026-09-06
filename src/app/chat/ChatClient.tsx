@@ -85,7 +85,7 @@ export default function ChatClient() {
           <input
             value={input}
             onChange={handleInputChange}
-            placeholder="Ask about your code, review best practices, or anything else..."
+            placeholder="Ask about your code, review best practices, or anything you wnt..."
             className="w-full bg-[var(--bg-base)] border border-[var(--color-outline)]/20 rounded-full py-4 pl-6 pr-14 focus:outline-none focus:border-[var(--color-sky-blue)] transition-colors"
             disabled={isLoading}
           />

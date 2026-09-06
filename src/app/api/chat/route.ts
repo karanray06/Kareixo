@@ -12,17 +12,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const allRequiredKeys = router.allRequiredEnvVars;
-    const hasAnyKey = allRequiredKeys.some((key) => !!process.env[key]);
-    
-    if (!hasAnyKey) {
-      return NextResponse.json(
-        { error: `No AI provider keys configured. Please add at least one of these to your environment variables: ${allRequiredKeys.join(", ")}` },
-        { status: 401 }
-      );
-    }
-
-    const { messages: rawMessages, taskType = "chat", forceProvider } = await req.json();
+    const { messages: rawMessages, taskType = "chat" } = await req.json();
 
     // Convert ai@7 UIMessage format (parts-based) to the simple format the AI SDK expects
     // UIMessages have { role, parts: [{ type: 'text', text: '...' }] }
@@ -42,7 +32,7 @@ export async function POST(req: Request) {
       return { role: msg.role, content: "" };
     });
 
-    // Execute the request with automatic failover
+    // Execute the request with automatic multi-key failover
     const { result, provider } = await router.executeWithFailover(async (p) => {
       const res = streamText({
         model: p.model,
@@ -92,7 +82,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error("Chat API error:", error);
     return NextResponse.json(
-      { error: error.message || "All providers are currently unavailable. Please try again shortly." },
+      { error: error.message || "All NVIDIA API keys are currently exhausted. Please try again shortly." },
       { status: 503 }
     );
   }

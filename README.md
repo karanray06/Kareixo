@@ -67,13 +67,9 @@ The product is designed around two principles:
    GITHUB_APP_ID=your_github_app_id
    GITHUB_APP_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
    GITHUB_WEBHOOK_SECRET=your_webhook_secret
-   OPENROUTER_API_KEY=optional
-   NVIDIA_API_KEY=optional
-   GROQ_API_KEY=optional
-   ZAI_API_KEY=optional
-   CLOUDFLARE_ACCOUNT_ID=optional
-   CLOUDFLARE_API_TOKEN=optional
-   MOONSHOT_API_KEY=optional
+   NVIDIA_API_KEY_1=your_first_nvidia_key
+   NVIDIA_API_KEY_2=your_second_nvidia_key
+   NVIDIA_API_KEY_3=your_third_nvidia_key
    ```
 
 4. Generate and push the database schema:

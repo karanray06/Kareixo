@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export default auth((req) => {
   const isLoggedIn = !!req.auth;
-  const isProtectedRoute = req.nextUrl.pathname.startsWith("/chat") || req.nextUrl.pathname.startsWith("/dashboard");
+  const isProtectedRoute = req.nextUrl.pathname.startsWith("/chat") || req.nextUrl.pathname.startsWith("/dashboard") || req.nextUrl.pathname.startsWith("/codechat") || req.nextUrl.pathname.startsWith("/incident");
 
   if (isProtectedRoute && !isLoggedIn) {
     const loginUrl = new URL("/login", req.nextUrl);

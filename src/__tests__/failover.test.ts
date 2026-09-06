@@ -1,109 +1,131 @@
 /**
- * Integration test: provider failover in model-router
+ * Integration test: NVIDIA multi-key failover
  *
- * Run with: npx tsx src/__tests__/failover.test.ts
- * (No Jest setup needed — uses plain assertions)
+ * Tests that the model router correctly fails over between keys when one
+ * returns 429 or times out.
+ *
+ * Run with: npx vitest run src/__tests__/failover.test.ts
  */
-import { ModelRouter } from "../lib/model-router";
-import { ProviderName } from "../lib/quota-tracker";
-import { LanguageModel } from "ai";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// ── Minimal mock model factory ──────────────────────────────────────────────
+// Mock the key pool before importing the router
+vi.mock("../lib/nvidia-key-pool", () => {
+  let callIndex = 0;
+  const mockKeys = [
+    {
+      index: 1, key: "fake-key-1", consecutiveFailures: 0,
+      cooldownUntil: 0, circuitOpen: false, circuitOpenUntil: 0,
+      totalRequests: 0, totalFailures: 0,
+    },
+    {
+      index: 2, key: "fake-key-2", consecutiveFailures: 0,
+      cooldownUntil: 0, circuitOpen: false, circuitOpenUntil: 0,
+      totalRequests: 0, totalFailures: 0,
+    },
+  ];
 
-function makeMockModel(name: string, shouldFail: boolean): LanguageModel {
   return {
-    specificationVersion: "v1" as any,
-    provider: "mock",
-    modelId: name,
+    PER_ATTEMPT_TIMEOUT_MS: 5000,
+    keyPool: {
+      size: 2,
+      getNextKey: () => {
+        const key = mockKeys[callIndex % mockKeys.length];
+        callIndex++;
+        return key;
+      },
+      reportSuccess: vi.fn(),
+      reportFailure: vi.fn(),
+      getHealthSummary: () => mockKeys.map(k => ({
+        index: k.index, available: true,
+        consecutiveFailures: k.consecutiveFailures,
+        circuitOpen: false, totalRequests: k.totalRequests,
+        totalFailures: k.totalFailures,
+      })),
+    },
+  };
+});
+
+// Mock the NVIDIA provider
+vi.mock("../lib/providers/nvidia", () => ({
+  createNvidiaProvider: (apiKey: string) => (modelId: string) => ({
+    specificationVersion: "v1",
+    provider: "mock-nvidia",
+    modelId,
+    apiKey, // expose for testing which key was used
     doGenerate: async () => {
-      if (shouldFail) {
-        const err: any = new Error(`Provider ${name} rate limited`);
+      if (apiKey === "fake-key-1") {
+        const err: any = new Error("Rate limited");
         err.statusCode = 429;
         throw err;
       }
       return {
-        text: "pong",
+        text: "reviewed",
         finishReason: "stop",
         usage: { promptTokens: 1, completionTokens: 1 },
         rawCall: { rawPrompt: "", rawSettings: {} },
-      } as any;
+      };
     },
-    doStream: async () => {
-      if (shouldFail) {
-        return {
-          stream: new ReadableStream({
-            start(controller) {
-              const err: any = new Error(`Provider ${name} rate limited`);
-              err.statusCode = 429;
-              controller.enqueue({ type: 'error', error: err });
-              controller.close();
-            }
-          }),
-          rawCall: { rawPrompt: "", rawSettings: {} },
-        } as any;
-      }
-      return {
-        stream: new ReadableStream({
-          start(controller) {
-            controller.enqueue({ type: 'text-delta', textDelta: 'pong' });
-            controller.close();
+    doStream: async () => ({
+      stream: new ReadableStream({
+        start(controller) {
+          if (apiKey === "fake-key-1") {
+            const err: any = new Error("Rate limited");
+            err.statusCode = 429;
+            controller.enqueue({ type: "error", error: err });
+          } else {
+            controller.enqueue({ type: "text-delta", textDelta: "pong" });
           }
-        }),
-        rawCall: { rawPrompt: "", rawSettings: {} },
-      } as any;
-    },
-  } as unknown as LanguageModel;
-}
+          controller.close();
+        },
+      }),
+      rawCall: { rawPrompt: "", rawSettings: {} },
+    }),
+  }),
+  NVIDIA_MODEL_CATALOG: [
+    { modelName: "Test Model", modelId: "test/model-1" },
+  ],
+}));
 
-// ── Test ────────────────────────────────────────────────────────────────────
+describe("Multi-key failover", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
-async function testFailover() {
-  console.log("\n--- Failover Integration Test ---\n");
+  it("should fail over from key #1 (429) to key #2 (success)", async () => {
+    const { ModelRouter } = await import("../lib/model-router");
+    const testRouter = new ModelRouter();
 
-  // Build a router with provider 0 failing (429) and provider 1 succeeding
-  const testRouter = new ModelRouter([
-    { name: "NVIDIA" as ProviderName, modelName: "Mock-Fail", model: makeMockModel("Mock-Fail", true), requiredEnvVars: [] },
-    { name: "NVIDIA" as ProviderName, modelName: "Mock-OK", model: makeMockModel("Mock-OK", false), requiredEnvVars: [] },
-  ]);
+    const { provider } = await testRouter.executeWithFailover(async (p) => {
+      await (p.model as any).doGenerate({
+        inputFormat: "messages",
+        prompt: [{ role: "user", content: [{ type: "text", text: "ping" }] }],
+        mode: { type: "regular" },
+      });
+      return "success";
+    }, "chat");
 
-  let resolvedProvider = "";
-  const { provider } = await testRouter.executeWithFailover(async (p) => {
-    // Simulate the probe: call doGenerate, will throw for failing provider
-    await (p.model as any).doGenerate({ inputFormat: "messages", prompt: [{ role: "user", content: [{ type: "text", text: "ping" }] }], mode: { type: "regular" } });
-    return p;
-  }, "chat");
+    // Key #1 failed with 429, so the result should come from key #2
+    expect(provider.keyState.index).toBe(2);
+  });
 
-  resolvedProvider = provider.modelName;
+  it("should fail over during streaming when key #1 returns error chunk", async () => {
+    const { ModelRouter } = await import("../lib/model-router");
+    const testRouter = new ModelRouter();
 
-  if (resolvedProvider !== "Mock-OK") {
-    throw new Error(`FAIL: Expected Mock-OK but got ${resolvedProvider}`);
-  }
+    const { provider } = await testRouter.executeWithFailover(async (p) => {
+      const res = await (p.model as any).doStream({
+        inputFormat: "messages",
+        prompt: [{ role: "user", content: [{ type: "text", text: "ping" }] }],
+        mode: { type: "regular" },
+      });
+      const reader = res.stream.getReader();
+      const firstChunk = await reader.read();
+      if (firstChunk.value && firstChunk.value.type === "error") {
+        throw firstChunk.value.error;
+      }
+      return "streamed";
+    }, "chat");
 
-  console.log(`✓ Failover worked: request fell through to "${resolvedProvider}" after Mock-Fail 429'd`);
-
-  console.log("\n--- Stream Failover Integration Test ---\n");
-
-  const { provider: streamProvider } = await testRouter.executeWithFailover(async (p) => {
-    // Simulate the route.ts stream interception
-    const res = await (p.model as any).doStream({ inputFormat: "messages", prompt: [{ role: "user", content: [{ type: "text", text: "ping" }] }], mode: { type: "regular" } });
-    const reader = res.stream.getReader();
-    const firstChunk = await reader.read();
-    if (firstChunk.value && firstChunk.value.type === 'error') {
-      throw firstChunk.value.error;
-    }
-    return p;
-  }, "chat");
-
-  if (streamProvider.modelName !== "Mock-OK") {
-    throw new Error(`FAIL: Expected Mock-OK for stream but got ${streamProvider.modelName}`);
-  }
-
-  console.log(`✓ Stream failover worked: request fell through to "${streamProvider.modelName}" after Mock-Fail 429'd inside stream chunks`);
-
-  console.log("\n--- Test Passed ---\n");
-}
-
-testFailover().catch((err) => {
-  console.error("TEST FAILED:", err.message);
-  process.exit(1);
+    expect(provider.keyState.index).toBe(2);
+  });
 });

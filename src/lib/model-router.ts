@@ -1,17 +1,13 @@
 import { LanguageModel } from "ai";
-import { quotaTracker, ProviderName } from "./quota-tracker";
-
-import {
-  nvidia, nvidiaModels,
-  nvidiaMinimax, nvidiaKimi, nvidiaMistral,
-  nvidiaDeepseek, nvidiaGlm, nvidiaGemma, nvidiaQwen,
-} from "./providers/nvidia";
+import { keyPool, KeyState, PER_ATTEMPT_TIMEOUT_MS } from "./nvidia-key-pool";
+import { createNvidiaProvider, NVIDIA_MODEL_CATALOG, NvidiaModelId } from "./providers/nvidia";
 
 export type ProviderEntry = {
-  name: ProviderName;
+  name: "NVIDIA";
   modelName: string;
+  modelId: NvidiaModelId;
   model: LanguageModel;
-  requiredEnvVars: string[];
+  keyState: KeyState;
 };
 
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
@@ -23,110 +19,130 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   ]);
 }
 
+/**
+ * Extract HTTP status code from various error shapes.
+ */
+function getStatusCode(error: any): number | undefined {
+  return error?.statusCode ?? error?.status ?? error?.response?.status;
+}
+
+/**
+ * Check if an error is a rate-limit or server error that warrants failover.
+ */
+function isRetryableError(error: any): boolean {
+  const status = getStatusCode(error);
+  if (status === 429) return true;
+  if (status !== undefined && status >= 500) return true;
+  const msg = error?.message?.toLowerCase() ?? "";
+  return msg.includes("429") || msg.includes("rate limit") || msg.includes("timeout");
+}
+
 export class ModelRouter {
-  public providers: ProviderEntry[];
-  public allPossibleEnvVars: string[] = [];
-  private lastUsedIndex = -1;
+  private modelCatalog = NVIDIA_MODEL_CATALOG;
+  private lastModelIndex = -1;
 
-  constructor(providers?: ProviderEntry[]) {
-    this.providers = providers ?? [
+  /**
+   * Get the next model + key pair for a request.
+   * Rotates through models round-robin, gets a key from the pool.
+   */
+  private getNextProvider(tier?: "fast" | "deep"): ProviderEntry {
+    const keyState = keyPool.getNextKey();
+    const provider = createNvidiaProvider(keyState.key);
 
-      // ── NVIDIA NIM Free Endpoints (best models first) ──
-      { name: "NVIDIA", modelName: "Kimi K2.6",               model: nvidiaKimi(nvidiaModels.kimi_k2), requiredEnvVars: ["NVIDIA_API_KEY"] },
-      { name: "NVIDIA", modelName: "Llama 3.1 70B",           model: nvidiaDeepseek(nvidiaModels.llama3_70b), requiredEnvVars: ["NVIDIA_API_KEY"] },
-      { name: "NVIDIA", modelName: "Nemotron 70B",            model: nvidiaQwen(nvidiaModels.nemotron_70b), requiredEnvVars: ["NVIDIA_API_KEY"] },
-      { name: "NVIDIA", modelName: "Mistral Large 2",         model: nvidiaMistral(nvidiaModels.mistral_large), requiredEnvVars: ["NVIDIA_API_KEY"] },
-      { name: "NVIDIA", modelName: "MiniMax M3",              model: nvidiaMinimax(nvidiaModels.minimax_m3), requiredEnvVars: ["NVIDIA_API_KEY"] },
-      { name: "NVIDIA", modelName: "Granite 3.0 8B",          model: nvidiaGlm(nvidiaModels.granite_8b), requiredEnvVars: ["NVIDIA_API_KEY"] },
-      { name: "NVIDIA", modelName: "Nemotron 340B",           model: nvidiaGemma(nvidiaModels.nemotron_340b), requiredEnvVars: ["NVIDIA_API_KEY"] },
-    ];
-
-    const vars = new Set<string>();
-    for (const p of this.providers) {
-      for (const v of p.requiredEnvVars) {
-        vars.add(v);
-      }
+    // Select model (round-robin through catalog)
+    let modelEntry;
+    if (tier === "deep") {
+      // For deep analysis, prefer the best model
+      modelEntry = this.modelCatalog[0];
+    } else {
+      this.lastModelIndex = (this.lastModelIndex + 1) % this.modelCatalog.length;
+      modelEntry = this.modelCatalog[this.lastModelIndex];
     }
-    this.allPossibleEnvVars = Array.from(vars);
 
-    // Only enable providers that have all their required environment variables set
-    this.providers = this.providers.filter((p) =>
-      p.requiredEnvVars.every((envVar) => !!process.env[envVar])
-    );
-    
-    // Fallback if none are configured, though the API routes usually catch this early
-    if (this.providers.length === 0) {
-      console.warn("[ModelRouter] No AI providers are configured. API requests will fail.");
-    }
-  }
-
-  public get allRequiredEnvVars(): string[] {
-    return this.allPossibleEnvVars;
-  }
-
-  /** Round-robin, skipping rate-limited providers */
-  public getNextProvider(taskType: "code" | "chat" = "chat", forceProvider?: string): ProviderEntry {
-    if (forceProvider) {
-      const found = this.providers.find((p) => p.modelName === forceProvider);
-      if (found) return found;
-    }
-    for (let i = 0; i < this.providers.length; i++) {
-      this.lastUsedIndex = (this.lastUsedIndex + 1) % this.providers.length;
-      const candidate = this.providers[this.lastUsedIndex];
-      if (!quotaTracker.shouldSkip(candidate.name)) return candidate;
-    }
-    return this.providers[0];
+    return {
+      name: "NVIDIA",
+      modelName: modelEntry.modelName,
+      modelId: modelEntry.modelId,
+      model: provider(modelEntry.modelId),
+      keyState,
+    };
   }
 
   /**
-   * Execute `operation` with automatic failover across all providers.
+   * Execute an operation with automatic failover across keys and models.
+   * 
+   * On failure (429, 5xx, timeout):
+   * 1. Reports failure to the key pool (triggers cooldown/circuit breaker)
+   * 2. Retries with the next available key
+   * 3. Continues until all keys exhausted or max attempts reached
    */
   public async executeWithFailover<T>(
     operation: (provider: ProviderEntry) => Promise<T>,
     taskType: "code" | "chat" = "chat",
     tier?: "fast" | "deep"
   ): Promise<{ result: T; provider: ProviderEntry }> {
-    const maxAttempts = this.providers.length;
+    // Max attempts = keys × 2 (allow some keys to be retried after cooldown probe)
+    const maxAttempts = Math.max(keyPool.size * 2, 3);
     let attempts = 0;
+    let lastError: Error | null = null;
 
     while (attempts < maxAttempts) {
-      let provider: ProviderEntry | undefined;
-      if (tier === "deep" && attempts === 0) {
-        provider = this.providers.find(p => !quotaTracker.shouldSkip(p.name) && (p.modelName.includes("DeepSeek") || p.modelName.includes("Qwen")));
-      }
-      if (!provider) {
-        provider = this.getNextProvider(taskType);
-      }
+      const provider = this.getNextProvider(tier);
+      attempts++;
+
       try {
-        const PER_ATTEMPT_TIMEOUT_MS = 20_000;
-        const result = await withTimeout(operation(provider), PER_ATTEMPT_TIMEOUT_MS);
-        quotaTracker.trackSuccess(provider.name);
-        return { result, provider };
-      } catch (error: any) {
-        attempts++;
-        const isRateLimit =
-          error?.statusCode === 429 ||
-          error?.status === 429 ||
-          error?.message?.includes("429") ||
-          error?.message?.toLowerCase().includes("rate limit");
-
-        if (isRateLimit) {
-          quotaTracker.trackRateLimit(provider.name);
-        }
-
-        console.warn(
-          `[ModelRouter] Provider ${provider.name} (${provider.modelName}) failed on attempt ${attempts}/${maxAttempts}: ${error?.message}`
+        console.log(
+          `[ModelRouter] Attempt ${attempts}/${maxAttempts}: ` +
+          `model=${provider.modelName}, key=#${provider.keyState.index}`
         );
 
-        if (attempts >= maxAttempts) {
-          throw new Error(
-            "All AI providers are currently exhausted or rate-limited. Please try again in a few minutes."
-          );
+        const result = await withTimeout(
+          operation(provider),
+          PER_ATTEMPT_TIMEOUT_MS
+        );
+
+        // Success — report to pool and return
+        keyPool.reportSuccess(provider.keyState);
+        return { result, provider };
+
+      } catch (error: any) {
+        lastError = error;
+        const statusCode = getStatusCode(error);
+
+        console.warn(
+          `[ModelRouter] Key #${provider.keyState.index} (${provider.modelName}) ` +
+          `failed on attempt ${attempts}/${maxAttempts}: ` +
+          `status=${statusCode || "N/A"}, message=${error?.message?.slice(0, 200)}`
+        );
+
+        if (isRetryableError(error)) {
+          keyPool.reportFailure(provider.keyState, statusCode);
+          // Continue to next attempt with a different key
+          continue;
         }
+
+        // Non-retryable error (e.g., 400 bad request, schema error) — don't burn more keys
+        keyPool.reportFailure(provider.keyState, statusCode);
+        throw error;
       }
     }
 
-    throw new Error("Unexpected routing failure");
+    // All attempts exhausted
+    const healthSummary = keyPool.getHealthSummary();
+    console.error(
+      `[ModelRouter] All ${maxAttempts} attempts exhausted. Pool health:`,
+      JSON.stringify(healthSummary)
+    );
+
+    throw new Error(
+      `All NVIDIA API keys are currently exhausted or rate-limited after ${maxAttempts} attempts. ` +
+      `Please try again in a few minutes. Last error: ${lastError?.message}`
+    );
+  }
+
+  /** Get pool health for monitoring/dashboard. */
+  public getPoolHealth() {
+    return keyPool.getHealthSummary();
   }
 }
 

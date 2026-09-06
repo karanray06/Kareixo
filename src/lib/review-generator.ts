@@ -19,13 +19,27 @@ const ReviewOutputSchema = z.object({
   summary: z.string().describe("A high-level summary of the review."),
 });
 
+/**
+ * Queue and execute a code review for a PR.
+ * Called from the webhook handler via waitUntil() — runs async after the 200 is sent.
+ */
 export async function queueReview(installationId: number, repoFullName: string, prNumber: number) {
   const db = getDb();
-  console.log(`Starting real review for ${repoFullName}#${prNumber}`);
+  const logPrefix = `[Review ${repoFullName}#${prNumber}]`;
+  console.log(`${logPrefix} ── PIPELINE START ──`);
 
   let pendingReviewId: string | null = null;
+  let octokit: Awaited<ReturnType<typeof getInstallationOctokit>> | null = null;
+  const [owner, repo] = repoFullName.split("/");
 
   try {
+    // ── Step 1: Get installation Octokit ──
+    console.log(`${logPrefix} Step 1: Authenticating as GitHub App installation ${installationId}`);
+    octokit = await getInstallationOctokit(installationId);
+    console.log(`${logPrefix} Step 1: ✅ Authenticated`);
+
+    // ── Step 2: Find repository in DB ──
+    console.log(`${logPrefix} Step 2: Looking up repository in DB`);
     const [repository] = await db.select().from(repositories).where(
       and(
         eq(repositories.installationId, installationId),
@@ -34,10 +48,13 @@ export async function queueReview(installationId: number, repoFullName: string, 
     );
 
     if (!repository) {
-      console.warn(`Repository not found in DB: ${repoFullName}`);
+      console.warn(`${logPrefix} Step 2: ❌ Repository not found in DB — skipping`);
       return;
     }
+    console.log(`${logPrefix} Step 2: ✅ Found repository (id=${repository.id})`);
 
+    // ── Step 3: Create pending review record ──
+    console.log(`${logPrefix} Step 3: Creating pending review record`);
     const [pendingReview] = await db.insert(reviews).values({
       repositoryId: repository.id,
       prNumber,
@@ -45,11 +62,10 @@ export async function queueReview(installationId: number, repoFullName: string, 
     }).returning({ id: reviews.id });
     
     pendingReviewId = pendingReview.id;
+    console.log(`${logPrefix} Step 3: ✅ Review record created (id=${pendingReviewId})`);
 
-    const [owner, repo] = repoFullName.split("/");
-    const octokit = await getInstallationOctokit(installationId);
-
-    // 0. Enforce Monetization Cap
+    // ── Step 4: Enforce monetization cap ──
+    console.log(`${logPrefix} Step 4: Checking monetization cap`);
     const [installRecord] = await db.select({
       user: users
     })
@@ -75,6 +91,7 @@ export async function queueReview(installationId: number, repoFullName: string, 
       
       const count = Number(usageResult[0]?.count || 0);
       if (count >= 50) {
+        console.warn(`${logPrefix} Step 4: ❌ Free tier limit reached (${count}/50)`);
         await octokit.rest.issues.createComment({
           owner,
           repo,
@@ -87,15 +104,20 @@ export async function queueReview(installationId: number, repoFullName: string, 
           .where(eq(reviews.id, pendingReviewId));
         return;
       }
+      console.log(`${logPrefix} Step 4: ✅ Free tier usage: ${count}/50`);
+    } else {
+      console.log(`${logPrefix} Step 4: ✅ Plan: ${installRecord?.user.plan ?? "unknown"} — no cap`);
     }
 
-    // 1. Fetch real PR details and diff
+    // ── Step 5: Fetch PR diff ──
+    console.log(`${logPrefix} Step 5: Fetching PR data and diff`);
     const { data: prData } = await octokit.rest.pulls.get({
       owner,
       repo,
       pull_number: prNumber,
     });
     const headSha = prData.head.sha;
+    console.log(`${logPrefix} Step 5: PR head SHA: ${headSha}`);
 
     const { data: diff } = await octokit.rest.pulls.get({
       owner,
@@ -110,8 +132,9 @@ export async function queueReview(installationId: number, repoFullName: string, 
     const MAX_DIFF_LENGTH = 15000;
     const isTruncated = diffString.length > MAX_DIFF_LENGTH;
     const diffContext = isTruncated ? diffString.slice(0, MAX_DIFF_LENGTH) + "\n... (diff truncated)" : diffString;
+    console.log(`${logPrefix} Step 5: ✅ Diff fetched (${diffString.length} chars${isTruncated ? ", truncated" : ""})`);
 
-    // 2. Generate structured review
+    // ── Step 6: Generate AI review ──
     let categories: string[];
     try {
       categories = JSON.parse(repository.enabledCategories);
@@ -126,6 +149,7 @@ export async function queueReview(installationId: number, repoFullName: string, 
     }
     
     const tier = (repository.preferredTier === "deep") ? "deep" : "fast";
+    console.log(`${logPrefix} Step 6: Generating AI review (tier=${tier}, categories=${categories.join(",")})`);
 
     const { result, provider } = await router.executeWithFailover(async (provider) => {
       const response = await generateObject({
@@ -137,9 +161,13 @@ export async function queueReview(installationId: number, repoFullName: string, 
       return response.object;
     }, "chat", tier);
     
-    console.log(`Generated review successfully via ${provider.name}`);
+    console.log(
+      `${logPrefix} Step 6: ✅ Review generated via ${provider.name} (${provider.modelName}, key=#${provider.keyState.index}). ` +
+      `Findings: ${result.findings.length}`
+    );
 
-    // 3. Post review to GitHub
+    // ── Step 7: Post review to GitHub ──
+    console.log(`${logPrefix} Step 7: Posting review to GitHub`);
     const comments = result.findings.map(f => ({
       path: f.path,
       line: f.line,
@@ -152,7 +180,7 @@ export async function queueReview(installationId: number, repoFullName: string, 
     }
 
     try {
-      await octokit.rest.pulls.createReview({
+      const reviewResponse = await octokit.rest.pulls.createReview({
         owner,
         repo,
         pull_number: prNumber,
@@ -160,23 +188,34 @@ export async function queueReview(installationId: number, repoFullName: string, 
         body: finalSummary,
         comments: comments.length > 0 ? comments : undefined,
       });
-    } catch (postError) {
-      console.warn("Failed to post inline review (likely invalid line numbers), falling back to issue comment.", postError);
+      console.log(`${logPrefix} Step 7: ✅ Inline review posted (status=${reviewResponse.status})`);
+    } catch (postError: any) {
+      console.warn(
+        `${logPrefix} Step 7: ⚠️ Inline review failed (status=${postError?.status}, ` +
+        `message=${postError?.message}). Falling back to issue comment.`
+      );
+      if (postError?.response?.data) {
+        console.warn(`${logPrefix} Step 7: GitHub API error body:`, JSON.stringify(postError.response.data));
+      }
+      
       // Fallback: Post as a single issue comment
       const fallbackBody = `${finalSummary}\n\n**Findings:**\n` + 
         result.findings.map(f => `- **${f.path}:${f.line}** [${f.severity} / ${f.category}]: ${f.comment}`).join("\n");
         
-      await octokit.rest.issues.createComment({
+      const fallbackResponse = await octokit.rest.issues.createComment({
         owner,
         repo,
         issue_number: prNumber,
         body: fallbackBody,
       });
+      console.log(`${logPrefix} Step 7: ✅ Fallback comment posted (status=${fallbackResponse.status})`);
     }
 
+    // ── Step 8: Create check run ──
+    console.log(`${logPrefix} Step 8: Creating check run`);
     const hasHighSeverity = result.findings.some(f => f.severity.toLowerCase() === 'high');
 
-    await octokit.rest.checks.create({
+    const checkResponse = await octokit.rest.checks.create({
       owner,
       repo,
       name: "Kareixo Code Review",
@@ -188,8 +227,9 @@ export async function queueReview(installationId: number, repoFullName: string, 
         summary: finalSummary,
       }
     });
+    console.log(`${logPrefix} Step 8: ✅ Check run created (status=${checkResponse.status})`);
 
-    // Update status to completed
+    // ── Step 9: Update DB record ──
     await db.update(reviews)
       .set({
         status: "completed",
@@ -198,14 +238,33 @@ export async function queueReview(installationId: number, repoFullName: string, 
       })
       .where(eq(reviews.id, pendingReviewId));
 
-    console.log(`Successfully completed and logged review for ${repoFullName}#${prNumber}`);
+    console.log(`${logPrefix} ── PIPELINE COMPLETE ── (${result.findings.length} findings)`);
     
-  } catch (error) {
-    console.error(`Failed to generate review for ${repoFullName}#${prNumber}`, error);
+  } catch (error: any) {
+    console.error(`${logPrefix} ── PIPELINE FAILED ──`, error);
+
+    // Update DB record to failed
     if (pendingReviewId) {
       await db.update(reviews)
-        .set({ status: "failed" })
-        .where(eq(reviews.id, pendingReviewId));
+        .set({ status: "failed", summary: error?.message?.slice(0, 500) })
+        .where(eq(reviews.id, pendingReviewId)).catch(() => {});
+    }
+
+    // ── Dead-letter fallback: post a minimal comment so it's never silent ──
+    if (octokit) {
+      try {
+        await octokit.rest.issues.createComment({
+          owner,
+          repo,
+          issue_number: prNumber,
+          body: `⚠️ **Kareixo** couldn't complete a review on this PR.\n\n` +
+            `**Error:** ${error?.message?.slice(0, 300) || "Unknown error"}\n\n` +
+            `_The team has been notified. A review will be retried on the next push._`,
+        });
+        console.log(`${logPrefix} Dead-letter fallback comment posted.`);
+      } catch (deadLetterError) {
+        console.error(`${logPrefix} Dead-letter fallback ALSO failed:`, deadLetterError);
+      }
     }
   }
 }
