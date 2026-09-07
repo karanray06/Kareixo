@@ -9,7 +9,7 @@ const COOLDOWN_BASE_MS = 60_000;
 const COOLDOWN_MAX_MS = 5 * 60_000;
 const CIRCUIT_BREAKER_THRESHOLD = 3;
 const CIRCUIT_BREAKER_COOLDOWN_MS = 3 * 60_000;
-export const PER_ATTEMPT_TIMEOUT_MS = 10_000;
+export const PER_ATTEMPT_TIMEOUT_MS = 30_000;
 
 export type KeyState = {
   task: "chat" | "code";
