@@ -41,19 +41,27 @@ export async function POST(req: Request) {
 
       // Intercept the stream to catch immediate failures (e.g. 401/429) before streaming
       const reader = res.fullStream.getReader();
-      const chunk1 = await reader.read();
-      const chunk2 = await reader.read();
+      const buffered: any[] = [];
+      let streamError: any = null;
 
-      // If the API call fails immediately, chunk2 will be the error
-      if (chunk2.value && chunk2.value.type === "error") {
-        throw chunk2.value.error;
+      for (let i = 0; i < 2; i++) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (value.type === "error") {
+          streamError = value.error;
+          break;
+        }
+        buffered.push(value);
+      }
+
+      if (streamError) {
+        throw streamError;
       }
 
       // It's a valid stream. Reconstruct fullStream so the start chunks aren't lost.
       const customFullStream = new ReadableStream({
         start(controller) {
-          if (!chunk1.done) controller.enqueue(chunk1.value);
-          if (!chunk2.done) controller.enqueue(chunk2.value);
+          for (const chunk of buffered) controller.enqueue(chunk);
         },
         async pull(controller) {
           const { done, value } = await reader.read();
@@ -82,7 +90,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error("Chat API error:", error);
     return NextResponse.json(
-      { error: error.message || "All NVIDIA API keys are currently exhausted. Please try again shortly." },
+      { error: error.message || "All Gemini API keys are currently exhausted. Please try again shortly." },
       { status: 503 }
     );
   }

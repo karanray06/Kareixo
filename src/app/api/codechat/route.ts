@@ -59,7 +59,7 @@ export async function POST(req: Request) {
         // Tool: Read a specific file from the repo
         tools.readFile = {
           description: "Read a file from the repository. Use this to examine source code when you need to see the actual implementation.",
-          parameters: z.object({
+          inputSchema: z.object({
             path: z.string().describe("The file path relative to the repo root, e.g. 'src/lib/utils.ts'"),
           }),
           execute: async ({ path: filePath }: { path: string }) => {
@@ -91,7 +91,7 @@ export async function POST(req: Request) {
         // Tool: List directory contents
         tools.listDirectory = {
           description: "List the contents of a directory in the repository. Use this to explore the file structure.",
-          parameters: z.object({
+          inputSchema: z.object({
             path: z.string().describe("The directory path relative to repo root, e.g. 'src/lib' or '' for root").default(""),
           }),
           execute: async ({ path: dirPath }: { path: string }) => {
@@ -123,7 +123,7 @@ export async function POST(req: Request) {
         // Tool: Search for code in the repo
         tools.searchCode = {
           description: "Search for code in the repository using GitHub's code search.",
-          parameters: z.object({
+          inputSchema: z.object({
             query: z.string().describe("The search query, e.g. 'function handleSubmit' or 'import router'"),
           }),
           execute: async ({ query }: { query: string }) => {
@@ -171,17 +171,26 @@ export async function POST(req: Request) {
 
       // Probe the stream for immediate failures
       const reader = res.fullStream.getReader();
-      const chunk1 = await reader.read();
-      const chunk2 = await reader.read();
+      const buffered: any[] = [];
+      let streamError: any = null;
 
-      if (chunk2.value && chunk2.value.type === "error") {
-        throw chunk2.value.error;
+      for (let i = 0; i < 2; i++) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (value.type === "error") {
+          streamError = value.error;
+          break;
+        }
+        buffered.push(value);
+      }
+
+      if (streamError) {
+        throw streamError;
       }
 
       const customFullStream = new ReadableStream({
         start(controller) {
-          if (!chunk1.done) controller.enqueue(chunk1.value);
-          if (!chunk2.done) controller.enqueue(chunk2.value);
+          for (const chunk of buffered) controller.enqueue(chunk);
         },
         async pull(controller) {
           const { done, value } = await reader.read();

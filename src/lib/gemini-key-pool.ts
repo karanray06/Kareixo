@@ -23,8 +23,8 @@ export type KeyState = {
 };
 
 class GeminiKeyPool {
-  private chatKey!: KeyState;
-  private codeKey!: KeyState;
+  private chatKeys: KeyState[] = [];
+  private codeKeys: KeyState[] = [];
   private initialized = false;
 
   private ensureInitialized(): void {
@@ -37,25 +37,28 @@ class GeminiKeyPool {
     const chatKeyValue = process.env.GEMINI_API_KEY_CHAT;
     const codeKeyValue = process.env.GEMINI_API_KEY_CODE;
 
-    if (!chatKeyValue || !codeKeyValue) {
-      console.warn("[KeyPool] WARNING: Missing GEMINI_API_KEY_CHAT or GEMINI_API_KEY_CODE. Falling back to single key if available.");
-    }
-
-    const defaultKey = chatKeyValue || codeKeyValue || process.env.GEMINI_API_KEY;
-    if (!defaultKey) {
+    if (!chatKeyValue && !codeKeyValue && !process.env.GEMINI_API_KEY) {
       throw new Error("No Gemini API keys configured.");
     }
 
-    this.chatKey = this.createKeyState("chat", chatKeyValue || defaultKey);
-    this.codeKey = this.createKeyState("code", codeKeyValue || defaultKey);
+    const defaultKeys = (process.env.GEMINI_API_KEY || "").split(",").map(k => k.trim()).filter(Boolean);
+    const chatKeysInput = chatKeyValue ? chatKeyValue.split(",").map(k => k.trim()).filter(Boolean) : defaultKeys;
+    const codeKeysInput = codeKeyValue ? codeKeyValue.split(",").map(k => k.trim()).filter(Boolean) : defaultKeys;
 
-    console.log(`[KeyPool] Loaded Gemini API keys for Chat and Code.`);
+    if (chatKeysInput.length === 0 || codeKeysInput.length === 0) {
+      throw new Error("No Gemini API keys configured.");
+    }
+
+    this.chatKeys = chatKeysInput.map(k => this.createKeyState("chat", k));
+    this.codeKeys = codeKeysInput.map(k => this.createKeyState("code", k));
+
+    console.log(`[KeyPool] Loaded ${this.chatKeys.length} Chat keys and ${this.codeKeys.length} Code keys.`);
   }
 
   private createKeyState(task: "chat" | "code", key: string): KeyState {
     return {
       task,
-      key: key.trim(),
+      key: key,
       consecutiveFailures: 0,
       cooldownUntil: 0,
       circuitOpen: false,
@@ -67,17 +70,27 @@ class GeminiKeyPool {
 
   getKeyForTask(task: "chat" | "code"): KeyState {
     this.ensureInitialized();
-    const candidate = task === "chat" ? this.chatKey : this.codeKey;
+    const candidates = task === "chat" ? this.chatKeys : this.codeKeys;
     const now = Date.now();
 
-    if (candidate.circuitOpen) {
-      if (now >= candidate.circuitOpenUntil) {
+    let bestCandidate: KeyState | null = null;
+
+    for (const candidate of candidates) {
+      if (candidate.circuitOpen && now >= candidate.circuitOpenUntil) {
         candidate.circuitOpen = false;
         console.log(`[KeyPool] Key for ${task} circuit breaker half-opened for probe.`);
       }
+
+      if (!candidate.circuitOpen && now >= candidate.cooldownUntil) {
+        return candidate;
+      }
+
+      if (!bestCandidate || candidate.cooldownUntil < bestCandidate.cooldownUntil) {
+        bestCandidate = candidate;
+      }
     }
 
-    return candidate;
+    return bestCandidate!;
   }
 
   reportSuccess(keyState: KeyState): void {
@@ -120,7 +133,7 @@ class GeminiKeyPool {
   getHealthSummary() {
     if (!this.initialized) return [];
     const now = Date.now();
-    return [this.chatKey, this.codeKey].map((k) => ({
+    return [...this.chatKeys, ...this.codeKeys].map((k) => ({
       task: k.task,
       available: !k.circuitOpen && now >= k.cooldownUntil,
       consecutiveFailures: k.consecutiveFailures,

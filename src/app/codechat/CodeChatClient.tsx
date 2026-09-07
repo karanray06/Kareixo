@@ -218,7 +218,7 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
           <div className="flex-1" />
           <div className="text-[10px] font-mono text-[var(--text-secondary)] flex items-center gap-1.5">
             <div className={`w-1.5 h-1.5 rounded-full ${isLoading ? "bg-orange-400 animate-pulse" : "bg-emerald-400"}`} />
-            {selectedRepo ? selectedRepo.fullName : "No repo"} • NVIDIA NIM
+            {selectedRepo ? selectedRepo.fullName : "No repo"} • Gemini
           </div>
         </div>
 

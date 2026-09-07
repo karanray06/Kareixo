@@ -79,6 +79,6 @@ export const chatMessages = pgTable("chat_messages", {
   conversationId: uuid("conversation_id").references(() => chatConversations.id).notNull(),
   role: text("role").notNull(), // 'user', 'assistant', 'system'
   content: text("content").notNull(),
-  model: text("model"), // track which NVIDIA model answered
+  model: text("model"), // track which Gemini model answered
   createdAt: timestamp("created_at").defaultNow(),
 });

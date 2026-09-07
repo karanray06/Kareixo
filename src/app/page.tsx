@@ -86,10 +86,10 @@ export default function Home() {
           How is it free?
         </h2>
         <p className="text-xl text-[var(--text-secondary)] max-w-3xl mx-auto">
-          Kareixo relies entirely on NVIDIA's powerful NIM APIs. When you connect a repository, your reviews are powered by the fastest and most capable models hosted directly by NVIDIA, with automatic failover to guarantee uptime.
+          Kareixo runs on Google's Gemini models, with automatic failover across keys and tiers to guarantee uptime.
         </p>
         <div className="flex flex-wrap justify-center gap-4 mt-8">
-          {["Kimi", "Llama 3.1", "Nemotron", "Mistral Large", "MiniMax", "Granite", "Nemotron 340B"].map((provider) => (
+          {["Gemini 3.6 Pro", "Gemini 3.6 Flash"].map((provider) => (
             <span key={provider} className="px-6 py-3 bg-[var(--bg-elevated)] border border-[var(--color-outline)]/20 rounded-full font-mono text-sm font-semibold">
               {provider}
             </span>
@@ -104,7 +104,7 @@ export default function Home() {
             Meet Kareixo Chat
           </h2>
           <p className="text-xl text-[var(--text-secondary)] mb-8">
-            The same resilient, NVIDIA-powered multi-model architecture, now available as a general-purpose AI chat assistant. Seamlessly fall back across the best models available.
+            The same resilient, Gemini-powered multi-model architecture, now available as a general-purpose AI chat assistant. Seamlessly fall back across the best models available.
           </p>
           <a
             href="/chat"

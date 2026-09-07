@@ -23,7 +23,7 @@ export default function PrivacyPage() {
         <section className="space-y-4">
           <h2 className="text-2xl font-bold">Third-Party LLM Providers</h2>
           <p className="text-[var(--text-secondary)]">
-            To provide automated code reviews, the diff content from your Pull Requests is sent to third-party LLM providers (such as NVIDIA) for analysis. 
+            To provide automated code reviews, the diff content from your Pull Requests is sent to third-party LLM providers (such as Google (Gemini API)) for analysis. 
             We do not store your code or diffs after the review is generated. We only retain the generated summary and metadata to provide you with an activity dashboard.
           </p>
         </section>

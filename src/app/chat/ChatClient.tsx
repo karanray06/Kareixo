@@ -31,7 +31,7 @@ export default function ChatClient() {
       <header className="border-b border-[var(--color-outline)]/20 py-4 px-6 bg-[var(--bg-elevated)] flex justify-between items-center">
         <h1 className="font-display text-xl font-bold">Kareixo Chat</h1>
         <div className="text-xs font-mono bg-[var(--bg-base)] px-3 py-1 rounded-full border border-[var(--color-outline)]/20">
-          NVIDIA NIM Powered
+          Gemini Powered
         </div>
       </header>
 

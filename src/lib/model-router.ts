@@ -49,9 +49,9 @@ export class ModelRouter {
 
     let modelEntry;
     if (tier === "deep") {
-      modelEntry = this.modelCatalog.find(m => m.modelId === "gemini-2.5-pro") || this.modelCatalog[1];
+      modelEntry = this.modelCatalog.find(m => m.modelId === "gemini-3.6-pro") || this.modelCatalog[1];
     } else {
-      modelEntry = this.modelCatalog.find(m => m.modelId === "gemini-2.5-flash") || this.modelCatalog[0];
+      modelEntry = this.modelCatalog.find(m => m.modelId === "gemini-3.6-flash") || this.modelCatalog[0];
     }
 
     return {
@@ -74,9 +74,10 @@ export class ModelRouter {
     const maxAttempts = 3;
     let attempts = 0;
     let lastError: Error | null = null;
+    let currentTier = tier;
 
     while (attempts < maxAttempts) {
-      const provider = this.getProviderForTask(taskType, tier);
+      const provider = this.getProviderForTask(taskType, currentTier);
       attempts++;
 
       try {
@@ -105,6 +106,13 @@ export class ModelRouter {
 
         if (isRetryableError(error)) {
           keyPool.reportFailure(provider.keyState, statusCode);
+          
+          if (attempts === maxAttempts && currentTier === "deep") {
+            console.log(`[ModelRouter] Falling back from deep tier to fast tier for final attempt.`);
+            currentTier = "fast";
+            attempts--; // Allow one more attempt with fast tier
+          }
+          
           continue;
         }
 
