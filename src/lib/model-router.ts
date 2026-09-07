@@ -34,7 +34,7 @@ function isRetryableError(error: any): boolean {
   if (status === 429 || status === 404) return true;
   if (status !== undefined && status >= 500) return true;
   const msg = error?.message?.toLowerCase() ?? "";
-  return msg.includes("429") || msg.includes("rate limit") || msg.includes("timeout") || msg.includes("not found");
+  return msg.includes("429") || msg.includes("rate limit") || msg.includes("timeout") || msg.includes("timed out") || msg.includes("not found");
 }
 
 export class ModelRouter {

@@ -174,7 +174,7 @@ export async function POST(req: Request) {
       const buffered: any[] = [];
       let streamError: any = null;
 
-      for (let i = 0; i < 2; i++) {
+      for (let i = 0; i < 1; i++) {
         const { done, value } = await reader.read();
         if (done) break;
         if (value.type === "error") {
