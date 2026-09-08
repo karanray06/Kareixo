@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { waitUntil } from "@vercel/functions";
+
+export const maxDuration = 60;
 import crypto from "crypto";
 import { getDb } from "@/db";
 import { github_installations, repositories, reviews, feedback } from "@/db/schema";

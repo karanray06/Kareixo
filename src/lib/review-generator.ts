@@ -49,6 +49,14 @@ export async function queueReview(installationId: number, repoFullName: string, 
 
     if (!repository) {
       console.warn(`${logPrefix} Step 2: ❌ Repository not found in DB — skipping`);
+      if (octokit) {
+        await octokit.rest.issues.createComment({
+          owner,
+          repo,
+          issue_number: prNumber,
+          body: `⚠️ **Kareixo Configuration Error**\n\nThis repository is not registered in Kareixo's database. This usually happens if a database migration was recently run. Please go to your GitHub Settings, **uninstall the Kareixo app, and reinstall it** to sync the repository back to the database.`,
+        }).catch(() => {});
+      }
       return;
     }
     console.log(`${logPrefix} Step 2: ✅ Found repository (id=${repository.id})`);
