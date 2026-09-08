@@ -13,7 +13,7 @@ export const users = pgTable("users", {
 export const github_installations = pgTable("github_installations", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id), // nullable — webhook creates before user links
-  installationId: integer("installation_id").notNull().unique(),
+  installationId: bigint("installation_id", { mode: 'number' }).notNull().unique(),
   accountLogin: text("account_login").notNull(), // GitHub account login from webhook
   digestWebhookUrl: text("digest_webhook_url"), // For Slack/Discord digests
   createdAt: timestamp("created_at").defaultNow(),
@@ -22,8 +22,8 @@ export const github_installations = pgTable("github_installations", {
 
 export const repositories = pgTable("repositories", {
   id: uuid("id").primaryKey().defaultRandom(),
-  installationId: integer("installation_id").references(() => github_installations.installationId).notNull(),
-  githubRepoId: integer("github_repo_id").notNull(),
+  installationId: bigint("installation_id", { mode: 'number' }).references(() => github_installations.installationId).notNull(),
+  githubRepoId: bigint("github_repo_id", { mode: 'number' }).notNull(),
   fullName: text("full_name").notNull(), // e.g. owner/repo
   enabledCategories: text("enabled_categories").notNull().default('["logic", "security", "style"]'), // JSON string array
   preferredTier: text("preferred_tier").notNull().default('fast'), // "deep" or "fast"
