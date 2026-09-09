@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Serif, Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const instrumentSerif = Instrument_Serif({
+const interDisplay = Inter({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["400"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -24,7 +24,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#606887",
+  themeColor: "#FAFAF9",
 };
 
 export const metadata: Metadata = {
@@ -52,9 +52,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${instrumentSerif.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+      className={`${interDisplay.variable} ${inter.variable} ${jetbrainsMono.variable}`}
     >
-      <body>{children}</body>
+      <body className="antialiased min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)]">{children}</body>
     </html>
   );
 }

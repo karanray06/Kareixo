@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-background" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "on-surface": "#1a1c1c",
+          "dark-text-muted": "#71717A",
+          "accent-ai-hover": "#7C3AED",
+          "secondary-fixed": "#e9ddff",
+          "inverse-on-surface": "#f1f1f0",
+          "on-primary-fixed-variant": "#47464a",
+          "surface-container-highest": "#e2e2e2",
+          "on-tertiary": "#ffffff",
+          "tertiary-fixed-dim": "#b4c5ff",
+          "secondary-fixed-dim": "#d0bcff",
+          "on-tertiary-container": "#497cff",
+          "on-primary": "#ffffff",
+          "primary-fixed-dim": "#c8c5ca",
+          "dark-text-secondary": "#A1A1AA",
+          "tertiary-fixed": "#dbe1ff",
+          "outline-variant": "#c8c5cb",
+          "on-tertiary-fixed": "#00174b",
+          "error": "#DC2626",
+          "dark-border": "#27272A",
+          "on-background": "#1a1c1c",
+          "on-secondary": "#ffffff",
+          "info": "#2563EB",
+          "success": "#16A34A",
+          "dark-background": "#09090B",
+          "surface-container-low": "#f3f4f3",
+          "border-strong": "#D6D3D1",
+          "dark-surface-elevated": "#18181B",
+          "primary": "#000000",
+          "surface-bright": "#f9f9f8",
+          "error-subtle": "#FEE2E2",
+          "info-subtle": "#DBEAFE",
+          "primary-container": "#1b1b1e",
+          "on-secondary-container": "#fffbff",
+          "inverse-surface": "#2f3130",
+          "on-error-container": "#93000a",
+          "surface-container-high": "#e8e8e7",
+          "dark-border-strong": "#3F3F46",
+          "surface-tint": "#5f5e61",
+          "dark-text-primary": "#FAFAFA",
+          "primary-fixed": "#e4e1e6",
+          "secondary": "#6b38d4",
+          "text-secondary": "#71717A",
+          "background": "#f9f9f8",
+          "outline": "#77767b",
+          "on-surface-variant": "#47464b",
+          "warning": "#D97706",
+          "error-container": "#ffdad6",
+          "surface-subtle": "#F5F5F4",
+          "success-subtle": "#DCFCE7",
+          "text-primary": "#18181B",
+          "surface-dim": "#dadad9",
+          "on-primary-fixed": "#1b1b1e",
+          "tertiary": "#000000",
+          "surface-container-lowest": "#ffffff",
+          "accent-ai-subtle": "#F5F3FF",
+          "on-primary-container": "#858387",
+          "inverse-primary": "#c8c5ca",
+          "warning-subtle": "#FEF3C7",
+          "text-muted": "#A1A1AA",
+          "border": "#E7E5E4",
+          "on-tertiary-fixed-variant": "#003ea8",
+          "border-interactive": "#E4E4E7",
+          "on-error": "#ffffff",
+          "surface-elevated": "#FFFFFF",
+          "tertiary-container": "#00174b",
+          "surface-container": "#eeeeed",
+          "on-secondary-fixed": "#23005c",
+          "surface-variant": "#e2e2e2",
+          "dark-surface": "#111113",
+          "secondary-container": "#8455ef",
+          "on-secondary-fixed-variant": "#5516be",
+          "surface": "#FFFFFF"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "gutter-default": "24px",
+          "margin-mobile": "20px",
+          "space-2": "8px",
+          "space-1": "4px",
+          "section-desktop": "128px",
+          "container-max": "1280px",
+          "space-12": "48px",
+          "section-mobile": "72px",
+          "space-8": "32px",
+          "space-10": "40px",
+          "space-32": "128px",
+          "space-24": "96px",
+          "space-20": "80px",
+          "space-4": "16px",
+          "space-3": "12px",
+          "space-6": "24px",
+          "space-16": "64px"
+        },
+        "fontFamily": {
+          "display-hero": [
+            "Geist"
+          ],
+          "code-diff": [
+            "JetBrains Mono"
+          ],
+          "label-ui": [
+            "Geist"
+          ],
+          "title-card-sm": [
+            "Geist"
+          ],
+          "headline-section": [
+            "Geist"
+          ],
+          "title-card": [
+            "Geist"
+          ],
+          "body-base": [
+            "Geist"
+          ],
+          "badge-mono": [
+            "JetBrains Mono"
+          ],
+          "display-hero-mobile": [
+            "Geist"
+          ],
+          "code-gutter": [
+            "JetBrains Mono"
+          ],
+          "headline-section-mobile": [
+            "Geist"
+          ],
+          "body-sm": [
+            "Geist"
+          ]
+        },
+        "fontSize": {
+          "display-hero": [
+            "72px",
+            {
+              "lineHeight": "80px",
+              "letterSpacing": "-0.03em",
+              "fontWeight": "700"
+            }
+          ],
+          "code-diff": [
+            "13px",
+            {
+              "lineHeight": "20px",
+              "letterSpacing": "0",
+              "fontWeight": "400"
+            }
+          ],
+          "label-ui": [
+            "13px",
+            {
+              "lineHeight": "18px",
+              "letterSpacing": "0.01em",
+              "fontWeight": "500"
+            }
+          ],
+          "title-card-sm": [
+            "16px",
+            {
+              "lineHeight": "24px",
+              "letterSpacing": "-0.005em",
+              "fontWeight": "600"
+            }
+          ],
+          "headline-section": [
+            "40px",
+            {
+              "lineHeight": "48px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "600"
+            }
+          ],
+          "title-card": [
+            "20px",
+            {
+              "lineHeight": "28px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "600"
+            }
+          ],
+          "body-base": [
+            "16px",
+            {
+              "lineHeight": "26px",
+              "letterSpacing": "0",
+              "fontWeight": "400"
+            }
+          ],
+          "badge-mono": [
+            "12px",
+            {
+              "lineHeight": "16px",
+              "letterSpacing": "0.02em",
+              "fontWeight": "500"
+            }
+          ],
+          "display-hero-mobile": [
+            "38px",
+            {
+              "lineHeight": "44px",
+              "letterSpacing": "-0.025em",
+              "fontWeight": "700"
+            }
+          ],
+          "code-gutter": [
+            "12px",
+            {
+              "lineHeight": "20px",
+              "letterSpacing": "0",
+              "fontWeight": "400"
+            }
+          ],
+          "headline-section-mobile": [
+            "28px",
+            {
+              "lineHeight": "34px",
+              "letterSpacing": "-0.015em",
+              "fontWeight": "600"
+            }
+          ],
+          "body-sm": [
+            "14px",
+            {
+              "lineHeight": "22px",
+              "letterSpacing": "0",
+              "fontWeight": "400"
+            }
+          ]
+        }
+      },
+    },
+  }</script></head><body class="bg-background font-body-base text-on-surface min-h-full flex flex-col"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-[1280px] mx-auto px-6 lg:px-12 flex items-center justify-between"><div class="flex items-center gap-8"><a class="flex items-center gap-2.5" data-path="landing-page" href="#"><div class="w-7 h-7 rounded-lg bg-surface-subtle flex items-center justify-center overflow-hidden"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1UWIz4RfzHyOZlfOGvhBUtg7-6QYbUcT3ET13ztA2Vs2YWxd0ssaKyKmSb9Oco1LKHUyj6kVc6Nq1alUKokL6GBciJqGHkqfg-r5egq331YZbd0pVbivKzpx29lXbLvXyNHSDUP2lAfjV3r_W4wKD3WplLQg2wU0vFmCODrB8Z5S857jA9VXxAGUBE6V0YwoEwOGU0spcQKzqWJliJS-hz2RrMy58OUNVKioV3ZFU3zHVGRy_urdd9_P8HRCezeWvWwuE5qYIwy-A"/></div><span class="font-title-card-sm text-title-card-sm tracking-tight text-text-primary">Kareixo</span></a><nav class="hidden md:flex items-center gap-6" data-active-classes="text-text-primary font-medium"><a class="font-label-ui text-label-ui text-text-secondary hover:text-text-primary transition-colors" data-path="product" href="#">Product</a><a class="font-label-ui text-label-ui text-text-secondary hover:text-text-primary transition-colors" data-path="how-it-works" href="#">How it works</a><a class="font-label-ui text-label-ui text-text-secondary hover:text-text-primary transition-colors" data-path="security" href="#">Security</a><a class="font-label-ui text-label-ui text-text-secondary hover:text-text-primary transition-colors" href="https://github.com" rel="noreferrer" target="_blank">GitHub</a></nav></div><div class="flex items-center gap-3"><a class="hidden sm:inline-flex items-center justify-center font-label-ui text-label-ui text-text-secondary hover:text-text-primary px-3 py-2 transition-colors" data-path="sign-in" href="#">Sign in</a><a class="inline-flex items-center justify-center h-10 px-[18px] rounded-lg bg-text-primary text-on-primary font-label-ui text-label-ui transition-all duration-150 ease-out hover:-translate-y-[1px]" data-path="install" href="#">Install on GitHub</a><img alt="Profile" class="w-8 h-8 rounded-full object-cover ml-1" src="https://lh3.googleusercontent.com/aida/AEtjO1UWIz4RfzHyOZlfOGvhBUtg7-6QYbUcT3ET13ztA2Vs2YWxd0ssaKyKmSb9Oco1LKHUyj6kVc6Nq1alUKokL6GBciJqGHkqfg-r5egq331YZbd0pVbivKzpx29lXbLvXyNHSDUP2lAfjV3r_W4wKD3WplLQg2wU0vFmCODrB8Z5S857jA9VXxAGUBE6V0YwoEwOGU0spcQKzqWJliJS-hz2RrMy58OUNVKioV3ZFU3zHVGRy_urdd9_P8HRCezeWvWwuE5qYIwy-A"/></div></div></header><main class="w-full pt-16 flex-1 bg-background"><div class="flex flex-col w-full">
+<div class="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col h-[calc(100vh-4.25rem)] min-h-[820px]">
+<!-- Main Workspace Chassis -->
+<div class="flex-1 grid grid-cols-12 gap-0 bg-surface rounded-xl shadow-sm overflow-hidden border border-border">
+<!-- ========================================================================= -->
+<!-- LEFT SIDEBAR: THREAD HISTORY & REPOSITORY CONTEXT (Cols 1-3: ~320px)      -->
+<!-- ========================================================================= -->
+<aside class="col-span-12 lg:col-span-3 bg-surface-subtle/70 flex flex-col justify-between border-r border-border">
+<!-- Top Section: Brand/New Chat & Filters -->
+<div class="p-4 flex flex-col gap-3">
+<!-- Top Row: Title & New Thread Action -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-accent-ai-hover animate-pulse"></span>
+<span class="font-title-card-sm text-title-card-sm text-text-primary tracking-tight">Kareixo Chat</span>
+</div>
+<span class="font-badge-mono text-[11px] px-2 py-0.5 rounded-md bg-accent-ai-subtle text-accent-ai-hover font-medium">v2.4 Live</span>
+</div>
+<!-- New Thread Action Button -->
+<button class="w-full h-9 px-3 rounded-lg bg-text-primary hover:bg-black text-on-primary flex items-center justify-between transition-all duration-150 shadow-sm group" type="button">
+<span class="flex items-center gap-2 font-label-ui text-label-ui">
+<span class="material-symbols-outlined text-[18px] text-white">add</span>
+              New Thread
+            </span>
+<kbd class="font-badge-mono text-[11px] px-1.5 py-0.5 rounded bg-white/20 text-white/90">⌘N</kbd>
+</button>
+<!-- Search / Filter Input -->
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-2.5 top-2 text-[18px] text-text-muted">search</span>
+<input class="w-full h-8 pl-8 pr-3 text-body-sm font-body-sm bg-surface rounded-md border border-border-interactive placeholder:text-text-muted focus:outline-none focus:border-text-primary transition-colors text-text-primary" placeholder="Filter threads..." type="text"/>
+</div>
+</div>
+<!-- Thread List Area -->
+<div class="flex-1 overflow-y-auto px-3 py-1 space-y-1">
+<div class="px-2 py-1 text-[11px] font-badge-mono text-text-muted uppercase tracking-wider">Pinned &amp; Recent</div>
+<!-- Active Thread Card -->
+<div class="w-full text-left p-2.5 rounded-lg bg-surface border border-border-interactive shadow-xs flex flex-col gap-1.5 transition-all cursor-pointer">
+<div class="flex items-center justify-between gap-2">
+<span class="font-title-card-sm text-[13px] text-text-primary font-medium truncate">Postgres slow query on user_email index</span>
+<span class="font-badge-mono text-[11px] text-text-muted whitespace-nowrap">10m ago</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="font-badge-mono text-[11px] px-1.5 py-0.5 rounded bg-surface-subtle text-text-secondary border border-border truncate max-w-[170px]">
+                karanray06/api-service
+              </span>
+<span class="w-2 h-2 rounded-full bg-accent-ai-hover" title="Active conversation"></span>
+</div>
+</div>
+<!-- Thread Item 2 -->
+<div class="w-full text-left p-2.5 rounded-lg hover:bg-surface/80 border border-transparent hover:border-border transition-colors cursor-pointer group flex flex-col gap-1.5">
+<div class="flex items-center justify-between gap-2">
+<span class="font-body-sm text-[13px] text-text-primary group-hover:text-black font-normal truncate">CWE-208 timing attack mitigation for auth.guard.ts</span>
+<span class="font-badge-mono text-[11px] text-text-muted whitespace-nowrap">Yesterday</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="font-badge-mono text-[11px] px-1.5 py-0.5 rounded bg-surface-subtle text-text-muted truncate max-w-[170px]">
+                api-service #284
+              </span>
+<span class="material-symbols-outlined text-[14px] text-text-muted group-hover:text-text-secondary">chevron_right</span>
+</div>
+</div>
+<!-- Thread Item 3 -->
+<div class="w-full text-left p-2.5 rounded-lg hover:bg-surface/80 border border-transparent hover:border-border transition-colors cursor-pointer group flex flex-col gap-1.5">
+<div class="flex items-center justify-between gap-2">
+<span class="font-body-sm text-[13px] text-text-primary group-hover:text-black font-normal truncate">Redis connection pool memory leak investigation</span>
+<span class="font-badge-mono text-[11px] text-text-muted whitespace-nowrap">2d ago</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="font-badge-mono text-[11px] px-1.5 py-0.5 rounded bg-surface-subtle text-text-muted truncate max-w-[170px]">
+                web-client
+              </span>
+<span class="material-symbols-outlined text-[14px] text-text-muted group-hover:text-text-secondary">chevron_right</span>
+</div>
+</div>
+<!-- Thread Item 4 -->
+<div class="w-full text-left p-2.5 rounded-lg hover:bg-surface/80 border border-transparent hover:border-border transition-colors cursor-pointer group flex flex-col gap-1.5">
+<div class="flex items-center justify-between gap-2">
+<span class="font-body-sm text-[13px] text-text-primary group-hover:text-black font-normal truncate">Next.js 15 Server Actions migration plan</span>
+<span class="font-badge-mono text-[11px] text-text-muted whitespace-nowrap">Last week</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="font-badge-mono text-[11px] px-1.5 py-0.5 rounded bg-surface-subtle text-text-muted truncate max-w-[170px]">
+                docs/rfc-042
+              </span>
+<span class="material-symbols-outlined text-[14px] text-text-muted group-hover:text-text-secondary">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Sidebar Footer: Repository Context Selector -->
+<div class="p-3 border-t border-border bg-surface flex flex-col gap-2">
+<div class="text-[11px] font-badge-mono text-text-muted uppercase tracking-wider flex items-center justify-between">
+<span>Repository Context</span>
+<span class="text-success flex items-center gap-1 font-medium text-[10px]">
+<span class="w-1.5 h-1.5 rounded-full bg-success"></span> SYNCED
+            </span>
+</div>
+<div class="p-2 rounded-lg bg-surface-subtle border border-border flex items-center justify-between cursor-pointer hover:bg-surface-container-high/60 transition-colors">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-text-secondary text-[18px]">folder_code</span>
+<div class="min-w-0">
+<p class="font-badge-mono text-[12px] text-text-primary font-medium truncate">karanray06/api-service</p>
+<div class="flex items-center gap-2 text-[11px] font-badge-mono text-text-muted">
+<span class="flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[12px]">fork_right</span> main
+                  </span>
+<span>·</span>
+<span>48 files indexed</span>
+</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-text-muted text-[16px]">unfold_more</span>
+</div>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- RIGHT COLUMN: CHAT STREAM & PROMPT COMPOSER (Cols 4-12)                   -->
+<!-- ========================================================================= -->
+<main class="col-span-12 lg:col-span-9 flex flex-col bg-surface h-full">
+<!-- Top Conversation Header -->
+<header class="h-14 px-5 border-b border-border flex items-center justify-between bg-surface/90 backdrop-blur">
+<!-- Left: Title & Edit -->
+<div class="flex items-center gap-3 min-w-0">
+<div class="flex items-center gap-2 min-w-0">
+<h1 class="font-title-card-sm text-title-card-sm text-text-primary tracking-tight truncate">
+                Postgres slow query on user_email index
+              </h1>
+<button aria-label="Rename thread" class="text-text-muted hover:text-text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+</div>
+<!-- Model Health / Live Latency Pill -->
+<div class="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-surface-subtle border border-border text-[11px] font-badge-mono text-text-secondary">
+<span class="w-1.5 h-1.5 rounded-full bg-success"></span>
+<span class="text-text-primary font-medium">Gemini 1.5 Pro</span>
+<span class="text-text-muted">· Standby: Claude 3.5 Sonnet</span>
+<span class="text-text-muted">· ~1.2s</span>
+</div>
+</div>
+<!-- Right Header Controls: Context badge & Export actions -->
+<div class="flex items-center gap-2">
+<div class="hidden md:flex items-center gap-1 px-2.5 py-1 rounded-md bg-accent-ai-subtle text-accent-ai-hover text-[11px] font-badge-mono font-medium">
+<span class="material-symbols-outlined text-[14px]">memory</span>
+<span>api-service @ main (48 files in RAM)</span>
+</div>
+<button class="h-8 px-2.5 rounded-md border border-border hover:bg-surface-subtle text-text-secondary hover:text-text-primary flex items-center gap-1 font-label-ui text-[12px] transition-colors" title="Export Markdown" type="button">
+<span class="material-symbols-outlined text-[16px]">download</span>
+<span class="hidden sm:inline">Export</span>
+</button>
+<button class="h-8 w-8 rounded-md border border-border hover:bg-surface-subtle text-text-secondary hover:text-text-primary flex items-center justify-center transition-colors" title="Clear context session" type="button">
+<span class="material-symbols-outlined text-[16px]">delete_sweep</span>
+</button>
+</div>
+</header>
+<!-- Conversation Scrollable Canvas -->
+<div class="flex-1 overflow-y-auto px-6 py-6 space-y-6 bg-surface-bright">
+<!-- ------------------------------------------------------------- -->
+<!-- 1. USER MESSAGE                                               -->
+<!-- ------------------------------------------------------------- -->
+<article class="flex items-start gap-3.5 max-w-4xl">
+<div class="w-8 h-8 rounded-lg bg-surface-subtle border border-border flex items-center justify-center flex-shrink-0 overflow-hidden mt-0.5">
+<span class="font-badge-mono text-xs font-semibold text-text-primary">KR</span>
+</div>
+<div class="flex-1 flex flex-col gap-1.5">
+<div class="flex items-center gap-2">
+<span class="font-label-ui text-label-ui font-medium text-text-primary">Karan Ray</span>
+<span class="font-badge-mono text-[11px] text-text-muted">@karanray06</span>
+<span class="text-text-muted">·</span>
+<span class="font-badge-mono text-[11px] text-text-muted">10:14 AM</span>
+</div>
+<!-- Message Body -->
+<div class="bg-surface rounded-xl p-4 border border-border shadow-2xs space-y-3">
+<p class="font-body-base text-body-base text-text-primary">
+                  Why is this query performing so poorly in production? It's taking ~850ms on our 4M row user table:
+                </p>
+<!-- Code diff / block -->
+<div class="rounded-lg bg-surface-subtle border border-border overflow-hidden">
+<div class="bg-surface-container-high/60 px-3 py-1.5 border-b border-border flex items-center justify-between text-[11px] font-badge-mono text-text-muted">
+<span>users_query.sql</span>
+<span class="text-text-secondary">PostgreSQL</span>
+</div>
+<pre class="p-3.5 font-code-diff text-[13px] leading-5 text-text-primary overflow-x-auto"><code><span class="text-secondary font-semibold">SELECT</span> id, email, role, created_at 
+<span class="text-secondary font-semibold">FROM</span> users 
+<span class="text-secondary font-semibold">WHERE</span> <span class="text-accent-ai-hover">LOWER</span>(email) = <span class="text-accent-ai-hover">LOWER</span>($1) 
+  <span class="text-secondary font-semibold">AND</span> status = <span class="text-success">'active'</span>
+<span class="text-secondary font-semibold">ORDER BY</span> created_at <span class="text-secondary font-semibold">DESC</span> 
+<span class="text-secondary font-semibold">LIMIT</span> 1;</code></pre>
+</div>
+</div>
+</div>
+</article>
+<!-- ------------------------------------------------------------- -->
+<!-- 2. KAREIXO AI RESPONSE 1                                      -->
+<!-- ------------------------------------------------------------- -->
+<article class="flex items-start gap-3.5 max-w-4xl">
+<!-- Bot avatar with brand violet accent -->
+<div class="w-8 h-8 rounded-lg bg-text-primary flex items-center justify-center flex-shrink-0 shadow-sm mt-0.5">
+<span class="material-symbols-outlined text-white text-[18px]">smart_toy</span>
+</div>
+<div class="flex-1 flex flex-col gap-2 min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-label-ui text-label-ui font-medium text-text-primary">Kareixo Engine</span>
+<span class="px-1.5 py-0.2 rounded bg-accent-ai-subtle border border-purple-200 text-accent-ai-hover font-badge-mono text-[10px] font-semibold">GEMINI 1.5 PRO</span>
+<span class="text-text-muted">·</span>
+<span class="font-badge-mono text-[11px] text-text-muted">10:14 AM</span>
+</div>
+<!-- AI Content Box -->
+<div class="bg-surface rounded-xl p-5 border border-border shadow-xs space-y-4">
+<p class="font-body-base text-body-base text-text-primary leading-relaxed">
+                  The query is performing a sequential full-table scan because <code class="font-code-diff text-[12px] px-1.5 py-0.5 rounded bg-surface-subtle border border-border">LOWER(email)</code> invalidates the standard B-tree index on <code class="font-code-diff text-[12px] px-1.5 py-0.5 rounded bg-surface-subtle border border-border">email</code>. Even though an index exists on that column, PostgreSQL cannot utilize it when the indexed column is wrapped in an expression without a corresponding functional index.
+                </p>
+<!-- Diagnostic Breakdown Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+<div class="p-3 rounded-lg bg-surface-subtle border border-border flex flex-col gap-1">
+<div class="flex items-center gap-1.5 text-warning font-badge-mono text-[11px] font-semibold">
+<span class="material-symbols-outlined text-[15px]">warning</span>
+                      Root Cause
+                    </div>
+<p class="font-body-sm text-[12px] text-text-secondary leading-snug">
+                      Expression Impedance: wrapper prevents B-Tree lookup.
+                    </p>
+</div>
+<div class="p-3 rounded-lg bg-surface-subtle border border-border flex flex-col gap-1">
+<div class="flex items-center gap-1.5 text-error font-badge-mono text-[11px] font-semibold">
+<span class="material-symbols-outlined text-[15px]">speed</span>
+                      Scan Cost
+                    </div>
+<p class="font-body-sm text-[12px] text-text-secondary leading-snug">
+                      Seq Scan over 4,120,850 rows (planner cost ~48,210.00).
+                    </p>
+</div>
+<div class="p-3 rounded-lg bg-surface-subtle border border-border flex flex-col gap-1">
+<div class="flex items-center gap-1.5 text-success font-badge-mono text-[11px] font-semibold">
+<span class="material-symbols-outlined text-[15px]">auto_fix_high</span>
+                      Suggested Solution
+                    </div>
+<p class="font-body-sm text-[12px] text-text-secondary leading-snug">
+                      Functional expression index + composite ordering key.
+                    </p>
+</div>
+</div>
+<!-- Suggested SQL Snippet -->
+<div class="space-y-1.5">
+<div class="flex items-center justify-between px-1">
+<span class="font-label-ui text-[12px] text-text-secondary font-medium">Recommended DDL &amp; Query Plan</span>
+<span class="font-badge-mono text-[11px] text-success">Estimated: 850ms → &lt;1.4ms</span>
+</div>
+<div class="rounded-lg bg-[#0F0F12] text-zinc-100 border border-zinc-800 overflow-hidden shadow-sm">
+<!-- Block Header -->
+<div class="bg-zinc-900/90 px-4 py-2 border-b border-zinc-800 flex items-center justify-between">
+<div class="flex items-center gap-2 font-badge-mono text-[11px] text-zinc-400">
+<span class="w-2 h-2 rounded-full bg-accent-ai-hover"></span>
+<span>migration_idx_users_lower_email.sql</span>
+</div>
+<div class="flex items-center gap-1.5">
+<button class="px-2 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-label-ui text-[11px] flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[13px]">content_copy</span> Copy
+                        </button>
+<button class="px-2 py-1 rounded bg-accent-ai-hover hover:bg-purple-600 text-white font-label-ui text-[11px] flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[13px]">play_arrow</span> Run EXPLAIN ANALYZE
+                        </button>
+</div>
+</div>
+<!-- Code with Line Numbers -->
+<div class="p-4 font-code-diff text-[12.5px] leading-5 overflow-x-auto flex">
+<div class="select-none text-zinc-600 pr-4 text-right font-code-gutter space-y-0">
+<div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+</div>
+<div class="flex-1 text-zinc-200">
+<div class="text-zinc-500">-- 1. Create a functional expression index with active condition filter</div>
+<div><span class="text-purple-400 font-medium">CREATE INDEX CONCURRENTLY</span> idx_users_lower_email_active</div>
+<div><span class="text-purple-400 font-medium">ON</span> users (<span class="text-amber-300">LOWER</span>(email), created_at <span class="text-purple-400 font-medium">DESC</span>)</div>
+<div><span class="text-purple-400 font-medium">WHERE</span> status = <span class="text-emerald-400">'active'</span>;</div>
+<br/>
+<div class="text-zinc-500">-- 2. Query execution drops from 850ms to &lt;1.4ms (Index Scan)</div>
+<div><span class="text-purple-400 font-medium">SELECT</span> id, email, role, created_at</div>
+<div><span class="text-purple-400 font-medium">FROM</span> users</div>
+<div><span class="text-purple-400 font-medium">WHERE</span> <span class="text-amber-300">LOWER</span>(email) = <span class="text-amber-300">LOWER</span>($1) <span class="text-purple-400 font-medium">AND</span> status = <span class="text-emerald-400">'active'</span></div>
+<div><span class="text-purple-400 font-medium">ORDER BY</span> created_at <span class="text-purple-400 font-medium">DESC</span> <span class="text-purple-400 font-medium">LIMIT</span> 1;</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Micro Action Buttons & Feedback -->
+<div class="pt-2 border-t border-border flex flex-wrap items-center justify-between gap-2">
+<div class="flex items-center gap-2">
+<button class="h-7 px-2.5 rounded-md border border-border hover:bg-surface-subtle font-label-ui text-[12px] text-text-primary flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px] text-accent-ai-hover">lowercase</span>
+                      Create Migration PR
+                    </button>
+<button class="h-7 px-2.5 rounded-md border border-border hover:bg-surface-subtle font-label-ui text-[12px] text-text-secondary hover:text-text-primary flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px]">analytics</span>
+                      Explain Cost Estimate
+                    </button>
+</div>
+<div class="flex items-center gap-1 text-text-muted">
+<button class="h-7 w-7 rounded hover:bg-surface-subtle hover:text-text-primary flex items-center justify-center transition-colors" title="Helpful" type="button">
+<span class="material-symbols-outlined text-[16px]">thumb_up</span>
+</button>
+<button class="h-7 w-7 rounded hover:bg-surface-subtle hover:text-text-primary flex items-center justify-center transition-colors" title="Not helpful" type="button">
+<span class="material-symbols-outlined text-[16px]">thumb_down</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- ------------------------------------------------------------- -->
+<!-- 3. USER MESSAGE 2                                             -->
+<!-- ------------------------------------------------------------- -->
+<article class="flex items-start gap-3.5 max-w-4xl">
+<div class="w-8 h-8 rounded-lg bg-surface-subtle border border-border flex items-center justify-center flex-shrink-0 overflow-hidden mt-0.5">
+<span class="font-badge-mono text-xs font-semibold text-text-primary">KR</span>
+</div>
+<div class="flex-1 flex flex-col gap-1.5">
+<div class="flex items-center gap-2">
+<span class="font-label-ui text-label-ui font-medium text-text-primary">Karan Ray</span>
+<span class="font-badge-mono text-[11px] text-text-muted">@karanray06</span>
+<span class="text-text-muted">·</span>
+<span class="font-badge-mono text-[11px] text-text-muted">10:17 AM</span>
+</div>
+<div class="bg-surface rounded-xl p-4 border border-border shadow-2xs">
+<p class="font-body-base text-body-base text-text-primary">
+                  How should I structure this as a Prisma / Drizzle or raw SQL migration in our <code class="font-code-diff text-[13px] px-1 py-0.5 bg-surface-subtle border border-border rounded">api-service</code> repo?
+                </p>
+</div>
+</div>
+</article>
+<!-- ------------------------------------------------------------- -->
+<!-- 4. KAREIXO AI RESPONSE 2                                      -->
+<!-- ------------------------------------------------------------- -->
+<article class="flex items-start gap-3.5 max-w-4xl">
+<div class="w-8 h-8 rounded-lg bg-text-primary flex items-center justify-center flex-shrink-0 shadow-sm mt-0.5">
+<span class="material-symbols-outlined text-white text-[18px]">smart_toy</span>
+</div>
+<div class="flex-1 flex flex-col gap-2 min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-label-ui text-label-ui font-medium text-text-primary">Kareixo Engine</span>
+<span class="font-badge-mono text-[11px] text-text-muted">10:18 AM</span>
+</div>
+<div class="bg-surface rounded-xl p-5 border border-border shadow-xs space-y-3">
+<p class="font-body-base text-body-base text-text-primary">
+                  Since <span class="font-medium text-text-primary">api-service</span> uses raw SQL migrations via Kysely / node-pg (detected in <code class="font-code-diff text-[12px] px-1.5 py-0.5 rounded bg-surface-subtle border border-border text-accent-ai-hover">src/db/migrations/</code>), here is the transactional migration with zero-downtime safety:
+                </p>
+<!-- Code Container with File Path Header -->
+<div class="rounded-lg bg-surface-subtle border border-border overflow-hidden">
+<div class="bg-surface-container-high/60 px-3 py-2 border-b border-border flex items-center justify-between text-[12px] font-badge-mono">
+<div class="flex items-center gap-2 text-text-primary font-medium">
+<span class="material-symbols-outlined text-[16px] text-accent-ai-hover">description</span>
+<span>src/db/migrations/20260907_add_lower_email_index.sql</span>
+</div>
+<button class="text-text-secondary hover:text-text-primary flex items-center gap-1 font-label-ui text-[11px]" type="button">
+<span class="material-symbols-outlined text-[14px]">difference</span> Apply Diff
+                    </button>
+</div>
+<pre class="p-4 font-code-diff text-[13px] leading-5 text-text-primary overflow-x-auto"><code><span class="text-text-muted">-- Up Migration</span>
+<span class="text-secondary font-semibold">CREATE INDEX CONCURRENTLY IF NOT EXISTS</span> idx_users_lower_email_active
+<span class="text-secondary font-semibold">ON</span> users (<span class="text-accent-ai-hover">LOWER</span>(email), created_at <span class="text-secondary font-semibold">DESC</span>)
+<span class="text-secondary font-semibold">WHERE</span> status = <span class="text-success">'active'</span>;
+
+<span class="text-text-muted">-- Down Migration</span>
+<span class="text-secondary font-semibold">DROP INDEX CONCURRENTLY IF EXISTS</span> idx_users_lower_email_active;</code></pre>
+</div>
+<!-- Safety Note Notice Box -->
+<div class="p-3 rounded-lg bg-surface-subtle border-l-4 border-l-secondary border border-border flex items-start gap-2.5">
+<span class="material-symbols-outlined text-secondary text-[18px] mt-0.5">info</span>
+<div class="text-[13px] font-body-sm text-text-secondary leading-relaxed">
+<span class="font-medium text-text-primary">Safety requirement for CONCURRENTLY:</span> PostgreSQL prevents running concurrent index builds within an explicit transaction block (<code class="font-code-diff text-[12px] text-text-primary">BEGIN ... COMMIT</code>). Ensure your migration runner executes this with <code class="font-code-diff text-[12px] text-text-primary">disableTransactions: true</code>.
+                  </div>
+</div>
+</div>
+</div>
+</article>
+</div>
+<!-- ========================================================================= -->
+<!-- PROMPT COMPOSER (Docked Bottom Canvas)                                    -->
+<!-- ========================================================================= -->
+<footer class="p-4 bg-surface border-t border-border flex flex-col gap-2.5">
+<!-- Quick Prompt Chips -->
+<div class="flex items-center gap-2 overflow-x-auto pb-1 text-[12px] no-scrollbar">
+<span class="font-badge-mono text-[11px] text-text-muted uppercase tracking-wider flex-shrink-0">Suggestions:</span>
+<button class="px-2.5 py-1 rounded-full bg-surface-subtle hover:bg-surface-container-high border border-border text-text-secondary hover:text-text-primary transition-colors whitespace-nowrap flex-shrink-0 font-label-ui" type="button">
+              ⚡ Generate EXPLAIN plan
+            </button>
+<button class="px-2.5 py-1 rounded-full bg-surface-subtle hover:bg-surface-container-high border border-border text-text-secondary hover:text-text-primary transition-colors whitespace-nowrap flex-shrink-0 font-label-ui" type="button">
+              📊 Check index bloat
+            </button>
+<button class="px-2.5 py-1 rounded-full bg-surface-subtle hover:bg-surface-container-high border border-border text-text-secondary hover:text-text-primary transition-colors whitespace-nowrap flex-shrink-0 font-label-ui" type="button">
+              🧪 Create unit test case
+            </button>
+<button class="px-2.5 py-1 rounded-full bg-surface-subtle hover:bg-surface-container-high border border-border text-text-secondary hover:text-text-primary transition-colors whitespace-nowrap flex-shrink-0 font-label-ui" type="button">
+              🔄 Show Drizzle ORM equivalent
+            </button>
+</div>
+<!-- Main Textarea Composer Box -->
+<div class="w-full rounded-xl border border-border-interactive focus-within:border-accent-ai-hover focus-within:ring-1 focus-within:ring-accent-ai-hover bg-surface shadow-xs transition-all flex flex-col">
+<!-- Attached Context Tag Strip -->
+<div class="pt-2.5 px-3 flex flex-wrap items-center gap-1.5">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-subtle border border-border text-[11px] font-badge-mono text-text-secondary">
+<span class="material-symbols-outlined text-[13px] text-text-muted">folder</span>
+                karanray06/api-service
+              </span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-subtle border border-border text-[11px] font-badge-mono text-text-secondary">
+<span class="material-symbols-outlined text-[13px] text-text-muted">alt_route</span>
+                Branch: main
+              </span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-accent-ai-subtle text-accent-ai-hover text-[11px] font-badge-mono font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-ai-hover"></span>
+                AST Loaded (48 files)
+              </span>
+</div>
+<!-- Input area -->
+<textarea class="w-full px-3.5 py-2.5 text-body-sm font-body-base text-text-primary placeholder:text-text-muted bg-transparent resize-none focus:outline-none" placeholder="Ask Kareixo about code, PRs, architecture, or performance... (⌘K for commands, Shift+Enter for newline)" rows="2"></textarea>
+<!-- Bottom Toolbar -->
+<div class="px-3 pb-2.5 flex items-center justify-between">
+<!-- Left Action Controls -->
+<div class="flex items-center gap-1 text-text-secondary">
+<button class="h-8 w-8 rounded hover:bg-surface-subtle hover:text-text-primary flex items-center justify-center transition-colors" title="Attach file or diff" type="button">
+<span class="material-symbols-outlined text-[18px]">attach_file</span>
+</button>
+<button class="h-8 px-2 rounded hover:bg-surface-subtle hover:text-text-primary flex items-center gap-1 font-badge-mono text-[12px] transition-colors" title="Reference PR or Issue" type="button">
+<span class="font-bold">#</span>
+<span>PR/Issue</span>
+</button>
+<button class="h-8 px-2 rounded hover:bg-surface-subtle hover:text-text-primary flex items-center gap-1 font-badge-mono text-[12px] transition-colors" title="Switch Branch" type="button">
+<span class="material-symbols-outlined text-[15px]">fork_right</span>
+<span>main</span>
+<span class="material-symbols-outlined text-[14px]">expand_more</span>
+</button>
+<div class="h-4 w-[1px] bg-border mx-1"></div>
+<!-- Model Picker Pill -->
+<button class="h-7 px-2.5 rounded-md bg-surface-subtle hover:bg-surface-container-high border border-border text-[11px] font-badge-mono font-medium text-text-primary flex items-center gap-1.5 transition-colors" type="button">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-ai-hover"></span>
+<span>Gemini 1.5 Pro</span>
+<span class="material-symbols-outlined text-[13px] text-text-muted">expand_more</span>
+</button>
+</div>
+<!-- Right Action: Submit Button -->
+<div class="flex items-center gap-2">
+<button class="h-8 px-3.5 rounded-lg bg-text-primary hover:bg-black text-on-primary font-label-ui text-label-ui flex items-center gap-1.5 transition-all shadow-sm" type="button">
+<span>Send</span>
+<span class="material-symbols-outlined text-[16px]">arrow_upward</span>
+<kbd class="font-badge-mono text-[10px] opacity-70 ml-0.5">↵</kbd>
+</button>
+</div>
+</div>
+</div>
+<!-- Bottom Privacy & Zero Storage Footnote -->
+<div class="flex items-center justify-between text-[11px] font-badge-mono text-text-muted px-1">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[13px] text-success">lock</span>
+              Kareixo analyzes code in ephemeral RAM. Zero source code is stored or used for model training.
+            </span>
+<span>Latency SLA: 99.4% &lt; 1.5s</span>
+</div>
+</footer>
+</main>
+</div>
+</div>
+</div></main><footer class="w-full bg-surface-subtle py-space-16"><div class="max-w-[1280px] mx-auto px-6 lg:px-12"><div class="grid grid-cols-1 md:grid-cols-12 gap-y-10 md:gap-x-12 pb-space-12"><div class="md:col-span-5 flex flex-col items-start"><div class="flex items-center gap-2 mb-3"><span class="font-title-card-sm text-title-card-sm text-text-primary tracking-tight">Kareixo</span></div><p class="font-body-sm text-body-sm text-text-secondary max-w-sm">AI code review platform for GitHub. Precision diagnostics, automated sanity checks, and automated pull request analysis.</p></div><div class="md:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8"><div><h4 class="font-label-ui text-label-ui text-text-primary mb-4">Product</h4><ul class="space-y-3 font-body-sm text-body-sm text-text-secondary"><li><a class="hover:text-text-primary transition-colors" data-path="product" href="#">Product</a></li><li><a class="hover:text-text-primary transition-colors" data-path="how-it-works" href="#">How it works</a></li><li><a class="hover:text-text-primary transition-colors" data-path="security" href="#">Security</a></li><li><a class="hover:text-text-primary transition-colors" data-path="kareixo-chat" href="#">Kareixo Chat</a></li></ul></div><div><h4 class="font-label-ui text-label-ui text-text-primary mb-4">Resources</h4><ul class="space-y-3 font-body-sm text-body-sm text-text-secondary"><li><a class="hover:text-text-primary transition-colors" data-path="pricing" href="#">Pricing</a></li><li><a class="hover:text-text-primary transition-colors" href="https://github.com" rel="noreferrer" target="_blank">GitHub</a></li><li><a class="hover:text-text-primary transition-colors" data-path="privacy" href="#">Privacy</a></li><li><a class="hover:text-text-primary transition-colors" data-path="terms" href="#">Terms</a></li></ul></div><div><h4 class="font-label-ui text-label-ui text-text-primary mb-4">Developers</h4><div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-accent-ai-subtle"><span class="w-1.5 h-1.5 rounded-full bg-accent-ai-hover"></span><span class="font-badge-mono text-badge-mono text-accent-ai-hover">v2.4 Active</span></div></div></div></div><div class="pt-space-8 flex flex-col sm:flex-row items-center justify-between gap-4 font-body-sm text-body-sm text-text-muted"><p>© 2026 Kareixo. Free forever · Built for developers.</p><div class="flex items-center gap-6"><a class="hover:text-text-primary transition-colors" data-path="privacy" href="#">Privacy Policy</a><a class="hover:text-text-primary transition-colors" data-path="terms" href="#">Terms of Service</a></div></div></div></footer></body></html>

@@ -1,10 +1,11 @@
-import Navbar from "@/components/landing/Navbar";
-import { FiGithub, FiCheckCircle, FiActivity, FiXCircle } from "react-icons/fi";
-import { auth } from "@/auth";
 import { getDb } from "@/db";
 import { github_installations, repositories, reviews } from "@/db/schema";
 import { eq, desc, sql } from "drizzle-orm";
+import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { CheckCircle2, AlertCircle, XCircle } from "lucide-react";
+import { FiGithub } from "react-icons/fi";
+import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
 
@@ -18,11 +19,7 @@ export default async function DashboardPage() {
   const db = getDb();
   const userId = session.user.id;
 
-  const { users } = await import("@/db/schema");
-  const [dbUser] = await db.select().from(users).where(eq(users.id, userId));
-  const planName = dbUser?.plan || "free";
-
-  // 1. Fetch Connected Repositories (Joined with installations)
+  // 1. Fetch Connected Repositories
   const repos = await db
     .select({
       repo: repositories,
@@ -32,7 +29,7 @@ export default async function DashboardPage() {
     .innerJoin(github_installations, eq(repositories.installationId, github_installations.installationId))
     .where(eq(github_installations.userId, userId));
 
-  // 2. Fetch Recent Activity (Reviews)
+  // 2. Fetch Recent Activity
   const recentReviews = await db
     .select({
       review: reviews,
@@ -59,132 +56,125 @@ export default async function DashboardPage() {
   const totalReviews = Number(stats?.totalReviews || 0);
   const totalFindings = Number(stats?.totalFindings || 0);
 
-  // Compute relative time string
   const getRelativeTime = (date: Date | null) => {
     if (!date) return "Unknown time";
     const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
     const now = new Date();
-    const daysDifference = Math.round((date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-    if (daysDifference === 0) {
-      const hoursDifference = Math.round((date.getTime() - now.getTime()) / (1000 * 60 * 60));
-      if (hoursDifference === 0) {
+    const daysDiff = Math.round((date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    if (daysDiff === 0) {
+      const hoursDiff = Math.round((date.getTime() - now.getTime()) / (1000 * 60 * 60));
+      if (hoursDiff === 0) {
         const mins = Math.round((date.getTime() - now.getTime()) / (1000 * 60));
         return rtf.format(mins, "minute");
       }
-      return rtf.format(hoursDifference, "hour");
+      return rtf.format(hoursDiff, "hour");
     }
-    return rtf.format(daysDifference, "day");
+    return rtf.format(daysDiff, "day");
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)]">
-      <Navbar />
-      <div className="max-w-6xl mx-auto px-6 pt-32 pb-12">
-        <header className="mb-12">
-          <h1 className="text-4xl font-display">Dashboard</h1>
-          <p className="text-[var(--text-secondary)] mt-2">Manage your connected repositories and view recent activity.</p>
-        </header>
+    <div className="p-8 md:p-12 max-w-5xl">
+      <header className="mb-10">
+        <h1 className="text-2xl font-semibold tracking-tight">Good evening, {session.user.name?.split(' ')[0] || 'developer'}.</h1>
+        <p className="text-[var(--text-secondary)] mt-1">Here's what's happening across your repositories.</p>
+      </header>
 
-        {/* Aggregate Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-[var(--bg-elevated)] border border-[var(--color-outline)]/20 rounded-2xl p-6">
-            <h3 className="text-[var(--text-secondary)] text-sm font-semibold mb-1">Total PRs Reviewed</h3>
-            <p className="text-3xl font-display font-bold">{totalReviews}</p>
-          </div>
-          <div className="bg-[var(--bg-elevated)] border border-[var(--color-outline)]/20 rounded-2xl p-6">
-            <h3 className="text-[var(--text-secondary)] text-sm font-semibold mb-1">Total Issues Flagged</h3>
-            <p className="text-3xl font-display font-bold text-[var(--color-coral)]">{totalFindings}</p>
-          </div>
-          <div className="bg-[var(--bg-elevated)] border border-[var(--color-outline)]/20 rounded-2xl p-6">
-            <h3 className="text-[var(--text-secondary)] text-sm font-semibold mb-1">Active Repositories</h3>
-            <p className="text-3xl font-display font-bold">{repos.length}</p>
-          </div>
-          <div className="bg-[var(--bg-elevated)] border border-[var(--color-outline)]/20 rounded-2xl p-6">
-            <h3 className="text-[var(--text-secondary)] text-sm font-semibold mb-1">Current Plan</h3>
-            <p className="text-3xl font-display font-bold text-[var(--color-sky-blue)] capitalize">
-              {planName}
-            </p>
+      {/* ── Stats ── */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+        <div className="bg-[var(--bg-surface)] border border-[var(--border-base)] rounded-xl p-5 shadow-sm">
+          <p className="text-sm font-medium text-[var(--text-secondary)] mb-1">Reviews</p>
+          <p className="text-2xl font-semibold">{totalReviews}</p>
+        </div>
+        <div className="bg-[var(--bg-surface)] border border-[var(--border-base)] rounded-xl p-5 shadow-sm">
+          <p className="text-sm font-medium text-[var(--text-secondary)] mb-1">Findings</p>
+          <p className="text-2xl font-semibold">{totalFindings}</p>
+        </div>
+        <div className="bg-[var(--bg-surface)] border border-[var(--border-base)] rounded-xl p-5 shadow-sm">
+          <p className="text-sm font-medium text-[var(--text-secondary)] mb-1">Repositories</p>
+          <p className="text-2xl font-semibold">{repos.length}</p>
+        </div>
+        <div className="bg-[var(--bg-surface)] border border-[var(--border-base)] rounded-xl p-5 shadow-sm">
+          <p className="text-sm font-medium text-[var(--text-secondary)] mb-1">Resolved</p>
+          <p className="text-2xl font-semibold">0</p>
+        </div>
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-10">
+        {/* ── Recent Activity ── */}
+        <div className="lg:col-span-2 space-y-4">
+          <h2 className="text-lg font-semibold">Recent reviews</h2>
+          <div className="bg-[var(--bg-surface)] border border-[var(--border-base)] rounded-xl overflow-hidden">
+            {recentReviews.length === 0 ? (
+              <div className="p-8 text-center text-sm text-[var(--text-secondary)]">
+                No recent activity. Open a pull request to trigger a review.
+              </div>
+            ) : (
+              <div className="divide-y divide-[var(--border-base)]">
+                {recentReviews.map(({ review, repo }) => (
+                  <div key={review.id} className="p-4 flex items-center justify-between hover:bg-[var(--bg-subtle)] transition-colors">
+                    <div className="flex items-center gap-4">
+                      {review.status === 'failed' ? (
+                        <div className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center">
+                          <XCircle size={16} className="text-red-600" />
+                        </div>
+                      ) : (review.findingCount ?? 0) > 0 ? (
+                        <div className="w-8 h-8 rounded-full bg-orange-500/10 flex items-center justify-center">
+                          <AlertCircle size={16} className="text-orange-600" />
+                        </div>
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center">
+                          <CheckCircle2 size={16} className="text-green-600" />
+                        </div>
+                      )}
+                      
+                      <div>
+                        <p className="text-sm font-medium">
+                          {repo.fullName} <span className="text-[var(--text-muted)] font-normal">#{review.prNumber}</span>
+                        </p>
+                        <div className="flex items-center gap-3 text-xs text-[var(--text-secondary)] mt-0.5">
+                          <span>{getRelativeTime(review.createdAt)}</span>
+                          {(review.findingCount ?? 0) > 0 && (
+                            <>
+                              <span>&middot;</span>
+                              <span className="text-orange-600 font-medium">{review.findingCount ?? 0} findings</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {/* Connected Repositories */}
-          <div className="md:col-span-2 space-y-6">
-            <h2 className="text-2xl font-bold">Connected Repositories</h2>
-            <div className="bg-[var(--bg-elevated)] border border-[var(--color-outline)]/20 rounded-2xl p-6">
-              
-              {repos.length === 0 ? (
-                <div className="py-12 text-center space-y-4">
-                  <p className="text-[var(--text-secondary)]">No repositories connected yet.</p>
-                  <a
-                    href="https://github.com/apps/kareixo-reviewer/installations/new"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--text-primary)] text-[var(--bg-base)] rounded-full font-semibold text-sm hover:scale-105 transition-transform"
-                  >
-                    <FiGithub className="w-4 h-4" />
-                    Install App to get started
-                  </a>
-                </div>
-              ) : (
-                <div className="space-y-0">
-                  {repos.map(({ repo, install }, idx) => (
-                    <div key={repo.id} className={`flex items-center justify-between py-4 ${idx !== repos.length - 1 ? 'border-b border-[var(--color-outline)]/10' : ''}`}>
-                      <div className="flex items-center gap-4">
-                        <FiGithub className="w-6 h-6 text-[var(--text-secondary)]" />
-                        <div>
-                          <h3 className="font-bold">
-                            <a href={`/dashboard/${repo.id}`} className="hover:underline hover:text-[var(--color-sky-blue)] transition-colors">{repo.fullName}</a>
-                          </h3>
-                          <p className="text-sm text-[var(--text-secondary)]">Installed via {install.accountLogin}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm font-semibold text-[var(--color-mint)]">
-                        <FiCheckCircle />
-                        Active
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-              
-              {repos.length > 0 && (
-                <div className="py-4 mt-4 text-center border-t border-[var(--color-outline)]/10">
-                  <a href="https://github.com/settings/installations" target="_blank" rel="noopener noreferrer" className="text-[var(--color-sky-blue)] hover:underline text-sm font-semibold">
-                    + Add or remove repositories on GitHub
-                  </a>
-                </div>
-              )}
-            </div>
+        {/* ── Repositories ── */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Repositories</h2>
+            <a href="https://github.com/settings/installations" target="_blank" rel="noopener noreferrer" className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]">Manage</a>
           </div>
-
-          {/* Recent Activity */}
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Recent Activity</h2>
-            <div className="bg-[var(--bg-elevated)] border border-[var(--color-outline)]/20 rounded-2xl p-6 space-y-4">
-              
-              {recentReviews.length === 0 ? (
-                <div className="py-8 text-center">
-                  <p className="text-[var(--text-secondary)] text-sm">No reviews yet.</p>
-                </div>
-              ) : (
-                recentReviews.map(({ review, repo }) => (
-                  <div key={review.id} className="flex items-start gap-4">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1 ${review.status === 'failed' ? 'bg-[var(--color-coral)]/20' : 'bg-[var(--color-sky-blue)]/20'}`}>
-                      {review.status === 'failed' ? (
-                        <FiXCircle className="text-[var(--color-coral)]" />
-                      ) : (
-                        <FiActivity className="text-[var(--color-sky-blue)]" />
-                      )}
-                    </div>
-                    <div>
-                      <p className="text-sm">
-                        Reviewed <span className="font-semibold">PR #{review.prNumber}</span> on <span className="font-semibold">{repo.fullName.split('/')[1]}</span>
-                      </p>
-                      <p className="text-xs text-[var(--text-secondary)]">{getRelativeTime(review.createdAt)}</p>
-                    </div>
+          <div className="bg-[var(--bg-surface)] border border-[var(--border-base)] rounded-xl overflow-hidden">
+            {repos.length === 0 ? (
+              <div className="p-6 text-center">
+                <p className="text-sm text-[var(--text-secondary)] mb-4">No repositories connected.</p>
+                <a href="https://github.com/apps/kareixo-reviewer/installations/new" className="btn btn-primary text-xs w-full">
+                  Connect GitHub
+                </a>
+              </div>
+            ) : (
+              <div className="divide-y divide-[var(--border-base)]">
+                {repos.map(({ repo }) => (
+                  <div key={repo.id} className="p-4 flex items-center gap-3">
+                    <FiGithub size={16} className="text-[var(--text-muted)]" />
+                    <Link href={`/dashboard/${repo.id}`} className="text-sm font-medium hover:underline">
+                      {repo.fullName.split('/')[1]}
+                    </Link>
                   </div>
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

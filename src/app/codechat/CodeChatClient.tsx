@@ -3,7 +3,10 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { FiSend, FiCpu, FiUser, FiFolder, FiFile, FiChevronRight, FiChevronDown, FiCode, FiTerminal, FiMessageSquare, FiSearch, FiX } from "react-icons/fi";
+import { 
+  Send, Cpu, User, Folder, File, ChevronRight, ChevronDown, 
+  Code2, TerminalSquare, MessageSquare, Search, X 
+} from "lucide-react";
 
 type FileEntry = {
   name: string;
@@ -132,20 +135,20 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
       <div key={entry.path}>
         <button
           onClick={() => entry.type === "dir" ? toggleDir(entry, []) : openFile(entry.path)}
-          className={`w-full flex items-center gap-2 px-3 py-1.5 text-xs font-mono hover:bg-white/5 transition-colors text-left ${
-            selectedFile?.path === entry.path ? "bg-[var(--color-sky-blue)]/10 text-[var(--color-sky-blue)]" : "text-[var(--text-secondary)]"
+          className={`w-full flex items-center gap-2 px-3 py-1.5 text-xs font-mono hover:bg-[var(--bg-subtle)] transition-colors text-left ${
+            selectedFile?.path === entry.path ? "bg-[var(--bg-subtle)] font-medium text-[var(--text-primary)]" : "text-[var(--text-secondary)]"
           }`}
           style={{ paddingLeft: `${12 + depth * 16}px` }}
         >
           {entry.type === "dir" ? (
             entry.loaded && entry.children && entry.children.length > 0
-              ? <FiChevronDown className="w-3 h-3 flex-shrink-0" />
-              : <FiChevronRight className="w-3 h-3 flex-shrink-0" />
+              ? <ChevronDown size={14} className="flex-shrink-0" />
+              : <ChevronRight size={14} className="flex-shrink-0" />
           ) : null}
           {entry.type === "dir" ? (
-            <FiFolder className="w-3.5 h-3.5 flex-shrink-0 text-[var(--color-sky-blue)]" />
+            <Folder size={14} className="flex-shrink-0 text-[var(--text-muted)]" />
           ) : (
-            <FiFile className="w-3.5 h-3.5 flex-shrink-0 opacity-50" />
+            <File size={14} className="flex-shrink-0 opacity-50" />
           )}
           <span className="truncate">{entry.name}</span>
         </button>
@@ -167,16 +170,16 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
     <div className="flex h-full bg-[var(--bg-base)] text-[var(--text-primary)]">
       {/* Sidebar — File Explorer */}
       {showFileExplorer && (
-        <div className="w-64 flex-shrink-0 border-r border-[var(--color-outline)]/20 flex flex-col bg-[var(--bg-elevated)]">
+        <div className="w-64 flex-shrink-0 border-r border-[var(--border-base)] flex flex-col bg-[var(--bg-surface)]">
           {/* Repo Selector */}
-          <div className="p-3 border-b border-[var(--color-outline)]/20">
+          <div className="p-3 border-b border-[var(--border-base)]">
             <select
               value={selectedRepo?.fullName || ""}
               onChange={(e) => {
                 const repo = repos.find(r => r.fullName === e.target.value);
                 if (repo) setSelectedRepo(repo);
               }}
-              className="w-full bg-[var(--bg-base)] border border-[var(--color-outline)]/20 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-[var(--color-sky-blue)]"
+              className="w-full bg-[var(--bg-base)] border border-[var(--border-base)] rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-[var(--color-accent)]"
             >
               {repos.map(r => (
                 <option key={r.fullName} value={r.fullName}>{r.fullName}</option>
@@ -200,24 +203,24 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Toolbar */}
-        <div className="flex items-center gap-2 px-4 py-2 border-b border-[var(--color-outline)]/20 bg-[var(--bg-elevated)]">
+        <div className="flex items-center gap-2 px-4 py-2 border-b border-[var(--border-base)] bg-[var(--bg-surface)]">
           <button
             onClick={() => setShowFileExplorer(!showFileExplorer)}
-            className={`p-1.5 rounded-lg transition-colors ${showFileExplorer ? "bg-[var(--color-sky-blue)]/10 text-[var(--color-sky-blue)]" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"}`}
+            className={`p-1.5 rounded-md transition-colors ${showFileExplorer ? "bg-[var(--bg-subtle)] text-[var(--text-primary)]" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)]"}`}
             title="Toggle file explorer"
           >
-            <FiFolder className="w-4 h-4" />
+            <Folder size={16} />
           </button>
           <button
             onClick={() => setShowCodeViewer(!showCodeViewer)}
-            className={`p-1.5 rounded-lg transition-colors ${showCodeViewer ? "bg-[var(--color-sky-blue)]/10 text-[var(--color-sky-blue)]" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"}`}
+            className={`p-1.5 rounded-md transition-colors ${showCodeViewer ? "bg-[var(--bg-subtle)] text-[var(--text-primary)]" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)]"}`}
             title="Toggle code viewer"
           >
-            <FiCode className="w-4 h-4" />
+            <Code2 size={16} />
           </button>
           <div className="flex-1" />
-          <div className="text-[10px] font-mono text-[var(--text-secondary)] flex items-center gap-1.5">
-            <div className={`w-1.5 h-1.5 rounded-full ${isLoading ? "bg-orange-400 animate-pulse" : "bg-emerald-400"}`} />
+          <div className="text-xs font-mono text-[var(--text-secondary)] flex items-center gap-2">
+            <div className={`w-1.5 h-1.5 rounded-full ${isLoading ? "bg-orange-500 animate-pulse" : "bg-green-500"}`} />
             {selectedRepo ? selectedRepo.fullName : "No repo"} • Gemini
           </div>
         </div>
@@ -226,13 +229,13 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
         <div className="flex-1 flex min-h-0">
           {/* Code Viewer */}
           {showCodeViewer && selectedFile && (
-            <div className="w-1/2 flex flex-col border-r border-[var(--color-outline)]/20">
-              <div className="flex items-center gap-2 px-4 py-2 border-b border-[var(--color-outline)]/10 bg-[var(--bg-base)]">
-                <FiFile className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
+            <div className="w-1/2 flex flex-col border-r border-[var(--border-base)]">
+              <div className="flex items-center gap-2 px-4 py-2 border-b border-[var(--border-base)] bg-[var(--bg-surface)]">
+                <File size={14} className="text-[var(--text-secondary)]" />
                 <span className="text-xs font-mono text-[var(--text-secondary)]">{selectedFile.path}</span>
                 <div className="flex-1" />
-                <button onClick={() => { setShowCodeViewer(false); setSelectedFile(null); }} className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
-                  <FiX className="w-3.5 h-3.5" />
+                <button onClick={() => { setShowCodeViewer(false); setSelectedFile(null); }} className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] p-1 rounded hover:bg-[var(--bg-subtle)]">
+                  <X size={14} />
                 </button>
               </div>
               <div className="flex-1 overflow-auto bg-[var(--bg-base)]">
@@ -241,8 +244,8 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
                 ) : (
                   <pre className="p-4 text-xs font-mono leading-relaxed whitespace-pre-wrap text-[var(--text-secondary)]">
                     {selectedFile.content.split("\n").map((line, i) => (
-                      <div key={i} className="flex hover:bg-white/[0.02]">
-                        <span className="inline-block w-12 text-right pr-4 select-none opacity-30 flex-shrink-0">{i + 1}</span>
+                      <div key={i} className="flex hover:bg-[var(--bg-subtle)]">
+                        <span className="inline-block w-10 text-right pr-4 select-none text-[var(--text-muted)] flex-shrink-0">{i + 1}</span>
                         <span className="flex-1">{line}</span>
                       </div>
                     ))}
@@ -253,15 +256,17 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
           )}
 
           {/* Chat Panel */}
-          <div className="flex-1 flex flex-col min-w-0">
+          <div className="flex-1 flex flex-col min-w-0 bg-[var(--bg-base)]">
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-5">
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {messages.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-center space-y-3 opacity-50">
-                  <FiMessageSquare className="w-10 h-10" />
+                <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
+                  <div className="w-12 h-12 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-base)] flex items-center justify-center text-[var(--text-muted)]">
+                    <MessageSquare size={24} />
+                  </div>
                   <div>
-                    <p className="text-sm font-medium">Kareixo CodeChat</p>
-                    <p className="text-xs text-[var(--text-secondary)] mt-1">
+                    <p className="text-base font-semibold">Kareixo CodeChat</p>
+                    <p className="text-sm text-[var(--text-secondary)] mt-1 max-w-sm">
                       {selectedRepo 
                         ? `Ask questions about ${selectedRepo.fullName} — I can read files directly from the repo.`
                         : "Ask any coding question, or connect a repo for file access."}
@@ -271,43 +276,42 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
               ) : (
                 messages.map((m: any) => {
                   const text = getMessageText(m);
-                  // Check for tool calls
                   const toolCalls = m.parts?.filter((p: any) => p.type === "tool-invocation") || [];
                   
                   return (
-                    <div key={m.id || Math.random().toString()} className={`flex gap-3 ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+                    <div key={m.id || Math.random().toString()} className={`flex gap-4 ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                       {m.role !== "user" && (
-                        <div className="w-7 h-7 rounded-full bg-[var(--color-mint)]/15 flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <FiCpu className="w-3.5 h-3.5 text-[var(--color-mint)]" />
+                        <div className="w-8 h-8 rounded border border-[var(--border-base)] bg-[var(--bg-surface)] flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <Cpu size={16} className="text-[var(--text-primary)]" />
                         </div>
                       )}
                       
-                      <div className={`max-w-[85%] space-y-2 ${m.role === "user" ? "" : ""}`}>
+                      <div className={`max-w-[85%] space-y-3`}>
                         {/* Tool call indicators */}
                         {toolCalls.map((tc: any, i: number) => (
-                          <div key={i} className="flex items-center gap-2 text-[10px] font-mono text-[var(--text-secondary)] bg-[var(--bg-elevated)] rounded-lg px-3 py-1.5 border border-[var(--color-outline)]/10">
-                            <FiSearch className="w-3 h-3" />
+                          <div key={i} className="flex items-center gap-2 text-xs font-mono text-[var(--text-secondary)] bg-[var(--bg-surface)] rounded-md px-3 py-2 border border-[var(--border-base)]">
+                            <Search size={14} />
                             <span>{tc.toolName === "readFile" ? `Reading ${tc.args?.path}` : tc.toolName === "listDirectory" ? `Listing ${tc.args?.path || "/"}` : `Searching: ${tc.args?.query}`}</span>
-                            {tc.state === "result" && <span className="text-emerald-400">✓</span>}
-                            {tc.state === "call" && <span className="animate-pulse">…</span>}
+                            {tc.state === "result" && <span className="text-green-500">✓</span>}
+                            {tc.state === "call" && <span className="animate-pulse">...</span>}
                           </div>
                         ))}
                         
                         {/* Text content */}
                         {text && (
-                          <div className={`rounded-2xl px-4 py-2.5 text-sm ${
+                          <div className={`rounded-xl px-4 py-3 text-sm leading-relaxed ${
                             m.role === "user"
-                              ? "bg-[var(--text-primary)] text-[var(--bg-base)]"
-                              : "bg-[var(--bg-elevated)] border border-[var(--color-outline)]/15"
+                              ? "bg-[var(--color-accent)] text-[var(--color-accent-fg)]"
+                              : "bg-[var(--bg-surface)] border border-[var(--border-base)]"
                           }`}>
-                            <div className="whitespace-pre-wrap leading-relaxed">{text}</div>
+                            <div className="whitespace-pre-wrap">{text}</div>
                           </div>
                         )}
                       </div>
 
                       {m.role === "user" && (
-                        <div className="w-7 h-7 rounded-full bg-[var(--text-secondary)] flex items-center justify-center flex-shrink-0 mt-0.5 text-[var(--bg-base)]">
-                          <FiUser className="w-3.5 h-3.5" />
+                        <div className="w-8 h-8 rounded border border-[var(--border-base)] bg-[var(--bg-surface)] flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <User size={16} className="text-[var(--text-primary)]" />
                         </div>
                       )}
                     </div>
@@ -316,7 +320,7 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
               )}
               
               {error && (
-                <div className="bg-[var(--color-coral)]/15 text-[var(--color-coral)] p-3 rounded-xl text-xs border border-[var(--color-coral)]/20">
+                <div className="bg-red-500/10 text-red-600 p-3 rounded-lg text-sm border border-red-500/20">
                   {error.message || "An error occurred."}
                 </div>
               )}
@@ -324,8 +328,8 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
             </div>
 
             {/* Input */}
-            <div className="p-4 border-t border-[var(--color-outline)]/20 bg-[var(--bg-elevated)]">
-              <form onSubmit={handleSubmit} className="relative">
+            <div className="p-4 border-t border-[var(--border-base)] bg-[var(--bg-surface)]">
+              <form onSubmit={handleSubmit} className="relative max-w-4xl mx-auto">
                 <textarea
                   ref={inputRef}
                   value={input}
@@ -337,20 +341,20 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
                     }
                   }}
                   placeholder={selectedRepo ? "Ask about this codebase..." : "Ask any coding question..."}
-                  className="w-full bg-[var(--bg-base)] border border-[var(--color-outline)]/20 rounded-xl py-3 pl-4 pr-12 text-sm focus:outline-none focus:border-[var(--color-sky-blue)] resize-none transition-colors"
+                  className="w-full bg-[var(--bg-base)] border border-[var(--border-base)] rounded-xl py-3 pl-4 pr-12 text-sm focus:outline-none focus:border-[var(--border-strong)] resize-none transition-colors"
                   rows={2}
                   disabled={isLoading}
                 />
                 <button
                   type="submit"
                   disabled={isLoading || !input.trim()}
-                  className="absolute right-3 bottom-3 w-8 h-8 bg-[var(--text-primary)] text-[var(--bg-base)] rounded-lg flex items-center justify-center disabled:opacity-30 transition-all hover:scale-105"
+                  className="absolute right-2 bottom-2 w-8 h-8 bg-[var(--color-accent)] text-[var(--color-accent-fg)] rounded-lg flex items-center justify-center disabled:opacity-30 transition-all hover:-translate-y-px"
                 >
-                  <FiSend className="w-3.5 h-3.5" />
+                  <Send size={14} />
                 </button>
               </form>
-              <div className="flex justify-between items-center mt-1.5 px-1">
-                <span className="text-[10px] text-[var(--text-secondary)] font-mono">
+              <div className="flex justify-center mt-2">
+                <span className="text-[10px] text-[var(--text-muted)] font-medium">
                   Shift+Enter for new line
                 </span>
               </div>

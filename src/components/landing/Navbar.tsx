@@ -2,15 +2,16 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FiMenu, FiX, FiGithub } from "react-icons/fi";
+import { Menu, X } from "lucide-react";
+import { FiGithub } from "react-icons/fi";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      setScrolled(window.scrollY > 10);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -18,57 +19,95 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${scrolled || menuOpen ? 'bg-[var(--bg-base)] border-b border-[var(--color-outline)] py-4' : 'bg-transparent py-6'}`}>
-        <div className="max-w-[1400px] mx-auto px-6 md:px-12 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Link href="/" className="text-[var(--text-primary)] font-bold text-xl tracking-tight flex items-center gap-2" onClick={() => setMenuOpen(false)}>
-              <div className="bg-white p-1 rounded-md flex items-center justify-center">
-                <img src="/logo.png" alt="Kareixo Logo" className="w-6 h-6 object-contain" />
+      <nav
+        className={`fixed top-0 inset-x-0 z-50 transition-all duration-200 ${
+          scrolled ? "glass-nav shadow-sm py-3" : "bg-transparent py-5 border-b border-transparent"
+        }`}
+      >
+        <div className="max-w-[1280px] mx-auto px-6 flex items-center justify-between">
+          <div className="flex items-center gap-8">
+            <Link
+              href="/"
+              className="text-[var(--text-primary)] font-semibold text-lg tracking-tight flex items-center gap-2"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {/* Kareixo Logo (monochrome) */}
+              <div className="w-6 h-6 bg-[var(--text-primary)] rounded-md flex items-center justify-center">
+                <span className="text-[var(--bg-base)] text-xs font-bold font-mono">K</span>
               </div>
               Kareixo
             </Link>
+
+            {/* Desktop Links */}
+            <div className="hidden md:flex items-center gap-6 text-sm font-medium text-[var(--text-secondary)]">
+              <Link href="#product" className="hover:text-[var(--text-primary)] transition-colors">
+                Product
+              </Link>
+              <Link href="#how-it-works" className="hover:text-[var(--text-primary)] transition-colors">
+                How it works
+              </Link>
+              <Link href="#security" className="hover:text-[var(--text-primary)] transition-colors">
+                Security
+              </Link>
+              <a
+                href="https://github.com/karanray06/Kareixo"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[var(--text-primary)] transition-colors flex items-center gap-1.5"
+              >
+                GitHub
+              </a>
+            </div>
           </div>
-          
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="text-[var(--text-primary)] flex items-center gap-2 font-medium hover:text-[var(--text-secondary)] transition-colors"
+
+          <div className="hidden md:flex items-center gap-4">
+            <Link href="/dashboard" className="text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
+              Sign in
+            </Link>
+            <a
+              href="https://github.com/apps/kareixo-reviewer/installations/new"
+              className="btn btn-primary text-sm"
             >
-              <span className="hidden sm:inline">Menu</span>
-              {menuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+              Install on GitHub
+            </a>
+          </div>
+
+          {/* Mobile menu toggle */}
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors p-1"
+            >
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>
       </nav>
 
-      {/* Full-screen overlay menu */}
-      {menuOpen && (
-        <div className="fixed inset-0 z-40 bg-[var(--bg-base)] flex flex-col items-center justify-center">
-          <div className="flex flex-col items-center gap-8 text-3xl font-bold">
-            <Link href="/" onClick={() => setMenuOpen(false)} className="text-[var(--text-primary)] hover:text-[var(--text-secondary)] transition-colors">
-              Home
-            </Link>
-            <Link href="#how-it-works" onClick={() => setMenuOpen(false)} className="text-[var(--text-primary)] hover:text-[var(--text-secondary)] transition-colors">
-              How it works
-            </Link>
-            <Link href="/chat" onClick={() => setMenuOpen(false)} className="text-[var(--text-primary)] hover:text-[var(--text-secondary)] transition-colors">
-              Chat
-            </Link>
-            <Link href="/codechat" onClick={() => setMenuOpen(false)} className="text-[var(--text-primary)] hover:text-[var(--text-secondary)] transition-colors">
-              CodeChat
-            </Link>
-            <Link href="/incident" onClick={() => setMenuOpen(false)} className="text-[var(--text-primary)] hover:text-[var(--text-secondary)] transition-colors">
-              Incident Tracer
-            </Link>
-            <Link href="/pricing" onClick={() => setMenuOpen(false)} className="text-[var(--text-primary)] hover:text-[var(--text-secondary)] transition-colors">
-              Pricing
-            </Link>
-            <a href="https://github.com/apps/kareixo-reviewer/installations/new" onClick={() => setMenuOpen(false)} className="text-[var(--text-primary)] hover:text-[var(--text-secondary)] transition-colors">
-              Install
-            </a>
-            <a href="https://github.com/karanray06/Kareixo" target="_blank" rel="noopener noreferrer" className="text-[var(--text-primary)] hover:text-[var(--text-secondary)] transition-colors flex items-center gap-2">
-              <FiGithub /> GitHub
-            </a>
+      {/* Mobile overlay menu */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-40 bg-[var(--bg-base)] pt-24 px-6 pb-6 flex flex-col md:hidden">
+          <div className="flex flex-col gap-6 text-lg font-medium text-[var(--text-primary)]">
+            <Link href="#product" onClick={() => setMobileMenuOpen(false)}>Product</Link>
+            <Link href="#how-it-works" onClick={() => setMobileMenuOpen(false)}>How it works</Link>
+            <Link href="#security" onClick={() => setMobileMenuOpen(false)}>Security</Link>
+            <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>Sign in</Link>
+            <div className="pt-4 border-t border-[var(--border-base)] flex flex-col gap-4">
+              <a
+                href="https://github.com/apps/kareixo-reviewer/installations/new"
+                className="btn btn-primary w-full"
+              >
+                Install on GitHub
+              </a>
+              <a
+                href="https://github.com/karanray06/Kareixo"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-secondary w-full"
+              >
+                <FiGithub size={16} /> View on GitHub
+              </a>
+            </div>
           </div>
         </div>
       )}

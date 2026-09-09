@@ -1,10 +1,10 @@
-import Navbar from "@/components/landing/Navbar";
 import { auth } from "@/auth";
 import { getDb } from "@/db";
 import { repositories, github_installations } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { redirect } from "next/navigation";
-import { FiArrowLeft } from "react-icons/fi";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import SettingsForm from "./SettingsForm";
 
 export default async function RepositorySettingsPage({ params }: { params: { repoId: string } }) {
@@ -47,24 +47,22 @@ export default async function RepositorySettingsPage({ params }: { params: { rep
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)]">
-      <Navbar />
-      <div className="max-w-4xl mx-auto px-6 pt-32 pb-12">
-        <a href="/dashboard" className="inline-flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--color-sky-blue)] transition-colors mb-6 font-semibold">
-          <FiArrowLeft /> Back to Dashboard
-        </a>
-        <header className="mb-12">
-          <h1 className="text-4xl font-display">{repo.fullName}</h1>
-          <p className="text-[var(--text-secondary)] mt-2">Configure Kareixo rules and review behavior for this repository.</p>
-        </header>
+    <div className="p-8 md:p-12 max-w-4xl">
+      <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors mb-6">
+        <ArrowLeft size={16} /> Back to Overview
+      </Link>
+      
+      <header className="mb-10">
+        <h1 className="text-2xl font-semibold tracking-tight">{repo.fullName}</h1>
+        <p className="text-[var(--text-secondary)] mt-1">Configure Kareixo rules and review behavior for this repository.</p>
+      </header>
 
-        <SettingsForm
-          repoId={repo.id}
-          initialCategories={initialCategories}
-          initialTier={repo.preferredTier || "fast"}
-          initialInstructions={repo.customInstructions || ""}
-        />
-      </div>
+      <SettingsForm
+        repoId={repo.id}
+        initialCategories={initialCategories}
+        initialTier={repo.preferredTier || "fast"}
+        initialInstructions={repo.customInstructions || ""}
+      />
     </div>
   );
 }
