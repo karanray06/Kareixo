@@ -42,21 +42,31 @@ export default function HeroScene() {
           </div>
         ) : (
           <>
-            <h1 className="text-5xl md:text-7xl tracking-normal text-[var(--text-primary)] animate-fade-in-up">
-              Free AI code review for every pull request
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8 animate-fade-in-up">
+              Ship better code.<br />
+              <span className="text-[var(--text-muted)]">Automatically.</span>
             </h1>
-            <p className="text-[var(--text-secondary)] text-xl max-w-2xl animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-              Install the GitHub App once, and get instant, intelligent code reviews powered by a resilient multi-model router.
+            <p className="text-lg md:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+              Kareixo reviews your pull requests with AI, catches issues before they reach production, and gives your team actionable feedback directly in GitHub.
             </p>
-            <div className="animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
               <a
                 href="https://github.com/apps/kareixo-reviewer/installations/new"
-                className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white !text-slate-900 rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-lg"
+                className="btn btn-primary h-12 px-8 text-base w-full sm:w-auto shadow-lg shadow-black/5"
               >
-                <FiGithub className="w-5 h-5" />
+                <FiGithub size={18} />
                 Install on GitHub
               </a>
+              <a
+                href="#how-it-works"
+                className="btn btn-secondary h-12 px-8 text-base w-full sm:w-auto"
+              >
+                Explore how it works
+              </a>
             </div>
+            <p className="text-sm text-[var(--text-muted)] font-medium animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
+              Free forever &middot; No configuration &middot; GitHub-native
+            </p>
           </>
         )}
       </div>

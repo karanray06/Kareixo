@@ -6,7 +6,8 @@ import {
   GitMerge, 
   Activity, 
   Settings, 
-  LogOut
+  LogOut,
+  TerminalSquare
 } from "lucide-react";
 import { FiGithub } from "react-icons/fi";
 
@@ -42,6 +43,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)] transition-colors">
             <Activity size={18} />
             Reviews
+          </Link>
+          <Link href="/codechat" className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)] transition-colors">
+            <TerminalSquare size={18} />
+            Code Chat
           </Link>
           
           <div className="pt-4 mt-4 border-t border-[var(--border-base)]">

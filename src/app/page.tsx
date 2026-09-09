@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { FiGithub } from "react-icons/fi";
 import Link from "next/link";
+import HeroScene from "@/components/landing/HeroScene";
 
 export default function Home() {
   return (
@@ -18,37 +19,9 @@ export default function Home() {
       <Navbar />
 
       {/* ── 1. Hero Section ── */}
-      <section className="pt-40 pb-20 px-6 max-w-[1280px] mx-auto text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--bg-subtle)] border border-[var(--border-base)] text-[var(--text-secondary)] text-xs font-semibold tracking-wider mb-8 uppercase">
-          <GitPullRequest size={14} /> AI Code Review for GitHub
-        </div>
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8">
-          Ship better code.<br />
-          <span className="text-[var(--text-muted)]">Automatically.</span>
-        </h1>
-        <p className="text-lg md:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto mb-10 leading-relaxed">
-          Kareixo reviews your pull requests with AI, catches issues before they reach production, and gives your team actionable feedback directly in GitHub.
-        </p>
-        
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-          <a
-            href="https://github.com/apps/kareixo-reviewer/installations/new"
-            className="btn btn-primary h-12 px-8 text-base w-full sm:w-auto shadow-lg shadow-black/5"
-          >
-            <FiGithub size={18} />
-            Install on GitHub
-          </a>
-          <a
-            href="#how-it-works"
-            className="btn btn-secondary h-12 px-8 text-base w-full sm:w-auto"
-          >
-            Explore how it works
-          </a>
-        </div>
-        <p className="text-sm text-[var(--text-muted)] font-medium">
-          Free forever &middot; No configuration &middot; GitHub-native
-        </p>
-      </section>
+      <div className="pt-20">
+        <HeroScene />
+      </div>
 
       {/* ── 2. Hero Visual (Mockup) ── */}
       <section className="px-6 max-w-[1000px] mx-auto mb-24 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
