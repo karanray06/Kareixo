@@ -96,9 +96,9 @@ export default function RepositoryDetails({ params }: { params: { repoId: string
 <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-secondary"></span>Go 16.2%</span>
 </div>
 <div className="w-full h-1.5 rounded-full bg-surface-subtle overflow-hidden flex">
-<div className="h-full bg-info" style="width: 78.4%"></div>
-<div className="h-full bg-secondary" style="width: 16.2%"></div>
-<div className="h-full bg-text-muted" style="width: 5.4%"></div>
+<div className="h-full bg-info" style={{ width: "78.4%" }}></div>
+<div className="h-full bg-secondary" style={{ width: "16.2%" }}></div>
+<div className="h-full bg-text-muted" style={{ width: "5.4%" }}></div>
 </div>
 <div className="text-[10px] font-badge-mono text-text-muted mt-1 text-right">5.4% Docker &amp; Shell</div>
 </div>
