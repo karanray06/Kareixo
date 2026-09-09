@@ -31,10 +31,8 @@ export default function Navbar() {
               className="text-[var(--text-primary)] font-semibold text-lg tracking-tight flex items-center gap-2"
               onClick={() => setMobileMenuOpen(false)}
             >
-              {/* Kareixo Logo (monochrome) */}
-              <div className="w-6 h-6 bg-[var(--text-primary)] rounded-md flex items-center justify-center">
-                <span className="text-[var(--bg-base)] text-xs font-bold font-mono">K</span>
-              </div>
+              {/* Kareixo Logo */}
+              <img src="/logo.png" alt="Kareixo Logo" className="w-7 h-7 rounded-md object-contain" />
               Kareixo
             </Link>
 

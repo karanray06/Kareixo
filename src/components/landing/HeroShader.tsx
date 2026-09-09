@@ -1,0 +1,229 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
+
+export default function HeroShader() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    let animationFrameId: number;
+
+    function syncSize() {
+      const w = canvas!.clientWidth || window.innerWidth;
+      const h = canvas!.clientHeight || window.innerHeight;
+      if (canvas!.width !== w || canvas!.height !== h) {
+        canvas!.width = w;
+        canvas!.height = h;
+      }
+    }
+
+    if (typeof ResizeObserver !== 'undefined') {
+      new ResizeObserver(syncSize).observe(canvas);
+    }
+    syncSize();
+
+    const gl = canvas.getContext('webgl') || (canvas.getContext('experimental-webgl') as WebGLRenderingContext);
+    if (!gl) return;
+
+    const vs = `attribute vec2 a_position;
+varying vec2 v_texCoord;
+void main() {
+  v_texCoord = a_position * 0.5 + 0.5;
+  gl_Position = vec4(a_position, 0.0, 1.0);
+}`;
+
+    const fs = `precision highp float;
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+
+// Simplex-style procedural noise & math helpers
+vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
+vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
+
+float snoise(vec3 v) {
+  const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+  const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+
+  vec3 i  = floor(v + dot(v, C.yyy));
+  vec3 x0 = v - i + dot(i, C.xxx);
+
+  vec3 g = step(x0.yzx, x0.xyz);
+  vec3 l = 1.0 - g;
+  vec3 i1 = min(g.xyz, l.zxy);
+  vec3 i2 = max(g.xyz, l.zxy);
+
+  vec3 x1 = x0 - i1 + C.xxx;
+  vec3 x2 = x0 - i2 + C.yyy;
+  vec3 x3 = x0 - D.yyy;
+
+  i = mod289(i);
+  vec4 p = permute(permute(permute(
+             i.z + vec4(0.0, i1.z, i2.z, 1.0))
+           + i.y + vec4(0.0, i1.y, i2.y, 1.0))
+           + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+
+  float n_ = 0.142857142857;
+  vec3  ns = n_ * D.wyz - D.xzx;
+
+  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+
+  vec4 x_ = floor(j * ns.z);
+  vec4 y_ = floor(j - 7.0 * x_);
+
+  vec4 x = x_ *ns.x + ns.yyyy;
+  vec4 y = y_ *ns.x + ns.yyyy;
+  vec4 h = 1.0 - abs(x) - abs(y);
+
+  vec4 b0 = vec4(x.xy, y.xy);
+  vec4 b1 = vec4(x.zw, y.zw);
+
+  vec4 s0 = floor(b0)*2.0 + 1.0;
+  vec4 s1 = floor(b1)*2.0 + 1.0;
+  vec4 sh = -step(h, vec4(0.0));
+
+  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy;
+  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+
+  vec3 p0 = vec3(a0.xy, h.x);
+  vec3 p1 = vec3(a0.zw, h.y);
+  vec3 p2 = vec3(a1.xy, h.z);
+  vec3 p3 = vec3(a1.zw, h.w);
+
+  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
+  p0 *= norm.x;
+  p1 *= norm.y;
+  p2 *= norm.z;
+  p3 *= norm.w;
+
+  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+  m = m * m;
+  return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
+}
+
+void main() {
+    vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+    vec2 p = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / min(u_resolution.x, u_resolution.y);
+    
+    // Normalized mouse with dampening
+    vec2 mouse = u_mouse.xy / u_resolution.xy;
+    vec2 mouseOffset = (mouse - 0.5) * 0.4;
+    p += mouseOffset;
+
+    float t = u_time * 0.25;
+
+    // Perspective depth tunneling / geometric lattice
+    float z = 2.0 - fract(t * 0.3);
+    vec3 ray = normalize(vec3(p, 1.4));
+
+    // Volumetric 3D procedural flow
+    float noiseVal1 = snoise(vec3(p * 1.5, t * 0.4));
+    float noiseVal2 = snoise(vec3(p * 3.2 - vec2(t * 0.2, t * 0.3), t * 0.6));
+    
+    // Floating AST network mesh lines
+    vec2 grid = abs(fract(p * 4.0 + vec2(t * 0.1, sin(t * 0.3) * 0.2)) - 0.5);
+    float gridLine = smoothstep(0.04, 0.0, min(grid.x, grid.y)) * 0.25;
+
+    // Cinematic deep tech palette (Zinc-950 base with violet/indigo & emerald holographic beams)
+    vec3 baseDark = vec3(0.04, 0.045, 0.055); // #0a0b0e
+    vec3 deepIndigo = vec3(0.12, 0.08, 0.28); // Holographic depth
+    vec3 electricViolet = vec3(0.55, 0.35, 0.98); // AI AST beam
+    vec3 cyberEmerald = vec3(0.1, 0.7, 0.45); // Safe Code verification aura
+    vec3 photonWhite = vec3(0.96, 0.96, 1.0);
+
+    // Dynamic wave pulses simulating code analysis passes
+    float pulse = sin(length(p) * 6.0 - t * 4.0 + noiseVal1 * 2.5);
+    pulse = smoothstep(0.7, 0.98, pulse);
+
+    // Layered composition
+    vec3 col = baseDark;
+    col += deepIndigo * (0.35 + 0.35 * noiseVal1);
+    col += electricViolet * pow(max(0.0, 1.0 - length(p * 1.2)), 2.8) * 0.85;
+    col += electricViolet * pulse * 0.45;
+    col += gridLine * (electricViolet * 0.6 + photonWhite * 0.4);
+    
+    // Passing luminous energy nodes
+    float nodeGlow = 0.0;
+    for(int i = 0; i < 4; i++) {
+        float fi = float(i);
+        vec2 nodePos = vec2(sin(t * 0.7 + fi * 1.57) * 0.85, cos(t * 0.5 + fi * 2.1) * 0.5);
+        float d = length(p - nodePos);
+        nodeGlow += 0.012 / (d * d + 0.01);
+    }
+    col += mix(electricViolet, cyberEmerald, sin(t + uv.x * 3.14) * 0.5 + 0.5) * nodeGlow * 0.5;
+
+    // Vignette for cinema screen focus
+    float vignette = smoothstep(1.6, 0.4, length(p));
+    col *= vignette;
+
+    gl_FragColor = vec4(col, 0.95);
+}`;
+
+    function cs(type: number, src: string) {
+      const s = gl!.createShader(type)!;
+      gl!.shaderSource(s, src);
+      gl!.compileShader(s);
+      return s;
+    }
+
+    const prog = gl.createProgram()!;
+    gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs));
+    gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs));
+    gl.linkProgram(prog);
+    gl.useProgram(prog);
+    
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+    
+    const pos = gl.getAttribLocation(prog, 'a_position');
+    gl.enableVertexAttribArray(pos);
+    gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+    
+    const uTime = gl.getUniformLocation(prog, 'u_time');
+    const uRes = gl.getUniformLocation(prog, 'u_resolution');
+    const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+
+    const mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+
+    function onMouseMove(event: MouseEvent) {
+      const rect = canvas!.getBoundingClientRect();
+      if (rect.width && rect.height) {
+        const nx = (event.clientX - rect.left) / rect.width;
+        const ny = 1.0 - (event.clientY - rect.top) / rect.height;
+        mouse.x = nx * canvas!.width;
+        mouse.y = ny * canvas!.height;
+      }
+    }
+
+    window.addEventListener('mousemove', onMouseMove);
+
+    function render(t: number) {
+      if (typeof ResizeObserver === 'undefined') syncSize();
+      gl!.viewport(0, 0, canvas!.width, canvas!.height);
+      if (uTime) gl!.uniform1f(uTime, t * 0.001);
+      if (uRes) gl!.uniform2f(uRes, canvas!.width, canvas!.height);
+      if (uMouse) gl!.uniform2f(uMouse, mouse.x, mouse.y);
+      gl!.drawArrays(gl!.TRIANGLE_STRIP, 0, 4);
+      animationFrameId = requestAnimationFrame(render);
+    }
+    
+    render(0);
+
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  return (
+    <div className="fixed inset-0 w-full h-full pointer-events-none z-0 opacity-80" style={{ display: 'block' }}>
+      <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
+    </div>
+  );
+}

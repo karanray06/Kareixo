@@ -18,7 +18,7 @@ export default function HeroScene() {
   return (
     <section className="relative min-h-[80vh] flex flex-col items-center justify-center overflow-hidden bg-[var(--bg-base)]">
       {/* Background Shapes */}
-      <div className={`absolute inset-0 z-0 transition-opacity duration-1000 ${loading ? 'opacity-0' : 'opacity-100'}`}>
+      <div className={`absolute inset-0 -z-10 pointer-events-none transition-opacity duration-1000 ${loading ? 'opacity-0' : 'opacity-100'}`}>
         {/* Mint to Pale Yellow Squiggle */}
         <div className="absolute top-[20%] left-[20%] w-[200px] h-[50px] rounded-full bg-gradient-to-r from-[var(--color-mint)] to-[var(--color-pale-yellow)] border-[4px] border-[var(--color-outline)] animate-float opacity-80" style={{ animationDelay: '0s' }}></div>
         
