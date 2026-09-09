@@ -370,7 +370,7 @@ export default function DashboardOverview() {
 <span>3m ago</span>
 </div>
 <div className="w-full bg-surface-container rounded-full h-1 overflow-hidden">
-<div className="bg-success h-full rounded-full" style="width: 99.2%"></div>
+<div className="bg-success h-full rounded-full" style={{ width: "99.2%" }}></div>
 </div>
 </div>
 
@@ -404,7 +404,7 @@ export default function DashboardOverview() {
 <span>1h ago</span>
 </div>
 <div className="w-full bg-surface-container rounded-full h-1 overflow-hidden">
-<div className="bg-warning h-full rounded-full" style="width: 97.4%"></div>
+<div className="bg-warning h-full rounded-full" style={{ width: "97.4%" }}></div>
 </div>
 </div>
 
@@ -450,7 +450,7 @@ export default function DashboardOverview() {
 <span className="font-semibold text-error">3 <span className="text-[10px] font-normal text-text-muted">(1 High, 2 Med)</span></span>
 </div>
 <div className="w-full bg-surface-container rounded-full h-1.5 overflow-hidden">
-<div className="bg-error h-full rounded-full" style="width: 33.3%"></div>
+<div className="bg-error h-full rounded-full" style={{ width: "33.3%" }}></div>
 </div>
 </div>
 
@@ -463,7 +463,7 @@ export default function DashboardOverview() {
 <span className="font-semibold text-text-primary">4</span>
 </div>
 <div className="w-full bg-surface-container rounded-full h-1.5 overflow-hidden">
-<div className="bg-warning h-full rounded-full" style="width: 44.4%"></div>
+<div className="bg-warning h-full rounded-full" style={{ width: "44.4%" }}></div>
 </div>
 </div>
 
@@ -476,7 +476,7 @@ export default function DashboardOverview() {
 <span className="font-semibold text-text-primary">2</span>
 </div>
 <div className="w-full bg-surface-container rounded-full h-1.5 overflow-hidden">
-<div className="bg-info h-full rounded-full" style="width: 22.2%"></div>
+<div className="bg-info h-full rounded-full" style={{ width: "22.2%" }}></div>
 </div>
 </div>
 </div>

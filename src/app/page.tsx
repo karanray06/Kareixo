@@ -168,7 +168,7 @@ export default function Home() {
 <div className="flex items-stretch hover:bg-white/[0.02]">
 <span className="w-12 py-1 px-3 text-right text-dark-text-muted font-code-gutter select-none bg-dark-surface/40 border-r border-dark-border">42</span>
 <span className="w-6 py-1 text-center text-dark-text-muted select-none"> </span>
-<span className="py-1 px-4 text-dark-text-secondary">export async function authMiddleware(req: Request, res: Response, next: NextFunction) {"{"{"}"}</span>
+<span className="py-1 px-4 text-dark-text-secondary">export async function authMiddleware(req: Request, res: Response, next: NextFunction) &#123;</span>
 </div>
 <div className="flex items-stretch hover:bg-white/[0.02]">
 <span className="w-12 py-1 px-3 text-right text-dark-text-muted font-code-gutter select-none bg-dark-surface/40 border-r border-dark-border">43</span>
@@ -206,9 +206,9 @@ export default function Home() {
           </p>
 <div className="p-3.5 rounded-lg bg-black/60 font-code-diff text-code-diff text-dark-text-primary mb-4 border border-dark-border">
 <span className="text-dark-text-muted">// Suggested safe verification pattern &amp; timing safety:</span><br/>
-<span className="text-secondary font-medium">if (!token || !isValidBearerFormat(token)) {"{"{"}"}</span><br/>
-              <span className="text-dark-text-secondary">return res.status(401).json({"{"{"}"} error: &apos;Invalid or missing bearer token&apos; {"}"});</span><br/>
-<span className="text-secondary font-medium">{"}"}</span><br/>
+<span className="text-secondary font-medium">if (!token || !isValidBearerFormat(token)) &#123;</span><br/>
+              <span className="text-dark-text-secondary">return res.status(401).json(&#123; error: &apos;Invalid or missing bearer token&apos; &#125;);</span><br/>
+<span className="text-secondary font-medium">&#125;</span><br/>
 <span className="text-emerald-400 font-medium">const isSigValid = crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected));</span>
 </div>
 <div className="flex flex-wrap items-center gap-3">
@@ -240,7 +240,7 @@ export default function Home() {
 <div className="flex items-stretch hover:bg-white/[0.02]">
 <span className="w-12 py-1 px-3 text-right text-dark-text-muted font-code-gutter select-none bg-dark-surface/40 border-r border-dark-border">49</span>
 <span className="w-6 py-1 text-center text-dark-text-muted select-none"> </span>
-<span className="py-1 px-4 text-dark-text-secondary">{"}"}</span>
+<span className="py-1 px-4 text-dark-text-secondary">&#125;</span>
 </div>
 </div>
 
@@ -445,7 +445,7 @@ export default function Home() {
 <span>Line 108</span>
 </div>
 <div className="font-code-diff text-code-diff p-5 space-y-1 bg-black/60">
-<div className="text-dark-text-muted font-code-gutter">105  export async function searchUsers(rawQuery: string) {"{"{"}"}</div>
+<div className="text-dark-text-muted font-code-gutter">105  export async function searchUsers(rawQuery: string) &#123;</div>
 <div className="text-dark-text-muted font-code-gutter">106    const db = await getDatabaseClient();</div>
 <div className="text-dark-text-muted font-code-gutter">107</div>
 
@@ -453,12 +453,12 @@ export default function Home() {
 <span className="text-rose-400 font-bold font-code-gutter">108</span>
 <span className="text-dark-text-primary font-medium">
               const result = await db.query(<br/>
-                `SELECT * FROM users WHERE email = &apos;${"{"{"}"}rawQuery{"}"}&apos;`<br/>
+                `SELECT * FROM users WHERE email = &apos;$&#123;rawQuery&#125;&apos;`<br/>
               );
           </span>
 </div>
 <div className="text-dark-text-muted font-code-gutter pt-2">109    return result.rows;</div>
-<div className="text-dark-text-muted font-code-gutter">110  {"}"}</div>
+<div className="text-dark-text-muted font-code-gutter">110  &#125;</div>
 </div>
 <div className="p-4 bg-dark-surface border-t border-dark-border flex items-center justify-between font-badge-mono text-badge-mono">
 <span className="text-rose-400 flex items-center gap-1.5">
@@ -861,68 +861,7 @@ export default function Home() {
 
 <footer className="w-full bg-[#070709] border-t border-dark-border py-space-16 relative z-10"><div className="max-w-[1280px] mx-auto px-6 lg:px-12"><div className="grid grid-cols-1 md:grid-cols-12 gap-y-10 md:gap-x-12 pb-space-12"><div className="md:col-span-5 flex flex-col items-start"><div className="flex items-center gap-2 mb-3"><span className="font-title-card-sm text-title-card-sm text-dark-text-primary tracking-tight">Kareixo</span><span className="text-xs px-2 py-0.5 rounded bg-secondary/20 text-secondary border border-secondary/30 font-badge-mono">3D Interactive</span></div><p className="font-body-sm text-body-sm text-dark-text-secondary max-w-sm">AI code review platform for GitHub. Precision diagnostics, automated sanity checks, and automated pull request analysis.</p></div><div className="md:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8"><div><h4 className="font-label-ui text-label-ui text-dark-text-primary mb-4 font-semibold">Product</h4><ul className="space-y-3 font-body-sm text-body-sm text-dark-text-secondary"><li><a className="hover:text-white transition-colors" data-path="product" href="#stage-engine">Engine</a></li><li><a className="hover:text-white transition-colors" data-path="how-it-works" href="#how-it-works">Timeline</a></li><li><a className="hover:text-white transition-colors" data-path="security" href="#security-vault">Security Vault</a></li><li><a className="hover:text-white transition-colors" data-path="kareixo-chat" href="#kareixo-chat">Kareixo Chat</a></li></ul></div><div><h4 className="font-label-ui text-label-ui text-dark-text-primary mb-4 font-semibold">Resources</h4><ul className="space-y-3 font-body-sm text-body-sm text-dark-text-secondary"><li><a className="hover:text-white transition-colors" data-path="pricing" href="#">Pricing</a></li><li><a className="hover:text-white transition-colors" href="https://github.com" rel="noreferrer" target="_blank">GitHub</a></li><li><a className="hover:text-white transition-colors" data-path="privacy" href="#">Privacy</a></li><li><a className="hover:text-white transition-colors" data-path="terms" href="#">Terms</a></li></ul></div><div><h4 className="font-label-ui text-label-ui text-dark-text-primary mb-4 font-semibold">Developers</h4><div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/20 border border-secondary/30"><span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span><span className="font-badge-mono text-badge-mono text-secondary">v2.4 Active · 3D</span></div></div></div></div><div className="pt-space-8 border-t border-dark-border/40 flex flex-col sm:flex-row items-center justify-between gap-4 font-body-sm text-body-sm text-dark-text-muted"><p>© 2026 Kareixo. Free forever · Built for developers.</p><div className="flex items-center gap-6"><a className="hover:text-dark-text-secondary transition-colors" data-path="privacy" href="#">Privacy Policy</a><a className="hover:text-dark-text-secondary transition-colors" data-path="terms" href="#">Terms of Service</a></div></div></div></footer>
 
-<script>
-  (function() {"{"{"}"}
-    // Check user preference for reduced motion
-    const prefersReducedMotion = window.matchMedia(&apos;(prefers-reduced-motion: reduce)&apos;).matches;
-    if (prefersReducedMotion) return;
 
-    const heroCard = document.getElementById(&apos;hero-3d-card&apos;);
-    const tiltCards = document.querySelectorAll(&apos;.scroll-tilt-card&apos;);
-    const floatPills = document.querySelectorAll(&apos;.data-parallax-float&apos;);
-
-    // Scroll-driven perspective tilt on hero PR inspector
-    let ticking = false;
-    function onScroll() {"{"{"}"}
-      if (!ticking) {"{"{"}"}
-        window.requestAnimationFrame(() => {"{"{"}"}
-          const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-          
-          if (heroCard) {"{"{"}"}
-            // Smoothly flatten and lift hero mock as the user scrolls into the viewport
-            const rect = heroCard.getBoundingClientRect();
-            const windowHeight = window.innerHeight;
-            const progress = Math.min(Math.max((windowHeight - rect.top) / (windowHeight * 1.5), 0), 1);
-            
-            // Starts at 12deg X tilt, transitions to 0deg flat, then subtle upward lift
-            const currentTiltX = (1 - progress) * 12;
-            const currentTranslateY = (1 - progress) * 30;
-            heroCard.style.transform = `rotateX(${"{"{"}"}currentTiltX.toFixed(2){"}"}deg) translateY(${"{"{"}"}currentTranslateY.toFixed(2){"}"}px)`;
-          {"}"}
-
-          // Tilt cards in viewport on scroll
-          tiltCards.forEach((card) => {"{"{"}"}
-            const rect = card.getBoundingClientRect();
-            if (rect.top < window.innerHeight && rect.bottom > 0) {"{"{"}"}
-              const centerDist = (rect.top + rect.height / 2) - window.innerHeight / 2;
-              const angle = Math.max(Math.min(centerDist / 40, 6), -6);
-              card.style.transform = `perspective(800px) rotateX(${"{"{"}"}angle.toFixed(1){"}"}deg)`;
-            {"}"}
-          {"}"});
-
-          ticking = false;
-        {"}"});
-        ticking = true;
-      {"}"}
-    {"}"}
-
-    window.addEventListener(&apos;scroll&apos;, onScroll, {"{"{"}"} passive: true {"}"});
-    onScroll();
-
-    // Mouse movement parallax for floating holographic pills and hero card
-    document.addEventListener(&apos;mousemove&apos;, (e) => {"{"{"}"}
-      const mouseX = (e.clientX / window.innerWidth) - 0.5;
-      const mouseY = (e.clientY / window.innerHeight) - 0.5;
-
-      floatPills.forEach((pill) => {"{"{"}"}
-        const depth = parseFloat(pill.getAttribute(&apos;data-depth&apos;) || &apos;0.05&apos;);
-        const moveX = mouseX * depth * 350;
-        const moveY = mouseY * depth * 350;
-        pill.style.transform = `translate3d(${"{"{"}"}moveX{"}"}px, ${"{"{"}"}moveY{"}"}px, 0)`;
-      {"}"});
-    {"}"});
-  {"}"})();
-</script>
 
     </>
   );
