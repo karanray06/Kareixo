@@ -17,11 +17,11 @@ export default function ReviewDetails() {
 </div>
 
 <div className="flex flex-wrap items-center gap-2.5">
-<button className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-surface-elevated text-text-primary font-label-ui text-label-ui shadow-sm hover:bg-surface-subtle transition-all duration-150 ease-out active:scale-95" id="btn-export" onclick="showExportToast()">
+<button className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-surface-elevated text-text-primary font-label-ui text-label-ui shadow-sm hover:bg-surface-subtle transition-all duration-150 ease-out active:scale-95" id="btn-export">
 <span className="material-symbols-outlined text-[17px] text-text-secondary">download</span>
 <span>Export JSON</span>
 </button>
-<button className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-surface-elevated text-text-primary font-label-ui text-label-ui shadow-sm hover:bg-surface-subtle transition-all duration-150 ease-out active:scale-95" id="btn-rerun" onclick="triggerRerun(this)">
+<button className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-surface-elevated text-text-primary font-label-ui text-label-ui shadow-sm hover:bg-surface-subtle transition-all duration-150 ease-out active:scale-95" id="btn-rerun">
 <span className="material-symbols-outlined text-[17px] text-text-secondary">refresh</span>
 <span id="rerun-label">Re-run Review</span>
 </button>
@@ -29,7 +29,7 @@ export default function ReviewDetails() {
 <span>GitHub</span>
 <span className="material-symbols-outlined text-[15px]">open_in_new</span>
 </a>
-<button className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg bg-primary text-on-primary font-label-ui text-label-ui shadow-md hover:bg-primary-container transition-all duration-150 ease-out hover:-translate-y-[1px]" id="btn-apply-all" onclick="applyAllSuggestions(this)">
+<button className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg bg-primary text-on-primary font-label-ui text-label-ui shadow-md hover:bg-primary-container transition-all duration-150 ease-out hover:-translate-y-[1px]" id="btn-apply-all">
 <span className="material-symbols-outlined text-[16px] text-secondary-fixed">auto_fix_high</span>
 <span>Apply All Fixes via PR</span>
 </button>
@@ -164,15 +164,15 @@ export default function ReviewDetails() {
 </div>
 
 <div className="grid grid-cols-4 gap-1 p-1 bg-surface-subtle rounded-lg font-badge-mono text-[11px] leading-4 text-center">
-<button className="filter-btn active-filter py-1 rounded font-medium bg-surface-elevated shadow-sm text-text-primary" onclick="filterFindings(&apos;all&apos;, this)">All (4)</button>
-<button className="filter-btn py-1 rounded font-medium text-text-secondary hover:text-text-primary" onclick="filterFindings(&apos;security&apos;, this)">Sec (2)</button>
-<button className="filter-btn py-1 rounded font-medium text-text-secondary hover:text-text-primary" onclick="filterFindings(&apos;perf&apos;, this)">Perf (1)</button>
-<button className="filter-btn py-1 rounded font-medium text-text-secondary hover:text-text-primary" onclick="filterFindings(&apos;quality&apos;, this)">Qual (1)</button>
+<button className="filter-btn active-filter py-1 rounded font-medium bg-surface-elevated shadow-sm text-text-primary">All (4)</button>
+<button className="filter-btn py-1 rounded font-medium text-text-secondary hover:text-text-primary">Sec (2)</button>
+<button className="filter-btn py-1 rounded font-medium text-text-secondary hover:text-text-primary">Perf (1)</button>
+<button className="filter-btn py-1 rounded font-medium text-text-secondary hover:text-text-primary">Qual (1)</button>
 </div>
 
 <div className="space-y-1.5 font-label-ui text-label-ui">
 
-<button className="w-full text-left p-2.5 rounded-lg bg-surface-subtle text-text-primary font-medium flex flex-col gap-1.5 transition-colors" onclick="switchActiveFile(this, &apos;file-auth-guard&apos;)">
+<button className="w-full text-left p-2.5 rounded-lg bg-surface-subtle text-text-primary font-medium flex flex-col gap-1.5 transition-colors">
 <div className="flex items-center justify-between w-full">
 <span className="truncate font-badge-mono text-badge-mono">auth.guard.ts</span>
 <span className="flex items-center gap-1">
@@ -183,7 +183,7 @@ export default function ReviewDetails() {
 <span className="text-[11px] text-text-muted truncate font-badge-mono">src/middleware/</span>
 </button>
 
-<button className="w-full text-left p-2.5 rounded-lg hover:bg-surface-subtle text-text-secondary hover:text-text-primary flex flex-col gap-1.5 transition-colors" onclick="switchActiveFile(this, &apos;file-session-service&apos;)">
+<button className="w-full text-left p-2.5 rounded-lg hover:bg-surface-subtle text-text-secondary hover:text-text-primary flex flex-col gap-1.5 transition-colors">
 <div className="flex items-center justify-between w-full">
 <span className="truncate font-badge-mono text-badge-mono">session.service.ts</span>
 <span className="w-2 h-2 rounded-full bg-secondary-container"></span>
@@ -191,7 +191,7 @@ export default function ReviewDetails() {
 <span className="text-[11px] text-text-muted truncate font-badge-mono">src/services/</span>
 </button>
 
-<button className="w-full text-left p-2.5 rounded-lg hover:bg-surface-subtle text-text-secondary hover:text-text-primary flex flex-col gap-1.5 transition-colors" onclick="switchActiveFile(this, &apos;file-middleware-config&apos;)">
+<button className="w-full text-left p-2.5 rounded-lg hover:bg-surface-subtle text-text-secondary hover:text-text-primary flex flex-col gap-1.5 transition-colors">
 <div className="flex items-center justify-between w-full">
 <span className="truncate font-badge-mono text-badge-mono">middleware.config.ts</span>
 <span className="w-2 h-2 rounded-full bg-outline"></span>
@@ -352,7 +352,7 @@ export default function ReviewDetails() {
 
 <div className="flex items-center justify-between pt-2">
 <div className="flex items-center gap-2">
-<button className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg bg-text-primary text-on-primary font-label-ui text-label-ui shadow-sm hover:bg-black transition-all duration-150 ease-out" onclick="applySpecificFix(this, &apos;finding-1&apos;)">
+<button className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg bg-text-primary text-on-primary font-label-ui text-label-ui shadow-sm hover:bg-black transition-all duration-150 ease-out">
 <span className="material-symbols-outlined text-[16px] text-accent-ai-hover">magic_button</span>
 <span>Apply fix to PR</span>
 </button>
@@ -423,7 +423,7 @@ export default function ReviewDetails() {
               Remote JWKS endpoints induce 40-120ms roundtrip network latency on critical API endpoints. Utilizing an in-memory LRU cache prevents rate-limiting trips from authorization servers.
             </p>
 <div className="flex items-center justify-between pt-1">
-<button className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg bg-surface-elevated text-text-primary font-label-ui text-label-ui shadow-sm hover:bg-surface-subtle transition-all duration-150 ease-out" onclick="applySpecificFix(this, &apos;finding-2&apos;)">
+<button className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg bg-surface-elevated text-text-primary font-label-ui text-label-ui shadow-sm hover:bg-surface-subtle transition-all duration-150 ease-out">
 <span className="material-symbols-outlined text-[16px] text-text-secondary">check</span>
 <span>Apply Cache Wrapper</span>
 </button>
@@ -455,7 +455,7 @@ export default function ReviewDetails() {
             </p>
 </div>
 <div className="px-5 pb-5 pt-2 flex items-center justify-between">
-<button className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-surface-subtle hover:bg-surface-container text-text-primary font-label-ui text-label-ui transition-colors" onclick="applySpecificFix(this, &apos;finding-3&apos;)">
+<button className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-surface-subtle hover:bg-surface-container text-text-primary font-label-ui text-label-ui transition-colors">
 <span className="material-symbols-outlined text-[15px]">auto_fix_normal</span>
 <span>Annotate Return Type</span>
 </button>

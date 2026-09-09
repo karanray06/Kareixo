@@ -17,7 +17,7 @@ export default function RepositoryDetails({ params }: { params: { repoId: string
 <span className="font-semibold text-text-primary">api-service</span>
 </div>
 
-<button className="relative p-1 rounded hover:bg-surface-subtle text-text-secondary hover:text-text-primary transition-colors inline-flex items-center justify-center" id="copy-btn" onclick="navigator.clipboard.writeText(&apos;karanray06/api-service&apos;); const t=document.getElementById(&apos;copy-tooltip&apos;); t.classList.remove(&apos;opacity-0&apos;); setTimeout(()=&gt;t.classList.add(&apos;opacity-0&apos;),1800);">
+<button className="relative p-1 rounded hover:bg-surface-subtle text-text-secondary hover:text-text-primary transition-colors inline-flex items-center justify-center" id="copy-btn">
 <span className="material-symbols-outlined text-[17px]">content_copy</span>
 <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-text-primary text-on-primary text-[11px] font-badge-mono px-2 py-0.5 rounded opacity-0 pointer-events-none transition-opacity duration-150" id="copy-tooltip">Copied</span>
 </button>
@@ -49,7 +49,7 @@ export default function RepositoryDetails({ params }: { params: { repoId: string
 <span className="material-symbols-outlined text-[16px] text-text-secondary">tune</span>
 <span>Repository Settings</span>
 </button>
-<button className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg bg-text-primary text-on-primary font-label-ui text-label-ui hover:opacity-90 active:scale-[0.98] transition-all duration-150 shadow-sm" id="rescan-btn" onclick="const s=document.getElementById(&apos;spin-icon&apos;); s.classList.add(&apos;animate-spin&apos;); setTimeout(()=&gt;s.classList.remove(&apos;animate-spin&apos;),2000);">
+<button className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg bg-text-primary text-on-primary font-label-ui text-label-ui hover:opacity-90 active:scale-[0.98] transition-all duration-150 shadow-sm" id="rescan-btn">
 <span className="material-symbols-outlined text-[16px]" id="spin-icon">sync</span>
 <span>Manual Re-scan</span>
 </button>
