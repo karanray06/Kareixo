@@ -17,7 +17,7 @@ export default function Home() {
 <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></span>
 <span>AST CLUSTER ACTIVE</span>
 </div>
-<a className="hidden sm:inline-flex items-center justify-center font-label-ui text-label-ui text-dark-text-secondary hover:text-dark-text-primary px-3 py-2 transition-colors" data-path="sign-in" href="#">Sign in</a><a className="inline-flex items-center justify-center h-10 px-[18px] rounded-lg bg-gradient-to-r from-secondary to-accent-ai-hover text-white font-label-ui text-label-ui shadow-lg shadow-secondary/20 hover:shadow-secondary/40 transition-all duration-200 hover:-translate-y-[1px]" data-path="install" href="#">Install on GitHub</a></div></div></header>
+<a className="hidden sm:inline-flex items-center justify-center font-label-ui text-label-ui text-dark-text-secondary hover:text-dark-text-primary px-3 py-2 transition-colors" data-path="sign-in" href="/dashboard">Sign in</a><a className="inline-flex items-center justify-center h-10 px-[18px] rounded-lg bg-gradient-to-r from-secondary to-accent-ai-hover text-white font-label-ui text-label-ui shadow-lg shadow-secondary/20 hover:shadow-secondary/40 transition-all duration-200 hover:-translate-y-[1px]" data-path="install" href="/dashboard">Install on GitHub</a></div></div></header>
 <main className="w-full pt-20 flex-1 relative z-10"><div className="flex flex-col w-full">
 
 <section className="w-full pt-16 pb-24 px-6 lg:px-12 max-w-[1280px] mx-auto flex flex-col items-center text-center perspective-cinema relative">
@@ -51,7 +51,7 @@ export default function Home() {
     </p>
 
 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto mb-6">
-<a className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 h-12 px-7 rounded-xl bg-white text-dark-background font-semibold font-label-ui text-label-ui shadow-2xl hover:bg-zinc-200 transition-all duration-200 hover:-translate-y-0.5" data-path="install" href="#">
+<a className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 h-12 px-7 rounded-xl bg-white text-black font-semibold font-label-ui text-label-ui shadow-2xl hover:bg-zinc-200 transition-all duration-200 hover:-translate-y-0.5" data-path="install" href="/dashboard">
 <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
 <path clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" fillRule="evenodd"></path>
 </svg>
