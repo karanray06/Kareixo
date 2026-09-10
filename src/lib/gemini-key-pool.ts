@@ -12,7 +12,8 @@ const CIRCUIT_BREAKER_COOLDOWN_MS = 3 * 60_000;
 export const PER_ATTEMPT_TIMEOUT_MS = 55_000;
 
 export type KeyState = {
-  task: "chat" | "code";
+  provider: "gemini" | "pollinations";
+  task: "chat" | "code" | "fallback";
   key: string;
   consecutiveFailures: number;
   cooldownUntil: number;
@@ -25,6 +26,7 @@ export type KeyState = {
 class GeminiKeyPool {
   private chatKeys: KeyState[] = [];
   private codeKeys: KeyState[] = [];
+  private pollinationsKeys: KeyState[] = [];
   private initialized = false;
 
   private ensureInitialized(): void {
@@ -36,27 +38,31 @@ class GeminiKeyPool {
   private loadKeys(): void {
     const chatKeyValue = process.env.GEMINI_API_KEY_CHAT;
     const codeKeyValue = process.env.GEMINI_API_KEY_CODE;
+    const pollinationsKeyValue = process.env.POLLINATIONS_API_KEY;
 
-    if (!chatKeyValue && !codeKeyValue && !process.env.GEMINI_API_KEY) {
-      throw new Error("No Gemini API keys configured.");
+    if (!chatKeyValue && !codeKeyValue && !process.env.GEMINI_API_KEY && !pollinationsKeyValue) {
+      throw new Error("No API keys configured.");
     }
 
     const defaultKeys = (process.env.GEMINI_API_KEY || "").split(",").map(k => k.trim()).filter(Boolean);
     const chatKeysInput = chatKeyValue ? chatKeyValue.split(",").map(k => k.trim()).filter(Boolean) : defaultKeys;
     const codeKeysInput = codeKeyValue ? codeKeyValue.split(",").map(k => k.trim()).filter(Boolean) : defaultKeys;
+    const pollinationsKeysInput = pollinationsKeyValue ? pollinationsKeyValue.split(",").map(k => k.trim()).filter(Boolean) : [];
 
     if (chatKeysInput.length === 0 || codeKeysInput.length === 0) {
-      throw new Error("No Gemini API keys configured.");
+      console.warn("[KeyPool] Warning: No Gemini API keys configured.");
     }
 
-    this.chatKeys = chatKeysInput.map(k => this.createKeyState("chat", k));
-    this.codeKeys = codeKeysInput.map(k => this.createKeyState("code", k));
+    this.chatKeys = chatKeysInput.map(k => this.createKeyState("gemini", "chat", k));
+    this.codeKeys = codeKeysInput.map(k => this.createKeyState("gemini", "code", k));
+    this.pollinationsKeys = pollinationsKeysInput.map(k => this.createKeyState("pollinations", "fallback", k));
 
-    console.log(`[KeyPool] Loaded ${this.chatKeys.length} Chat keys and ${this.codeKeys.length} Code keys.`);
+    console.log(`[KeyPool] Loaded ${this.chatKeys.length} Chat keys, ${this.codeKeys.length} Code keys, and ${this.pollinationsKeys.length} Pollinations keys.`);
   }
 
-  private createKeyState(task: "chat" | "code", key: string): KeyState {
+  private createKeyState(provider: "gemini" | "pollinations", task: "chat" | "code" | "fallback", key: string): KeyState {
     return {
+      provider,
       task,
       key: key,
       consecutiveFailures: 0,
@@ -68,9 +74,14 @@ class GeminiKeyPool {
     };
   }
 
-  getKeyForTask(task: "chat" | "code"): KeyState {
+  getKeyForTask(task: "chat" | "code" | "fallback", provider: "gemini" | "pollinations" = "gemini"): KeyState {
     this.ensureInitialized();
-    const candidates = task === "chat" ? this.chatKeys : this.codeKeys;
+    let candidates = this.chatKeys;
+    if (provider === "pollinations") {
+      candidates = this.pollinationsKeys;
+    } else if (task === "code") {
+      candidates = this.codeKeys;
+    }
     const now = Date.now();
 
     let bestCandidate: KeyState | null = null;
@@ -133,7 +144,8 @@ class GeminiKeyPool {
   getHealthSummary() {
     if (!this.initialized) return [];
     const now = Date.now();
-    return [...this.chatKeys, ...this.codeKeys].map((k) => ({
+    return [...this.chatKeys, ...this.codeKeys, ...this.pollinationsKeys].map((k) => ({
+      provider: k.provider,
       task: k.task,
       available: !k.circuitOpen && now >= k.cooldownUntil,
       consecutiveFailures: k.consecutiveFailures,

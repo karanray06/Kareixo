@@ -1,11 +1,12 @@
 import { LanguageModel } from "ai";
 import { keyPool, KeyState, PER_ATTEMPT_TIMEOUT_MS } from "./gemini-key-pool";
 import { createGeminiProvider, GEMINI_MODEL_CATALOG, GeminiModelId } from "./providers/gemini";
+import { createPollinationsProvider, POLLINATIONS_MODEL_CATALOG } from "./providers/pollinations";
 
 export type ProviderEntry = {
-  name: "GEMINI";
+  name: "GEMINI" | "POLLINATIONS";
   modelName: string;
-  modelId: GeminiModelId;
+  modelId: string;
   model: LanguageModel;
   keyState: KeyState;
 };
@@ -38,20 +39,38 @@ function isRetryableError(error: any): boolean {
 }
 
 export class ModelRouter {
-  private modelCatalog = GEMINI_MODEL_CATALOG;
+  private geminiModelCatalog = GEMINI_MODEL_CATALOG;
+  private pollinationsModelCatalog = POLLINATIONS_MODEL_CATALOG;
 
   /**
    * Get the provider configured for the specific task and tier.
    */
-  private getProviderForTask(taskType: "chat" | "code", tier?: "fast" | "deep"): ProviderEntry {
-    const keyState = keyPool.getKeyForTask(taskType);
+  private getProviderForTask(
+    taskType: "chat" | "code",
+    tier: "fast" | "deep" | "fallback" = "fast"
+  ): ProviderEntry {
+    if (tier === "fallback") {
+      const keyState = keyPool.getKeyForTask("fallback", "pollinations");
+      const provider = createPollinationsProvider(keyState.key);
+      const modelEntry = this.pollinationsModelCatalog[0]; // openai
+
+      return {
+        name: "POLLINATIONS",
+        modelName: modelEntry.modelName,
+        modelId: modelEntry.modelId,
+        model: provider(modelEntry.modelId),
+        keyState,
+      };
+    }
+
+    const keyState = keyPool.getKeyForTask(taskType, "gemini");
     const provider = createGeminiProvider(keyState.key);
 
     let modelEntry;
     if (tier === "deep") {
-      modelEntry = this.modelCatalog.find(m => m.modelId === "gemini-3.6-pro") || this.modelCatalog[1];
+      modelEntry = this.geminiModelCatalog.find(m => m.modelId === "gemini-3.6-pro") || this.geminiModelCatalog[1];
     } else {
-      modelEntry = this.modelCatalog.find(m => m.modelId === "gemini-3.6-flash") || this.modelCatalog[0];
+      modelEntry = this.geminiModelCatalog.find(m => m.modelId === "gemini-3.6-flash") || this.geminiModelCatalog[0];
     }
 
     return {
@@ -69,12 +88,12 @@ export class ModelRouter {
   public async executeWithFailover<T>(
     operation: (provider: ProviderEntry) => Promise<T>,
     taskType: "code" | "chat" = "chat",
-    tier?: "fast" | "deep"
+    tier: "fast" | "deep" = "fast"
   ): Promise<{ result: T; provider: ProviderEntry }> {
     const maxAttempts = 3;
     let attempts = 0;
     let lastError: Error | null = null;
-    let currentTier = tier;
+    let currentTier: "fast" | "deep" | "fallback" = tier;
 
     while (attempts < maxAttempts) {
       const provider = this.getProviderForTask(taskType, currentTier);
@@ -111,6 +130,10 @@ export class ModelRouter {
             console.log(`[ModelRouter] Falling back from deep tier to fast tier for final attempt.`);
             currentTier = "fast";
             attempts--; // Allow one more attempt with fast tier
+          } else if (attempts === maxAttempts && currentTier === "fast") {
+            console.log(`[ModelRouter] Falling back from Gemini to Pollinations for final attempt.`);
+            currentTier = "fallback";
+            attempts--; // Allow one more attempt with Pollinations
           }
           
           continue;
@@ -123,12 +146,12 @@ export class ModelRouter {
 
     const healthSummary = keyPool.getHealthSummary();
     console.error(
-      `[ModelRouter] All ${maxAttempts} attempts exhausted. Pool health:`,
+      `[ModelRouter] All attempts exhausted. Pool health:`,
       JSON.stringify(healthSummary)
     );
 
     throw new Error(
-      `Gemini API key for task '${taskType}' is exhausted or rate-limited after ${maxAttempts} attempts. ` +
+      `API key for task '${taskType}' is exhausted or rate-limited. ` +
       `Please try again in a few minutes. Last error: ${lastError?.message}`
     );
   }

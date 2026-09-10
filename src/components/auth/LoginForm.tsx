@@ -45,10 +45,10 @@ export default function LoginForm() {
   return (
     <div className="card max-w-md w-full mx-auto mt-16">
       <div className="text-center mb-8">
-        <h2 className="font-display text-2xl font-bold text-dusk-900 mb-2">
+        <h2 className="font-display text-2xl font-bold text-text-primary mb-2">
           Sign in to Kareixo
         </h2>
-        <p className="text-dusk-500 text-sm">
+        <p className="text-text-secondary text-sm">
           Welcome back to Kareixo.
         </p>
       </div>

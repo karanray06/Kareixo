@@ -18,7 +18,7 @@ export default function ProviderBadge({
         via {model} · {provider}
       </span>
       {latency && (
-        <span className="text-dusk-500 text-[11px] font-mono">{latency}</span>
+        <span className="text-text-muted text-[11px] font-mono">{latency}</span>
       )}
     </div>
   );

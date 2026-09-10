@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import HeroShader from '@/components/landing/HeroShader';
+import Navbar from '@/components/landing/Navbar';
 
 export default function Home() {
   return (
@@ -11,13 +12,7 @@ export default function Home() {
 <div className="fixed inset-0 pointer-events-none z-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,#09090B_100%)] opacity-90"></div>
 <div className="fixed inset-0 pointer-events-none z-0 grid-glow-subtle opacity-35"></div>
 
-<header className="fixed top-0 left-0 right-0 z-50 bg-[#09090B]/75 backdrop-blur-2xl border-b border-dark-border/60"><div className="h-16 max-w-[1280px] mx-auto px-6 lg:px-12 flex items-center justify-between"><div className="flex items-center gap-8"><a className="flex items-center gap-2.5 group" data-path="landing-page" href="#"><div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shadow-inner group-hover:border-secondary transition-colors"><img alt="Profile" className="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1UWIz4RfzHyOZlfOGvhBUtg7-6QYbUcT3ET13ztA2Vs2YWxd0ssaKyKmSb9Oco1LKHUyj6kVc6Nq1alUKokL6GBciJqGHkqfg-r5egq331YZbd0pVbivKzpx29lXbLvXyNHSDUP2lAfjV3r_W4wKD3WplLQg2wU0vFmCODrB8Z5S857jA9VXxAGUBE6V0YwoEwOGU0spcQKzqWJliJS-hz2RrMy58OUNVKioV3ZFU3zHVGRy_urdd9_P8HRCezeWvWwuE5qYIwy-A"/></div><span className="font-title-card-sm text-title-card-sm tracking-tight text-dark-text-primary flex items-center gap-1.5">Kareixo</span></a><nav className="hidden md:flex items-center gap-6" data-active-classes="text-dark-text-primary font-medium"><a className="font-label-ui text-label-ui text-dark-text-secondary hover:text-dark-text-primary transition-colors" data-path="product" href="#stage-engine">Engine</a><a className="font-label-ui text-label-ui text-dark-text-secondary hover:text-dark-text-primary transition-colors" data-path="how-it-works" href="#how-it-works">Timeline</a><a className="font-label-ui text-label-ui text-dark-text-secondary hover:text-dark-text-primary transition-colors" data-path="security" href="#security-vault">Zero-Retention Vault</a><a className="font-label-ui text-label-ui text-dark-text-secondary hover:text-dark-text-primary transition-colors" data-path="kareixo-chat" href="#kareixo-chat">Chat Shell</a><a className="font-label-ui text-label-ui text-dark-text-secondary hover:text-dark-text-primary transition-colors" href="https://github.com" rel="noreferrer" target="_blank">GitHub</a></nav></div><div className="flex items-center gap-3">
-
-<div className="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-full bg-surface-elevated/60 border border-dark-border text-[11px] font-badge-mono text-dark-text-muted">
-<span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></span>
-<span>AST CLUSTER ACTIVE</span>
-</div>
-<a className="hidden sm:inline-flex items-center justify-center font-label-ui text-label-ui text-dark-text-secondary hover:text-dark-text-primary px-3 py-2 transition-colors" data-path="sign-in" href="/dashboard">Sign in</a><a className="inline-flex items-center justify-center h-10 px-[18px] rounded-lg bg-gradient-to-r from-secondary to-accent-ai-hover text-white font-label-ui text-label-ui shadow-lg shadow-secondary/20 hover:shadow-secondary/40 transition-all duration-200 hover:-translate-y-[1px]" data-path="install" href="/dashboard">Install on GitHub</a></div></div></header>
+<Navbar />
 <main className="w-full pt-20 flex-1 relative z-10"><div className="flex flex-col w-full">
 
 <section className="w-full pt-16 pb-24 px-6 lg:px-12 max-w-[1280px] mx-auto flex flex-col items-center text-center perspective-cinema relative">
@@ -43,11 +38,11 @@ export default function Home() {
 
 <h1 className="font-display-hero text-display-hero md:text-[80px] md:leading-[88px] text-dark-text-primary tracking-tight max-w-5xl mx-auto mb-6 drop-shadow-sm">
       Ship better code.<br/>
-<span className="bg-gradient-to-r from-zinc-200 via-purple-300 to-secondary bg-clip-text text-transparent">Automatically in 3D Motion.</span>
+<span className="bg-gradient-to-r from-zinc-200 via-purple-300 to-secondary bg-clip-text text-transparent">Automatically in Motion.</span>
 </h1>
 
 <p className="font-body-base text-body-base md:text-lg text-dark-text-secondary max-w-2xl mx-auto mb-10 leading-relaxed">
-      Kareixo reviews pull requests with deterministic spatial AI, catching logic flaws and security leaks before production. Fluid, live-streamed code intelligence directly in your GitHub flow.
+      Kareixo reviews pull requests with deterministic static analysis, catching logic flaws and security leaks before production. Fluid, live-streamed code intelligence directly in your GitHub flow.
     </p>
 
 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto mb-6">

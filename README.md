@@ -69,6 +69,7 @@ The product is designed around two principles:
    GITHUB_WEBHOOK_SECRET=your_webhook_secret
    GEMINI_API_KEY_CHAT=your_gemini_key_for_chat_task   # comma-separate for multiple keys
    GEMINI_API_KEY_CODE=your_gemini_key_for_code_task   # comma-separate for multiple keys
+   POLLINATIONS_API_KEY=your_pollinations_api_key      # Fallback provider
    # GEMINI_API_KEY=fallback_single_key_if_the_above_are_not_set
 
    Note: The API keys above are Google AI Studio / Gemini API keys, not NVIDIA keys.

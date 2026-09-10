@@ -1,4 +1,19 @@
-export default function RepositoryDetails({ params }: { params: { repoId: string } }) {
+"use client";
+
+import { useEffect, useState, use } from "react";
+import { useSession } from "next-auth/react";
+
+export default function RepositoryDetails({ params }: { params: Promise<{ repoId: string }> }) {
+  const { repoId } = use(params);
+  const { data: session } = useSession();
+  const [data, setData] = useState<any>(null);
+
+  useEffect(() => {
+    fetch(`/api/repositories/${repoId}`)
+      .then(res => res.json())
+      .then(json => setData(json));
+  }, [repoId]);
+
   return (
     <>
       <div className="flex flex-col w-full">
@@ -12,9 +27,9 @@ export default function RepositoryDetails({ params }: { params: { repoId: string
 <div className="flex flex-wrap items-center gap-2.5">
 <span className="material-symbols-outlined text-text-secondary text-[22px]">folder_code</span>
 <div className="flex items-center gap-1.5 font-title-card text-title-card text-text-primary tracking-tight">
-<span className="text-text-secondary font-medium">karanray06</span>
+<span className="text-text-secondary font-medium">{data?.repository?.fullName?.split('/')[0] || "owner"}</span>
 <span className="text-text-muted">/</span>
-<span className="font-semibold text-text-primary">api-service</span>
+<span className="font-semibold text-text-primary">{data?.repository?.fullName?.split('/')[1] || "repo"}</span>
 </div>
 
 <button className="relative p-1 rounded hover:bg-surface-subtle text-text-secondary hover:text-text-primary transition-colors inline-flex items-center justify-center" id="copy-btn">
@@ -41,7 +56,7 @@ export default function RepositoryDetails({ params }: { params: { repoId: string
 </div>
 
 <div className="flex flex-wrap items-center gap-2.5">
-<a className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-surface-elevated border border-border-interactive font-label-ui text-label-ui text-text-primary hover:bg-surface-subtle hover:border-border-strong transition-all duration-150" href="https://github.com" rel="noreferrer" target="_blank">
+<a className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-surface-elevated border border-border-interactive font-label-ui text-label-ui text-text-primary hover:bg-surface-subtle hover:border-border-strong transition-all duration-150" href={`https://github.com/${data?.repository?.fullName || ""}`} rel="noreferrer" target="_blank">
 <span>Open GitHub</span>
 <span className="material-symbols-outlined text-[15px] text-text-secondary">open_in_new</span>
 </a>
@@ -61,7 +76,7 @@ export default function RepositoryDetails({ params }: { params: { repoId: string
 <div className="flex flex-col">
 <span className="font-label-ui text-[11px] text-text-muted tracking-wide uppercase">Total PRs Reviewed</span>
 <div className="flex items-baseline gap-2 mt-0.5">
-<span className="font-title-card text-title-card font-semibold text-text-primary">124</span>
+<span className="font-title-card text-title-card font-semibold text-text-primary">{data?.stats?.totalReviews || 0}</span>
 <span className="font-badge-mono text-[11px] text-success">98.4% uptime</span>
 </div>
 </div>
@@ -69,7 +84,7 @@ export default function RepositoryDetails({ params }: { params: { repoId: string
 <div className="flex flex-col">
 <span className="font-label-ui text-[11px] text-text-muted tracking-wide uppercase">Active Findings</span>
 <div className="flex items-baseline gap-2 mt-0.5">
-<span className="font-title-card text-title-card font-semibold text-warning">3</span>
+<span className="font-title-card text-title-card font-semibold text-warning">{data?.stats?.activeFindings || 0}</span>
 <span className="font-badge-mono text-[11px] text-text-secondary">2 Sec · 1 Perf</span>
 </div>
 </div>
@@ -77,7 +92,7 @@ export default function RepositoryDetails({ params }: { params: { repoId: string
 <div className="flex flex-col">
 <span className="font-label-ui text-[11px] text-text-muted tracking-wide uppercase">Clean Pass Ratio</span>
 <div className="flex items-baseline gap-2 mt-0.5">
-<span className="font-title-card text-title-card font-semibold text-text-primary">88.2%</span>
+<span className="font-title-card text-title-card font-semibold text-text-primary">{data?.stats?.totalReviews ? Math.round((data?.stats?.passedClean / data.stats.totalReviews) * 100) : 0}%</span>
 <span className="font-badge-mono text-[11px] text-success">↑ 3.1%</span>
 </div>
 </div>
