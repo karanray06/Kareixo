@@ -50,15 +50,12 @@ export async function GET(req: Request) {
     const totalReviews = userReviews.length;
     const passedClean = userReviews.filter(r => r.findingCount === 0).length;
     const activeFindings = userReviews.reduce((sum, r) => sum + (r.findingCount || 0), 0);
-    const avgReviewTime = "18s"; // Static for now as we don't track start/end times in DB
-
     return NextResponse.json({
       repositories: formattedRepos,
       stats: {
         totalReviews,
         passedClean,
         activeFindings,
-        avgReviewTime
       },
       recentReviews: userReviews.slice(0, 5)
     });
