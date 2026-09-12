@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><title>Kareixo Developer Platform</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base { html, body { margin: 0; padding: 0; } body { overscroll-behavior: none; } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface-container-low": "#181c22", "accent-purple-light": "#a371f7", "fg-subtle": "#6e7681", "surface-dim": "#10141a", "diff-deletion-line": "rgba(248, 81, 73, 0.15)", "surface-variant": "#31353c", "canvas-default": "#0d1117", "surface-bright": "#353940", "diff-addition-line": "rgba(46, 160, 67, 0.15)", "canvas-subtle": "#161b22", "outline": "#899485", "on-secondary-fixed": "#001c38", "accent-red": "#f85149", "fg-default": "#f0f6fc", "surface-container": "#1c2026", "on-secondary-fixed-variant": "#004882", "accent-purple": "#8957e5", "on-primary": "#00390e", "on-primary-fixed-variant": "#005319", "secondary-container": "#0071c7", "primary-container": "#238636", "canvas-inset": "#010409", "on-error-container": "#ffdad6", "secondary-fixed": "#d3e4ff", "on-secondary-container": "#f0f4ff", "tertiary-fixed-dim": "#d3bbff", "error": "#ffb4ab", "on-secondary": "#00315c", "secondary-fixed-dim": "#a2c9ff", "primary-fixed-dim": "#7bdb80", "accent-green-emphasis": "#238636", "accent-green-hover": "#2ea043", "inverse-on-surface": "#2d3137", "inverse-primary": "#006e23", "primary": "#7bdb80", "diff-deletion-text": "#f85149", "surface-container-high": "#262a31", "surface-container-lowest": "#0a0e14", "on-surface": "#dfe2eb", "tertiary-fixed": "#ebddff", "on-surface-variant": "#becaba", "on-primary-container": "#f9fff3", "fg-muted": "#8b949e", "tertiary": "#d3bbff", "secondary": "#a2c9ff", "surface-tint": "#7bdb80", "border-muted": "#21262d", "on-primary-fixed": "#002106", "surface-container-highest": "#31353c", "on-background": "#dfe2eb", "surface": "#10141a", "tertiary-container": "#8957e5", "primary-fixed": "#97f999", "error-container": "#93000a", "accent-amber": "#d29922", "on-tertiary-fixed": "#250059", "border-default": "#30363d", "accent-blue": "#58a6ff", "on-tertiary-fixed-variant": "#591db3", "outline-variant": "#3f4a3d", "on-error": "#690005", "background": "#10141a", "on-tertiary": "#3f008d", "inverse-surface": "#dfe2eb", "on-tertiary-container": "#fffdff", "diff-addition-text": "#3fb950" }, borderRadius: { DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem" }, spacing: { "gutter-mobile": "0.75rem", "space-sm": "0.5rem", margin: "2rem", "space-xl": "2rem", "margin-mobile": "1rem", "space-xs": "0.25rem", "space-md": "1rem", "space-lg": "1.5rem", gutter: "1rem" }, fontFamily: { "headline-hero-mobile": ["Noto Sans"], "code-diff": ["JetBrains Mono"], "badge-mono": ["JetBrains Mono"], "title-card": ["Noto Sans"], "title-card-sm": ["Noto Sans"], "code-gutter": ["JetBrains Mono"], "body-base": ["Noto Sans"], "body-sm": ["Noto Sans"], "headline-hero": ["Noto Sans"], "headline-section-mobile": ["Noto Sans"], "headline-section": ["Noto Sans"], "label-ui": ["Noto Sans"] }, fontSize: { "headline-hero-mobile": ["28px", { lineHeight: "36px", fontWeight: "600" }], "code-diff": ["12px", { lineHeight: "20px", fontWeight: "400" }], "badge-mono": ["11px", { lineHeight: "16px", fontWeight: "500" }], "title-card": ["16px", { lineHeight: "24px", fontWeight: "600" }], "title-card-sm": ["14px", { lineHeight: "20px", fontWeight: "600" }], "code-gutter": ["12px", { lineHeight: "20px", fontWeight: "400" }], "body-base": ["14px", { lineHeight: "21px", fontWeight: "400" }], "body-sm": ["12px", { lineHeight: "18px", fontWeight: "400" }], "headline-hero": ["40px", { lineHeight: "48px", fontWeight: "600" }], "headline-section-mobile": ["20px", { lineHeight: "28px", fontWeight: "600" }], "headline-section": ["24px", { lineHeight: "32px", fontWeight: "600" }], "label-ui": ["12px", { lineHeight: "16px", fontWeight: "500" }] } } } };</script></head><body class="bg-canvas-default text-on-surface font-body-base antialiased min-h-screen flex flex-col selection:bg-accent-blue selection:text-canvas-inset"><header class="fixed top-0 left-0 w-full z-50 bg-canvas-subtle/95 backdrop-blur-md"><div class="h-16 w-full px-gutter flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md min-w-0 flex-shrink-0"><div class="flex items-center gap-space-sm"><img alt="Kareixo brand logo featuring five overlapping soft organic rounded blob shapes in mint, warm yellow, soft coral, lavender, and sky-blue with subtle dark slate outline, alongside modern clean typography for Kareixo. Brand logo. - Primary color: #7c3aed
+- Font: geist
+- Mode: dark
+- Roundness: rounded-sm
+" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1U11nvsulNHh2_HelpBRUogSW2FzODnR-drsURGwiWGF0cpmbDUMJ8us9hZYTtcrXtnL2HhoVPgS3MXNx4xq3zxkj8ndIkfPQ8CjwEMxHG4YL_B54KJoGlZre1iZad9hgmHFwxuDPvdSBrT7LXZs2-w8KJlZVXcxMuB4eJKwMouKUBQfnQQD6zDrsFhE941x5GNBlmxFKOW9_1SRmC03nDJzqlt1fwbBo70guFdMlSkvszH00WneN3ZkO_F"/><span class="font-title-card text-title-card text-fg-default tracking-tight hidden sm:inline-block">Kareixo</span><span class="font-badge-mono text-badge-mono px-space-xs py-0.5 rounded bg-surface-container text-fg-muted">v2.4</span></div><div class="h-5 w-px bg-border-default hidden md:block"></div><div class="hidden md:flex items-center gap-space-xs bg-canvas-inset px-space-sm py-1.5 rounded-lg text-fg-default cursor-pointer group hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-fg-muted text-[18px] group-hover:text-accent-blue transition-colors">folder_open</span><span class="font-code-diff text-code-diff text-fg-default font-medium">karanray06/core-payment-service</span><span class="flex items-center gap-0.5 text-fg-muted font-badge-mono text-badge-mono px-1.5 py-0.5 bg-surface-container rounded"><span class="material-symbols-outlined text-[14px] text-accent-purple">alt_route</span>main</span><span class="font-badge-mono text-badge-mono text-fg-subtle">a9f4c3d</span><span class="material-symbols-outlined text-fg-muted text-[16px]">expand_more</span></div><div class="hidden xl:flex items-center gap-space-sm pl-space-xs"><div class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-diff-addition-line text-diff-addition-text font-badge-mono text-badge-mono"><span class="w-2 h-2 rounded-full bg-accent-green-emphasis animate-pulse"></span>GitHub App: Active</div><div class="flex items-center gap-space-xs font-code-diff text-code-diff text-fg-muted"><span class="text-fg-subtle">•</span><span>12ms</span><span class="text-fg-subtle">•</span><span>AST Cache: <span class="text-diff-addition-text font-medium">98.4%</span></span></div></div></div><nav class="hidden lg:flex items-center gap-space-xs" data-active-classes="text-fg-default bg-surface-container font-semibold rounded-lg"><a aria-current="page" class="px-3 py-1.5 transition-colors text-fg-default bg-surface-container font-semibold rounded-lg" data-path="dashboard" href="#">Dashboard</a><a class="px-3 py-1.5 text-on-surface-variant hover:text-fg-default hover:bg-surface-container-high rounded-lg transition-colors font-label-ui text-label-ui" data-path="repositories" href="#">Repositories</a><a class="px-3 py-1.5 text-on-surface-variant hover:text-fg-default hover:bg-surface-container-high rounded-lg transition-colors font-label-ui text-label-ui" data-path="codechat" href="#">CodeChat</a><a class="px-3 py-1.5 text-on-surface-variant hover:text-fg-default hover:bg-surface-container-high rounded-lg transition-colors font-label-ui text-label-ui" data-path="incident-tracer" href="#">Incident Tracer</a><a class="px-3 py-1.5 text-on-surface-variant hover:text-fg-default hover:bg-surface-container-high rounded-lg transition-colors font-label-ui text-label-ui" data-path="settings" href="#">Settings</a></nav><div class="flex items-center gap-space-sm flex-shrink-0"><button class="flex items-center gap-space-sm bg-canvas-inset px-3 py-1.5 rounded-lg text-fg-muted hover:text-fg-default hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-[18px]">search</span><span class="hidden md:inline font-body-sm text-body-sm text-fg-subtle">Type <kbd class="px-1.5 py-0.5 rounded bg-surface-container font-badge-mono text-badge-mono text-fg-muted">Cmd+K</kbd> to search</span></button><a class="hidden sm:flex items-center text-fg-muted hover:text-fg-default p-1.5 rounded-lg hover:bg-surface-container transition-colors" href="#" title="Documentation"><span class="material-symbols-outlined text-[20px]">menu_book</span></a><button class="relative p-1.5 text-fg-muted hover:text-fg-default rounded-lg hover:bg-surface-container transition-colors" title="Notifications" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-accent-blue"></span></button><div class="h-5 w-px bg-border-default hidden sm:block"></div><div class="flex items-center gap-space-sm pl-space-xs cursor-pointer group"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0 shadow-sm"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden 2xl:flex flex-col text-left"><span class="font-label-ui text-label-ui text-fg-default font-medium leading-none">karanray06</span><span class="font-code-gutter text-code-gutter text-fg-subtle leading-none mt-1">workspace</span></div><span class="material-symbols-outlined text-fg-muted text-[16px] hidden sm:inline">arrow_drop_down</span></div></div></div></header><main class="w-full pt-16 flex-1 bg-canvas-default"><div class="flex flex-col w-full">
+<div class="w-full px-gutter py-space-lg max-w-[1560px] mx-auto flex flex-col gap-space-lg">
+<!-- Top Telemetry Strip (4 Bento Cards) -->
+<section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-md">
+<!-- Card 1: PRs Analyzed -->
+<div class="bg-canvas-subtle p-space-md rounded-lg shadow-sm flex flex-col justify-between group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-ui text-label-ui text-fg-muted uppercase tracking-wider">PRs Analyzed</span>
+<span class="material-symbols-outlined text-accent-purple text-[20px]">merge</span>
+</div>
+<div class="my-space-sm flex items-baseline gap-space-sm">
+<span class="font-headline-section text-headline-section text-fg-default font-semibold tracking-tight">142</span>
+<span class="font-badge-mono text-badge-mono text-diff-addition-text bg-diff-addition-line px-1.5 py-0.5 rounded flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span>+18/wk
+          </span>
+</div>
+<div class="flex items-center justify-between text-fg-muted font-body-sm text-body-sm">
+<span>Autonomous pass rate</span>
+<span class="font-badge-mono text-badge-mono text-fg-default font-medium">94.2%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full mt-2 overflow-hidden">
+<div class="bg-accent-purple h-full rounded-full" style="width: 94.2%;"></div>
+</div>
+</div>
+<!-- Card 2: tsc Verified -->
+<div class="bg-canvas-subtle p-space-md rounded-lg shadow-sm flex flex-col justify-between group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-ui text-label-ui text-fg-muted uppercase tracking-wider">tsc Verified</span>
+<span class="material-symbols-outlined text-accent-green-hover text-[20px]">verified</span>
+</div>
+<div class="my-space-sm flex items-baseline gap-space-sm">
+<span class="font-headline-section text-headline-section text-fg-default font-semibold tracking-tight">94.2%</span>
+<span class="font-badge-mono text-badge-mono text-diff-addition-text bg-diff-addition-line px-1.5 py-0.5 rounded">strict mode</span>
+</div>
+<div class="flex items-center justify-between text-fg-muted font-body-sm text-body-sm">
+<span>Compiler pass</span>
+<span class="font-badge-mono text-badge-mono text-fg-default">TS 5.4.2 checked</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full mt-2 overflow-hidden">
+<div class="bg-accent-green-emphasis h-full rounded-full" style="width: 94.2%;"></div>
+</div>
+</div>
+<!-- Card 3: Claims Held -->
+<div class="bg-canvas-subtle p-space-md rounded-lg shadow-sm flex flex-col justify-between group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-ui text-label-ui text-fg-muted uppercase tracking-wider">Claims Held</span>
+<span class="material-symbols-outlined text-accent-amber text-[20px]">hourglass_top</span>
+</div>
+<div class="my-space-sm flex items-baseline gap-space-sm">
+<span class="font-headline-section text-headline-section text-fg-default font-semibold tracking-tight">18</span>
+<span class="font-badge-mono text-badge-mono text-accent-amber bg-surface-container px-1.5 py-0.5 rounded">queued</span>
+</div>
+<div class="flex items-center justify-between text-fg-muted font-body-sm text-body-sm">
+<span>Pending verification</span>
+<span class="font-body-sm text-body-sm text-fg-muted">Runtime synthesis</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full mt-2 overflow-hidden">
+<div class="bg-accent-amber h-full rounded-full" style="width: 32%;"></div>
+</div>
+</div>
+<!-- Card 4: Root Causes -->
+<div class="bg-canvas-subtle p-space-md rounded-lg shadow-sm flex flex-col justify-between group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-ui text-label-ui text-fg-muted uppercase tracking-wider">Root Causes</span>
+<span class="material-symbols-outlined text-accent-blue text-[20px]">troubleshoot</span>
+</div>
+<div class="my-space-sm flex items-baseline gap-space-sm">
+<span class="font-headline-section text-headline-section text-fg-default font-semibold tracking-tight">11</span>
+<span class="font-badge-mono text-badge-mono text-accent-blue bg-surface-container px-1.5 py-0.5 rounded">100% SHA</span>
+</div>
+<div class="flex items-center justify-between text-fg-muted font-body-sm text-body-sm">
+<span>Bugs traced to source</span>
+<span class="font-badge-mono text-badge-mono text-fg-default">AST commit diff</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full mt-2 overflow-hidden">
+<div class="bg-accent-blue h-full rounded-full" style="width: 100%;"></div>
+</div>
+</div>
+</section>
+<!-- Ground Truth System: Deterministic Compiler Assertion Banner -->
+<section class="bg-surface-container-low p-space-md rounded-lg shadow-sm flex flex-col lg:flex-row items-start lg:items-center justify-between gap-space-md relative overflow-hidden">
+<div class="flex items-start gap-space-md z-10">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center flex-shrink-0 text-accent-blue shadow-inner">
+<span class="material-symbols-outlined text-[24px]">verified_user</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="font-title-card text-title-card text-fg-default">Ground Truth Compiler Engine</span>
+<span class="font-badge-mono text-badge-mono px-2 py-0.5 rounded bg-surface-container-highest text-fg-muted">DETERMINISTIC · AST SYNC</span>
+</div>
+<p class="font-body-base text-body-base text-fg-muted mt-1 max-w-2xl">
+            Every suggested patch, PR review assertion, and incident trace is executed through real TypeScript <code class="font-code-diff text-code-diff text-accent-blue bg-canvas-inset px-1 py-0.5 rounded">tsc</code> and tree-sitter AST nodes before reaching code owners.
+          </p>
+</div>
+</div>
+<!-- Pill Legend / Status Explanations -->
+<div class="flex flex-wrap items-center gap-space-sm z-10">
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-diff-addition-line text-diff-addition-text font-badge-mono text-badge-mono shadow-sm" title="Synthesized unit test or strict tsc compiler reproduction succeeded.">
+<span class="material-symbols-outlined text-[15px]">check_circle</span>
+<span>Confirmed</span>
+<span class="text-diff-addition-text/70 text-[10px] hidden xl:inline">reproduced via tsc</span>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface-container text-accent-amber font-badge-mono text-badge-mono shadow-sm" title="Heuristic LLM match. Isolated unit test reproduction pending.">
+<span class="material-symbols-outlined text-[15px]">schedule</span>
+<span>Unverified</span>
+<span class="text-accent-amber/70 text-[10px] hidden xl:inline">heuristic queue</span>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-diff-deletion-line text-diff-deletion-text font-badge-mono text-badge-mono shadow-sm" title="Compiler syntax mismatch or disproven by historical commit log.">
+<span class="material-symbols-outlined text-[15px]">cancel</span>
+<span>Rejected</span>
+<span class="text-diff-deletion-text/70 text-[10px] hidden xl:inline">mismatch</span>
+</div>
+</div>
+<!-- Subtle background decor -->
+<div class="absolute right-0 top-0 bottom-0 w-96 bg-gradient-to-l from-surface-container-high/40 to-transparent pointer-events-none"></div>
+</section>
+<!-- Main Content Workspace (70% Left Main, 30% Right Diagnostics Stream) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- Left Column: Repositories & Realtime Diff Inspector (70% = 8.4 cols approx => 8 cols lg, 8 cols xl) -->
+<div class="lg:col-span-8 flex flex-col gap-space-lg min-w-0">
+<!-- Connected Repositories Section -->
+<div class="bg-canvas-subtle rounded-lg shadow-sm flex flex-col overflow-hidden">
+<div class="p-space-md flex items-center justify-between bg-surface-container">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-fg-muted text-[20px]">source_environment</span>
+<h2 class="font-title-card text-title-card text-fg-default font-semibold">Active Repository Graph</h2>
+<span class="font-badge-mono text-badge-mono bg-canvas-inset px-2 py-0.5 rounded text-fg-muted">3 Repositories</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="bg-canvas-inset hover:bg-surface-container-high text-fg-default px-3 py-1.5 rounded-lg font-label-ui text-label-ui flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">sync</span>
+<span>Trigger Full AST Reindex</span>
+</button>
+</div>
+</div>
+<!-- Repositories List / Detail cards -->
+<div class="p-space-md flex flex-col gap-space-md">
+<!-- Repository Item 1: core-payment-service (Active Diff Focus) -->
+<div class="bg-canvas-default rounded-lg p-space-md flex flex-col gap-space-md shadow-sm">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-accent-blue text-[22px]">account_tree</span>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<a class="font-title-card text-title-card text-accent-blue hover:underline font-semibold" href="#">karanray06/core-payment-service</a>
+<span class="font-badge-mono text-badge-mono text-fg-subtle px-1.5 py-0.2 rounded bg-surface-container">Public</span>
+</div>
+<div class="flex items-center gap-space-xs text-fg-muted font-code-diff text-code-diff mt-0.5">
+<span class="text-accent-amber font-medium">Node 20 · TypeScript 5.4</span>
+<span>•</span>
+<span>Branch: <span class="text-fg-default">main</span></span>
+<span>•</span>
+<span>AST Index: <span class="text-diff-addition-text">Realtime (12ms)</span></span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="font-badge-mono text-badge-mono px-2 py-1 rounded bg-diff-addition-line text-diff-addition-text flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-green-emphasis animate-ping"></span>
+                    2 Open PRs Monitored
+                  </span>
+</div>
+</div>
+<!-- Live Verified Diff Container inside core-payment-service -->
+<div class="bg-canvas-inset rounded-lg overflow-hidden flex flex-col shadow-inner">
+<!-- Diff Header -->
+<div class="bg-surface-container-high px-space-md py-2 flex items-center justify-between flex-wrap gap-2">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="material-symbols-outlined text-accent-purple text-[18px]">difference</span>
+<span class="font-code-diff text-code-diff text-fg-default font-semibold truncate">services/billing/webhookHandler.ts</span>
+<span class="font-badge-mono text-badge-mono bg-canvas-inset px-2 py-0.5 rounded text-accent-blue">PR #104</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="font-badge-mono text-badge-mono px-2 py-0.5 rounded bg-diff-addition-line text-diff-addition-text">tsc Verified Match</span>
+<div class="flex items-center gap-1 font-badge-mono text-badge-mono">
+<span class="text-diff-addition-text font-semibold">+6</span>
+<span class="text-diff-deletion-text font-semibold">-2</span>
+</div>
+</div>
+</div>
+<!-- Code Diff Body with Gutter -->
+<div class="font-code-diff text-code-diff overflow-x-auto select-text">
+<!-- Context line -->
+<div class="flex items-center hover:bg-surface-container-low transition-colors">
+<div class="w-12 bg-surface-container-lowest text-fg-subtle text-right pr-2 py-0.5 select-none font-code-gutter text-code-gutter">81</div>
+<div class="w-12 bg-surface-container-lowest text-fg-subtle text-right pr-2 py-0.5 select-none font-code-gutter text-code-gutter">81</div>
+<div class="px-3 py-0.5 text-fg-muted font-mono whitespace-pre"><span class="text-accent-purple">export async function</span> handleStripeWebhook(event: StripeEvent) {</div>
+</div>
+<!-- Deletion line 1 -->
+<div class="flex items-center bg-diff-deletion-line hover:bg-diff-deletion-line/80 transition-colors">
+<div class="w-12 bg-surface-container-lowest text-diff-deletion-text text-right pr-2 py-0.5 select-none font-code-gutter text-code-gutter">82</div>
+<div class="w-12 bg-surface-container-lowest text-fg-subtle text-right pr-2 py-0.5 select-none font-code-gutter text-code-gutter"></div>
+<div class="px-3 py-0.5 text-diff-deletion-text font-mono whitespace-pre">-   const customerId = event.data.object.customer;</div>
+</div>
+<!-- Deletion line 2 -->
+<div class="flex items-center bg-diff-deletion-line hover:bg-diff-deletion-line/80 transition-colors">
+<div class="w-12 bg-surface-container-lowest text-diff-deletion-text text-right pr-2 py-0.5 select-none font-code-gutter text-code-gutter">83</div>
+<div class="w-12 bg-surface-container-lowest text-fg-subtle text-right pr-2 py-0.5 select-none font-code-gutter text-code-gutter"></div>
+<div class="px-3 py-0.5 text-diff-deletion-text font-mono whitespace-pre">-   await syncSubscriptionRecord(customerId); <span class="text-accent-amber font-badge-mono text-badge-mono">// TS2339: Property 'customer' does not exist</span></div>
+</div>
+<!-- Addition line 1 -->
+<div class="flex items-center bg-diff-addition-line hover:bg-diff-addition-line/80 transition-colors">
+<div class="w-12 bg-surface-container-lowest text-fg-subtle text-right pr-2 py-0.5 select-none font-code-gutter text-code-gutter"></div>
+<div class="w-12 bg-surface-container-lowest text-diff-addition-text text-right pr-2 py-0.5 select-none font-code-gutter text-code-gutter">82</div>
+<div class="px-3 py-0.5 text-diff-addition-text font-mono whitespace-pre">+   if (!('customer' in event.data.object)) {</div>
+</div>
+<!-- Addition line 2 -->
+<div class="flex items-center bg-diff-addition-line hover:bg-diff-addition-line/80 transition-colors">
+<div class="w-12 bg-surface-container-lowest text-fg-subtle text-right pr-2 py-0.5 select-none font-code-gutter text-code-gutter"></div>
+<div class="w-12 bg-surface-container-lowest text-diff-addition-text text-right pr-2 py-0.5 select-none font-code-gutter text-code-gutter">83</div>
+<div class="px-3 py-0.5 text-diff-addition-text font-mono whitespace-pre">+     throw new PaymentPayloadError("Payload missing customer discriminator");</div>
+</div>
+<!-- Addition line 3 -->
+<div class="flex items-center bg-diff-addition-line hover:bg-diff-addition-line/80 transition-colors">
+<div class="w-12 bg-surface-container-lowest text-fg-subtle text-right pr-2 py-0.5 select-none font-code-gutter text-code-gutter"></div>
+<div class="w-12 bg-surface-container-lowest text-diff-addition-text text-right pr-2 py-0.5 select-none font-code-gutter text-code-gutter">84</div>
+<div class="px-3 py-0.5 text-diff-addition-text font-mono whitespace-pre">+   }</div>
+</div>
+<!-- Addition line 4 -->
+<div class="flex items-center bg-diff-addition-line hover:bg-diff-addition-line/80 transition-colors">
+<div class="w-12 bg-surface-container-lowest text-fg-subtle text-right pr-2 py-0.5 select-none font-code-gutter text-code-gutter"></div>
+<div class="w-12 bg-surface-container-lowest text-diff-addition-text text-right pr-2 py-0.5 select-none font-code-gutter text-code-gutter">85</div>
+<div class="px-3 py-0.5 text-diff-addition-text font-mono whitespace-pre">+   const customerId = (event.data.object as { customer: string }).customer;</div>
+</div>
+<!-- Addition line 5 -->
+<div class="flex items-center bg-diff-addition-line hover:bg-diff-addition-line/80 transition-colors">
+<div class="w-12 bg-surface-container-lowest text-fg-subtle text-right pr-2 py-0.5 select-none font-code-gutter text-code-gutter"></div>
+<div class="w-12 bg-surface-container-lowest text-diff-addition-text text-right pr-2 py-0.5 select-none font-code-gutter text-code-gutter">86</div>
+<div class="px-3 py-0.5 text-diff-addition-text font-mono whitespace-pre">+   await syncSubscriptionRecord(customerId);</div>
+</div>
+</div>
+<!-- Diff Footer quick action -->
+<div class="bg-surface-container px-space-md py-2 flex items-center justify-between">
+<div class="flex items-center gap-space-xs text-diff-addition-text font-code-diff text-code-diff">
+<span class="material-symbols-outlined text-[16px]">check</span>
+<span>No unresolved symbol errors. AST typeguard validated.</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="bg-surface-container-highest hover:bg-surface-variant text-fg-default px-2.5 py-1 rounded text-label-ui font-label-ui transition-colors" type="button">View Commit Chain</button>
+<button class="bg-primary-container hover:bg-accent-green-hover text-on-primary-container font-semibold px-3 py-1 rounded text-label-ui font-label-ui flex items-center gap-1 transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[14px]">commit</span>
+<span>Push Automated Fix</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Repository Item 2: auth-gateway -->
+<div class="bg-canvas-default rounded-lg p-space-md flex flex-col sm:flex-row sm:items-center justify-between gap-space-md shadow-sm hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-accent-purple text-[22px]">lock_reset</span>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<a class="font-title-card text-title-card text-fg-default hover:text-accent-blue font-semibold" href="#">karanray06/auth-gateway</a>
+<span class="font-badge-mono text-badge-mono text-diff-addition-text bg-diff-addition-line px-1.5 py-0.2 rounded">tsc Clean</span>
+</div>
+<div class="flex items-center gap-space-xs text-fg-muted font-code-diff text-code-diff mt-0.5">
+<span>Go 1.22 · TS SDK 2.1</span>
+<span>•</span>
+<span>SHA: <span class="font-mono text-fg-default">e3b991c</span></span>
+<span>•</span>
+<span>Last run: 4m ago</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="font-badge-mono text-badge-mono text-fg-muted bg-surface-container px-2 py-1 rounded">0 open PRs</span>
+<button class="bg-surface-container-highest hover:bg-surface-variant text-fg-default px-3 py-1.5 rounded text-label-ui font-label-ui flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">terminal</span>
+<span>Inspect</span>
+</button>
+</div>
+</div>
+<!-- Repository Item 3: frontend-app -->
+<div class="bg-canvas-default rounded-lg p-space-md flex flex-col sm:flex-row sm:items-center justify-between gap-space-md shadow-sm hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-accent-amber text-[22px]">laptop_mac</span>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<a class="font-title-card text-title-card text-fg-default hover:text-accent-blue font-semibold" href="#">karanray06/frontend-app</a>
+<span class="font-badge-mono text-badge-mono text-accent-amber bg-surface-container px-1.5 py-0.2 rounded flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-amber animate-pulse"></span>
+                      Compiling AST
+                    </span>
+</div>
+<div class="flex items-center gap-space-xs text-fg-muted font-code-diff text-code-diff mt-0.5">
+<span>Next.js 14 · React 18 · TypeScript Strict</span>
+<span>•</span>
+<span>Branch: <span class="text-fg-default">feat/checkout-v2</span></span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="font-badge-mono text-badge-mono text-fg-subtle">ETA: 4s</span>
+<span class="font-badge-mono text-badge-mono text-accent-blue bg-surface-container px-2 py-1 rounded">1 open PR</span>
+<button class="bg-surface-container-highest hover:bg-surface-variant text-fg-default px-3 py-1.5 rounded text-label-ui font-label-ui transition-colors" type="button">
+                  Logs
+                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- AST Compiler Health & Deterministic Confidence Breakdown -->
+<div class="bg-canvas-subtle p-space-md rounded-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-title-card text-title-card text-fg-default font-semibold">Deterministic AST Diagnostic Matrix</h3>
+<p class="font-body-sm text-body-sm text-fg-muted">Realtime synthesis of compiler invariants across branch heads</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-badge-mono text-badge-mono text-fg-subtle">Live Engine: v2.4-fast-ts</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md pt-space-xs">
+<!-- Col 1 -->
+<div class="bg-canvas-default p-space-sm rounded-lg flex flex-col gap-1">
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-fg-muted">Strict Nil Safety</span>
+<span class="font-badge-mono text-badge-mono text-diff-addition-text">100%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1.5 rounded-full overflow-hidden">
+<div class="bg-accent-green-emphasis h-full rounded-full" style="width: 100%;"></div>
+</div>
+<span class="font-code-gutter text-code-gutter text-fg-subtle mt-1">strictNullChecks enabled across 32 configs</span>
+</div>
+<!-- Col 2 -->
+<div class="bg-canvas-default p-space-sm rounded-lg flex flex-col gap-1">
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-fg-muted">Unused Exports Purged</span>
+<span class="font-badge-mono text-badge-mono text-accent-blue">89.4%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1.5 rounded-full overflow-hidden">
+<div class="bg-accent-blue h-full rounded-full" style="width: 89.4%;"></div>
+</div>
+<span class="font-code-gutter text-code-gutter text-fg-subtle mt-1">Tree-shaking dead symbol pruning verified</span>
+</div>
+<!-- Col 3 -->
+<div class="bg-canvas-default p-space-sm rounded-lg flex flex-col gap-1">
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-fg-muted">Circular Dependency Tree</span>
+<span class="font-badge-mono text-badge-mono text-diff-addition-text">0 cycles</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1.5 rounded-full overflow-hidden">
+<div class="bg-accent-green-emphasis h-full rounded-full" style="width: 100%;"></div>
+</div>
+<span class="font-code-gutter text-code-gutter text-fg-subtle mt-1">Madge dependency graph clean</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Diagnostic & Activity Stream + Quick Runner (30% = 4 cols) -->
+<div class="lg:col-span-4 flex flex-col gap-space-lg min-w-0">
+<!-- Instant Code Audit Box -->
+<div class="bg-canvas-subtle rounded-lg shadow-sm p-space-md flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">terminal</span>
+<span class="font-title-card-sm text-title-card-sm text-fg-default font-semibold">Instant Code Audit</span>
+</div>
+<span class="font-badge-mono text-badge-mono text-fg-subtle">Kareixo CLI</span>
+</div>
+<div class="flex flex-col gap-2 mt-1">
+<div class="relative flex items-center">
+<input class="w-full bg-canvas-inset text-fg-default font-code-diff text-code-diff px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-accent-blue shadow-inner" id="auditInput" placeholder="Ask code agent or run command..." type="text" value="/tsc-check --strict core-payment-service"/>
+<button class="absolute right-1.5 bg-primary-container hover:bg-accent-green-hover text-on-primary-container px-2.5 py-1 rounded text-badge-mono font-badge-mono flex items-center gap-1 transition-colors" id="runAuditBtn" type="button">
+<span class="material-symbols-outlined text-[14px]">play_arrow</span>
+<span>RUN</span>
+</button>
+</div>
+<!-- Quick Command Chips -->
+<div class="flex items-center gap-space-xs flex-wrap">
+<button class="quick-cmd font-badge-mono text-badge-mono bg-surface-container hover:bg-surface-container-high text-fg-muted hover:text-fg-default px-2 py-0.5 rounded transition-colors" data-cmd="/tsc-check" type="button">/tsc-check</button>
+<button class="quick-cmd font-badge-mono text-badge-mono bg-surface-container hover:bg-surface-container-high text-fg-muted hover:text-fg-default px-2 py-0.5 rounded transition-colors" data-cmd="/verify-open-prs" type="button">/verify-open-prs</button>
+<button class="quick-cmd font-badge-mono text-badge-mono bg-surface-container hover:bg-surface-container-high text-fg-muted hover:text-fg-default px-2 py-0.5 rounded transition-colors" data-cmd="/trace-root-cause" type="button">/trace-root-cause</button>
+</div>
+<div class="hidden font-code-diff text-code-diff text-diff-addition-text bg-diff-addition-line p-2 rounded flex items-center gap-2" id="auditFeedback">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span>Command scheduled: AST runner spawned. (PID 49102)</span>
+</div>
+</div>
+</div>
+<!-- Recent Verification Feed -->
+<div class="bg-canvas-subtle rounded-lg shadow-sm flex flex-col overflow-hidden">
+<!-- Feed Header & Filter Tabs -->
+<div class="p-space-md bg-surface-container flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-fg-muted text-[20px]">rss_feed</span>
+<h3 class="font-title-card-sm text-title-card-sm text-fg-default font-semibold">Verification Feed</h3>
+</div>
+<span class="w-2 h-2 rounded-full bg-accent-green-emphasis animate-pulse" title="Connected to AST WebSocket"></span>
+</div>
+<!-- Tabs Segmented -->
+<div class="flex items-center gap-1 bg-canvas-inset p-1 rounded-lg">
+<button class="feed-tab flex-1 text-center py-1 rounded text-label-ui font-label-ui text-fg-default bg-surface-container-high font-semibold transition-all" id="tab-all">All (3)</button>
+<button class="feed-tab flex-1 text-center py-1 rounded text-label-ui font-label-ui text-fg-muted hover:text-fg-default transition-all" id="tab-confirmed">Confirmed (2)</button>
+<button class="feed-tab flex-1 text-center py-1 rounded text-label-ui font-label-ui text-fg-muted hover:text-fg-default transition-all" id="tab-unverified">Unverified (1)</button>
+</div>
+</div>
+<!-- Feed Items Stream -->
+<div class="p-space-md flex flex-col gap-space-md" id="feed-container">
+<!-- Feed Item 1: Review Agent on PR #104 -->
+<div class="feed-item bg-canvas-default p-space-md rounded-lg flex flex-col gap-space-sm shadow-sm" data-status="confirmed">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-badge-mono text-badge-mono px-2 py-0.5 rounded bg-diff-addition-line text-diff-addition-text flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">check_circle</span>
+                    Confirmed
+                  </span>
+<span class="font-badge-mono text-badge-mono text-fg-subtle">Review Agent</span>
+</div>
+<span class="font-code-gutter text-code-gutter text-fg-muted">2m ago</span>
+</div>
+<div class="flex flex-col gap-1">
+<a class="font-title-card-sm text-title-card-sm text-fg-default hover:text-accent-blue font-semibold" href="#">PR #104: Type narrowing missing on WebhookPayload.event</a>
+<p class="font-body-sm text-body-sm text-fg-muted">
+                  Strict compiler caught potential runtime failure. <code class="font-code-diff text-code-diff text-accent-red bg-canvas-inset px-1 py-0.5 rounded">TS2339</code> reproduced on virtual test suite.
+                </p>
+</div>
+<div class="flex items-center justify-between pt-space-xs">
+<span class="font-code-diff text-code-diff text-accent-purple font-medium">core-payment-service</span>
+<button class="apply-patch-btn bg-surface-container hover:bg-surface-container-high text-accent-blue px-2.5 py-1 rounded text-label-ui font-label-ui flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px]">build</span>
+<span>Apply Patch</span>
+</button>
+</div>
+</div>
+<!-- Feed Item 2: Incident Tracer on Trace #48 -->
+<div class="feed-item bg-canvas-default p-space-md rounded-lg flex flex-col gap-space-sm shadow-sm" data-status="confirmed">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-badge-mono text-badge-mono px-2 py-0.5 rounded bg-diff-addition-line text-diff-addition-text flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">check_circle</span>
+                    Confirmed
+                  </span>
+<span class="font-badge-mono text-badge-mono text-fg-subtle">Incident Tracer</span>
+</div>
+<span class="font-code-gutter text-code-gutter text-fg-muted">14m ago</span>
+</div>
+<div class="flex flex-col gap-1">
+<a class="font-title-card-sm text-title-card-sm text-fg-default hover:text-accent-blue font-semibold" href="#">Trace #48: NullReference in billing.ts:84</a>
+<p class="font-body-sm text-body-sm text-fg-muted">
+                  Traced backwards through AST call graph directly to commit <code class="font-code-diff text-code-diff text-fg-default bg-canvas-inset px-1 rounded">8f2a1b9</code> authored by <span class="text-accent-blue">@alex</span>.
+                </p>
+</div>
+<div class="flex items-center justify-between pt-space-xs">
+<div class="flex items-center gap-1 text-fg-subtle font-code-diff text-code-diff">
+<span class="material-symbols-outlined text-[15px] text-diff-addition-text">verified</span>
+<span>100% SHA match</span>
+</div>
+<button class="bg-surface-container hover:bg-surface-container-high text-fg-default px-2.5 py-1 rounded text-label-ui font-label-ui transition-colors" type="button">
+                  Open Trace Log
+                </button>
+</div>
+</div>
+<!-- Feed Item 3: CodeChat Query (Unverified Heuristic) -->
+<div class="feed-item bg-canvas-default p-space-md rounded-lg flex flex-col gap-space-sm shadow-sm" data-status="unverified">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-badge-mono text-badge-mono px-2 py-0.5 rounded bg-surface-container text-accent-amber flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">help_outline</span>
+                    Unverified
+                  </span>
+<span class="font-badge-mono text-badge-mono text-fg-subtle">CodeChat Query</span>
+</div>
+<span class="font-code-gutter text-code-gutter text-fg-muted">31m ago</span>
+</div>
+<div class="flex flex-col gap-1">
+<a class="font-title-card-sm text-title-card-sm text-fg-default hover:text-accent-blue font-semibold" href="#">auth-gateway: Session token invalidation flow</a>
+<p class="font-body-sm text-body-sm text-fg-muted">
+                  Heuristic semantic match detected in Redis cluster invalidation logic. Unit test synthesis pending queue runner.
+                </p>
+</div>
+<div class="flex items-center justify-between pt-space-xs">
+<span class="font-code-diff text-code-diff text-accent-purple font-medium">auth-gateway</span>
+<button class="bg-primary-container hover:bg-accent-green-hover text-on-primary-container px-2.5 py-1 rounded text-label-ui font-label-ui flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px]">science</span>
+<span>Synthesize Test</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Realtime System Node Telemetry Card -->
+<div class="bg-surface-container-low p-space-md rounded-lg shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-title-card-sm text-title-card-sm text-fg-default font-semibold">Compiler Daemon Invariants</span>
+<span class="font-badge-mono text-badge-mono text-diff-addition-text bg-diff-addition-line px-1.5 py-0.5 rounded">ONLINE</span>
+</div>
+<div class="space-y-2 pt-1 font-body-sm text-body-sm">
+<div class="flex items-center justify-between text-fg-muted">
+<span>TypeScript Worker Pool</span>
+<span class="font-badge-mono text-badge-mono text-fg-default">8 active threads</span>
+</div>
+<div class="flex items-center justify-between text-fg-muted">
+<span>Incremental TS Cache Hits</span>
+<span class="font-badge-mono text-badge-mono text-diff-addition-text font-semibold">98.4%</span>
+</div>
+<div class="flex items-center justify-between text-fg-muted">
+<span>Virtual Isolation Sandbox</span>
+<span class="font-badge-mono text-badge-mono text-fg-default">bwrap / chroot</span>
+</div>
+<div class="flex items-center justify-between text-fg-muted">
+<span>Average Verification Latency</span>
+<span class="font-badge-mono text-badge-mono text-accent-blue font-semibold">184ms</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  (function initDashboard() {
+    // Quick Command Buttons for Instant Code Audit
+    const input = document.getElementById('auditInput');
+    const runBtn = document.getElementById('runAuditBtn');
+    const feedback = document.getElementById('auditFeedback');
+    const cmdChips = document.querySelectorAll('.quick-cmd');
+
+    cmdChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const cmd = chip.getAttribute('data-cmd');
+        if (input) {
+          input.value = cmd + ' core-payment-service';
+          input.focus();
+        }
+      });
+    });
+
+    if (runBtn && input && feedback) {
+      runBtn.addEventListener('click', () => {
+        feedback.classList.remove('hidden');
+        runBtn.innerHTML = '<span class="material-symbols-outlined text-[14px] animate-spin">refresh</span><span>...</span>';
+        setTimeout(() => {
+          runBtn.innerHTML = '<span class="material-symbols-outlined text-[14px]">play_arrow</span><span>RUN</span>';
+          setTimeout(() => {
+            feedback.classList.add('hidden');
+          }, 3500);
+        }, 600);
+      });
+    }
+
+    // Feed Filter Tabs (All, Confirmed, Unverified)
+    const tabAll = document.getElementById('tab-all');
+    const tabConfirmed = document.getElementById('tab-confirmed');
+    const tabUnverified = document.getElementById('tab-unverified');
+    const feedItems = document.querySelectorAll('.feed-item');
+
+    function setActiveTab(selectedTab, filterValue) {
+      [tabAll, tabConfirmed, tabUnverified].forEach(t => {
+        if (!t) return;
+        t.classList.remove('bg-surface-container-high', 'text-fg-default', 'font-semibold');
+        t.classList.add('text-fg-muted');
+      });
+
+      if (selectedTab) {
+        selectedTab.classList.remove('text-fg-muted');
+        selectedTab.classList.add('bg-surface-container-high', 'text-fg-default', 'font-semibold');
+      }
+
+      feedItems.forEach(item => {
+        const status = item.getAttribute('data-status');
+        if (filterValue === 'all' || status === filterValue) {
+          item.style.display = 'flex';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+
+    if (tabAll) tabAll.addEventListener('click', () => setActiveTab(tabAll, 'all'));
+    if (tabConfirmed) tabConfirmed.addEventListener('click', () => setActiveTab(tabConfirmed, 'confirmed'));
+    if (tabUnverified) tabUnverified.addEventListener('click', () => setActiveTab(tabUnverified, 'unverified'));
+
+    // Apply Patch Interaction Demo
+    const patchBtns = document.querySelectorAll('.apply-patch-btn');
+    patchBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.innerHTML = '<span class="material-symbols-outlined text-[14px] text-diff-addition-text">check</span><span class="text-diff-addition-text">Applied</span>';
+        btn.disabled = true;
+      });
+    });
+  })();
+</script></main><footer class="w-full bg-canvas-subtle mt-auto"><div class="w-full px-gutter py-space-md flex flex-col sm:flex-row items-center justify-between gap-space-sm text-fg-muted font-body-sm text-body-sm"><span>© 2025 Kareixo Developer Systems. GitHub Dark Engine.</span><div class="flex items-center gap-space-md"><span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-accent-green-emphasis"></span>Telemetry Online</span><a class="hover:text-fg-default transition-colors" href="#">Security Policy</a><a class="hover:text-fg-default transition-colors" href="#">API Specs</a><a class="hover:text-fg-default transition-colors" href="#">System Status</a></div></div></footer></body></html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;background-color:#0d1117;color:#c9d1d9;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "canvas-default": "#0d1117",
+        "canvas-subtle": "#161b22",
+        "canvas-inset": "#010409",
+        "border-default": "#30363d",
+        "border-muted": "#21262d",
+        "fg-default": "#f0f6fc",
+        "fg-muted": "#8b949e",
+        "fg-subtle": "#6e7681",
+        "accent-green-emphasis": "#238636",
+        "accent-green-hover": "#2ea043",
+        "diff-addition-line": "rgba(46, 160, 67, 0.15)",
+        "diff-addition-text": "#3fb950",
+        "diff-deletion-line": "rgba(248, 81, 73, 0.15)",
+        "diff-deletion-text": "#f85149",
+        "accent-purple": "#8957e5",
+        "accent-purple-light": "#a371f7",
+        "accent-blue": "#58a6ff",
+        "accent-amber": "#d29922",
+        "accent-red": "#f85149",
+        "surface-card": "#161b22",
+        "surface-container": "#161b22",
+        "surface-elevated": "#21262d"
+      },
+      borderRadius: {
+        "DEFAULT": "0.125rem",
+        "lg": "0.25rem",
+        "xl": "0.5rem",
+        "full": "0.75rem"
+      },
+      fontFamily: {
+        "headline-hero": ["Noto Sans"],
+        "headline-section": ["Noto Sans"],
+        "headline-section-mobile": ["Noto Sans"],
+        "title-card": ["Noto Sans"],
+        "title-card-sm": ["Noto Sans"],
+        "body-base": ["Noto Sans"],
+        "body-sm": ["Noto Sans"],
+        "label-ui": ["Noto Sans"],
+        "code-diff": ["JetBrains Mono"],
+        "code-gutter": ["JetBrains Mono"],
+        "badge-mono": ["JetBrains Mono"]
+      },
+      fontSize: {
+        "headline-section-mobile": ["20px", { lineHeight: "28px", fontWeight: "600" }],
+        "title-card": ["16px", { lineHeight: "24px", fontWeight: "600" }],
+        "title-card-sm": ["14px", { lineHeight: "20px", fontWeight: "600" }],
+        "body-base": ["14px", { lineHeight: "21px", fontWeight: "400" }],
+        "body-sm": ["12px", { lineHeight: "18px", fontWeight: "400" }],
+        "label-ui": ["12px", { lineHeight: "16px", fontWeight: "500" }],
+        "code-diff": ["12px", { lineHeight: "20px", fontWeight: "400" }],
+        "code-gutter": ["12px", { lineHeight: "20px", fontWeight: "400" }],
+        "badge-mono": ["11px", { lineHeight: "16px", fontWeight: "500" }]
+      }
+    }
+  }
+};</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head><body class="bg-canvas-default text-[#c9d1d9] min-h-screen flex flex-col antialiased"><header class="fixed top-0 w-full z-50 pt-safe bg-[#161b22]/90 backdrop-blur-xl border-b border-border-default shadow-[0_1px_8px_rgba(0,0,0,0.4)]"><div class="h-16 px-4 flex items-center justify-between gap-3"><div class="flex items-center gap-3 min-w-0"><img alt="Kareixo Brand Logo" class="h-7 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1U11nvsulNHh2_HelpBRUogSW2FzODnR-drsURGwiWGF0cpmbDUMJ8us9hZYTtcrXtnL2HhoVPgS3MXNx4xq3zxkj8ndIkfPQ8CjwEMxHG4YL_B54KJoGlZre1iZad9hgmHFwxuDPvdSBrT7LXZs2-w8KJlZVXcxMuB4eJKwMouKUBQfnQQD6zDrsFhE941x5GNBlmxFKOW9_1SRmC03nDJzqlt1fwbBo70guFdMlSkvszH00WneN3ZkO_F"/><div class="flex flex-col min-w-0"><div class="flex items-center gap-2"><span class="font-title-card-sm text-title-card-sm font-semibold text-fg-default tracking-tight truncate">Kareixo</span><span class="font-badge-mono text-badge-mono text-fg-muted px-1.5 py-0.5 rounded border border-border-default bg-[#0d1117]">v2.4</span></div><div class="flex items-center gap-2 mt-0.5"><div class="flex items-center gap-1 bg-diff-addition-line border border-diff-addition-text/30 px-1.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-diff-addition-text animate-pulse"></span><span class="font-badge-mono text-badge-mono text-diff-addition-text font-medium">GitHub App: Active</span></div><div class="flex items-center gap-1 bg-border-muted border border-border-default px-1.5 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-accent-blue"></span><span class="font-badge-mono text-badge-mono text-fg-muted">Webhook: 12ms</span></div></div></div></div><div class="flex items-center gap-2 flex-shrink-0"><span class="font-title-card-sm text-title-card-sm text-fg-muted hidden sm:inline-block">Repositories</span><div class="w-8 h-8 rounded-full bg-border-default border border-border-default flex items-center justify-center text-fg-default"><span class="material-symbols-outlined text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-20 pb-24 bg-canvas-default"><div class="flex flex-col w-full px-4 py-4 space-y-4">
+<!-- Top Repository Meta Card -->
+<div class="bg-canvas-subtle border border-border-default rounded-xl p-4 shadow-sm">
+<div class="flex items-center justify-between gap-3">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-8 h-8 rounded-lg bg-border-muted border border-border-default flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-fg-muted text-[18px]">folder_code</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="font-title-card-sm text-title-card-sm text-accent-blue font-semibold tracking-tight hover:underline cursor-pointer truncate">karanray06/core-payment-service</span>
+</div>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="inline-flex items-center gap-1 font-badge-mono text-badge-mono text-fg-muted bg-canvas-default border border-border-default px-1.5 py-0.5 rounded">
+<span class="material-symbols-outlined text-[13px] text-fg-muted">call_split</span>
+              main
+            </span>
+<span class="inline-flex items-center gap-1 font-badge-mono text-badge-mono text-diff-addition-text bg-diff-addition-line border border-diff-addition-text/30 px-1.5 py-0.5 rounded-full">
+<span class="w-1.5 h-1.5 rounded-full bg-diff-addition-text animate-pulse"></span>
+              Live · 14ms
+            </span>
+</div>
+</div>
+</div>
+<button aria-label="Repository Settings" class="w-8 h-8 rounded-lg bg-border-muted hover:bg-border-default border border-border-default flex items-center justify-center text-fg-muted hover:text-fg-default transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+</button>
+</div>
+</div>
+<!-- PR Meta Header -->
+<div class="bg-canvas-subtle border border-border-default rounded-xl p-4 shadow-sm space-y-3">
+<div class="flex items-start justify-between gap-2">
+<div class="space-y-1.5 min-w-0">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="font-badge-mono text-badge-mono px-2 py-0.5 rounded-full bg-accent-green-emphasis text-white font-medium inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">adjust</span>
+              Open
+            </span>
+<span class="font-title-card-sm text-fg-muted font-medium">#104</span>
+</div>
+<h1 class="font-headline-section-mobile text-headline-section-mobile text-fg-default tracking-tight">fix(stripe): handle idempotency key collisions</h1>
+</div>
+<div class="flex-shrink-0">
+<span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-border-muted border border-border-default text-fg-default font-title-card-sm text-title-card-sm font-medium">
+          @d
+        </span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-fg-muted flex-wrap text-[13px]">
+<span class="font-body-sm text-body-sm">Opened by <a class="text-fg-default hover:text-accent-blue font-semibold" href="#">@devon</a></span>
+<span class="font-badge-mono text-badge-mono text-fg-subtle">•</span>
+<span class="inline-flex items-center gap-1 font-badge-mono text-badge-mono text-fg-muted">
+        Into <span class="bg-border-muted border border-border-default px-1.5 py-0.5 rounded text-fg-default font-medium">main</span> from <span class="bg-border-muted border border-border-default px-1.5 py-0.5 rounded text-accent-blue font-medium">fix/idempotency-race</span>
+</span>
+</div>
+<!-- Agent Execution Summary Bento -->
+<div class="bg-canvas-default border border-border-default rounded-lg p-3 space-y-2.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-accent-purple text-[16px]">smart_toy</span>
+<span class="font-title-card-sm text-title-card-sm text-fg-default">Review Agent Execution Summary</span>
+</div>
+<span class="font-badge-mono text-badge-mono text-accent-purple-light bg-accent-purple/10 border border-accent-purple/30 px-1.5 py-0.5 rounded">v2.4.1</span>
+</div>
+<div class="grid grid-cols-1 gap-2">
+<!-- Metric 1 -->
+<div class="flex items-center justify-between bg-canvas-subtle border border-border-default rounded p-2 text-fg-default">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-diff-deletion-text text-[16px]">terminal</span>
+<span class="font-body-sm text-body-sm text-fg-muted truncate">Compiler Check</span>
+</div>
+<span class="font-badge-mono text-badge-mono text-diff-deletion-text bg-diff-deletion-line border border-diff-deletion-text/30 px-2 py-0.5 rounded text-right">TypeScript v5.3.3 emitted 1 error</span>
+</div>
+<!-- Metric 2 -->
+<div class="flex items-center justify-between bg-canvas-subtle border border-border-default rounded p-2 text-fg-default">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-accent-blue text-[16px]">account_tree</span>
+<span class="font-body-sm text-body-sm text-fg-muted truncate">AST Traversal</span>
+</div>
+<span class="font-badge-mono text-badge-mono text-fg-default bg-canvas-default border border-border-default px-2 py-0.5 rounded">6 files changed, 142 lines diff</span>
+</div>
+<!-- Metric 3 -->
+<div class="flex items-center justify-between bg-canvas-subtle border border-border-default rounded p-2 text-fg-default">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-diff-addition-text text-[16px]">verified</span>
+<span class="font-body-sm text-body-sm text-fg-muted truncate">Confidence Breakdown</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="font-badge-mono text-badge-mono text-diff-addition-text bg-diff-addition-line border border-diff-addition-text/30 px-1.5 py-0.5 rounded-full font-medium">2 Confirmed</span>
+<span class="font-badge-mono text-badge-mono text-accent-amber bg-[rgba(210,153,34,0.15)] border border-accent-amber/30 px-1.5 py-0.5 rounded-full font-medium">1 Unverified</span>
+<span class="font-badge-mono text-badge-mono text-fg-subtle bg-canvas-default border border-border-default px-1.5 py-0.5 rounded-full font-medium">0 Rejected</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Interactive Diff & Review Viewer Section -->
+<div class="space-y-3">
+<div class="flex items-center justify-between px-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-fg-muted text-[18px]">difference</span>
+<h2 class="font-title-card text-title-card text-fg-default">Inspected File Stream</h2>
+</div>
+<span class="font-badge-mono text-badge-mono text-fg-muted">1 of 6 files</span>
+</div>
+<!-- File Diff Card -->
+<div class="bg-canvas-subtle border border-border-default rounded-xl overflow-hidden shadow-sm space-y-0">
+<!-- File Diff Header -->
+<div class="bg-[#161b22] border-b border-border-default px-3 py-2 flex items-center justify-between gap-2">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-fg-muted text-[16px]">description</span>
+<span class="font-code-diff text-code-diff text-fg-default font-medium truncate">payments/webhook.ts:42</span>
+</div>
+<div class="flex items-center gap-1.5 flex-shrink-0">
+<span class="font-badge-mono text-badge-mono px-1.5 py-0.5 rounded bg-canvas-default border border-border-default text-fg-muted">sha: 9d1b7f2</span>
+<span class="font-badge-mono text-badge-mono px-1.5 py-0.5 rounded bg-diff-addition-line border border-diff-addition-text/30 text-diff-addition-text">+28</span>
+<span class="font-badge-mono text-badge-mono px-1.5 py-0.5 rounded bg-diff-deletion-line border border-diff-deletion-text/30 text-diff-deletion-text">-4</span>
+</div>
+</div>
+<!-- Diff Monospace Canvas -->
+<div class="bg-canvas-default p-2 space-y-1 overflow-x-auto border-b border-border-default font-code-diff text-code-diff">
+<div class="flex items-start gap-2 text-fg-subtle select-none">
+<span class="w-6 text-right font-code-gutter text-fg-subtle">40</span>
+<span class="text-[#c9d1d9] whitespace-pre">  const sig = req.headers['stripe-signature'] as string;</span>
+</div>
+<div class="flex items-start gap-2 text-fg-subtle select-none">
+<span class="w-6 text-right font-code-gutter text-fg-subtle">41</span>
+<span class="text-[#c9d1d9] whitespace-pre">  const secret = process.env.STRIPE_WEBHOOK_SECRET!;</span>
+</div>
+<!-- Deleted Line -->
+<div class="flex items-start gap-2 bg-diff-deletion-line text-diff-deletion-text rounded px-1.5 py-0.5 select-none border-l-2 border-diff-deletion-text">
+<span class="w-6 font-code-gutter text-diff-deletion-text text-right">42</span>
+<span class="whitespace-pre font-medium">- const payload = req.body as StripeEvent;</span>
+</div>
+<!-- Added Line -->
+<div class="flex items-start gap-2 bg-diff-addition-line text-diff-addition-text rounded px-1.5 py-0.5 select-none border-l-2 border-diff-addition-text">
+<span class="w-6 font-code-gutter text-diff-addition-text text-right">42</span>
+<span class="whitespace-pre font-medium">+ const payload = stripe.webhooks.constructEvent(req.rawBody, sig, secret);</span>
+</div>
+<div class="flex items-start gap-2 text-fg-subtle select-none">
+<span class="w-6 text-right font-code-gutter text-fg-subtle">43</span>
+<span class="text-[#c9d1d9] whitespace-pre">  const eventKey = `evt_${payload.id}`;</span>
+</div>
+</div>
+<!-- Inline Review Agent Finding Box 1 (Confirmed) -->
+<div class="p-3 bg-canvas-subtle space-y-2.5 border-b border-border-default">
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-1.5">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-diff-addition-line border border-diff-addition-text/30 text-diff-addition-text font-badge-mono text-badge-mono font-medium">
+<span class="material-symbols-outlined text-[13px]">check_circle</span>
+              Confirmed Finding
+            </span>
+<span class="font-badge-mono text-badge-mono text-fg-muted">Agent Rule TS-2339</span>
+</div>
+<span class="font-badge-mono text-badge-mono text-accent-purple bg-accent-purple/10 border border-accent-purple/30 px-1.5 py-0.5 rounded">Deterministic</span>
+</div>
+<p class="font-body-base text-body-base text-[#c9d1d9]">
+          Constructed event type <code class="font-code-diff text-code-diff px-1.5 py-0.5 rounded bg-border-muted border border-border-default text-fg-default">Stripe.DiscriminatedEvent</code> does not expose <code class="font-code-diff text-code-diff px-1.5 py-0.5 rounded bg-diff-deletion-line border border-diff-deletion-text/30 text-diff-deletion-text">.customer_account</code> property without runtime guard. Cross-checked with <code class="font-code-diff text-code-diff px-1.5 py-0.5 rounded bg-border-muted border border-border-default text-fg-muted">tsc --noEmit</code> which returns error TS2339 on line 48.
+        </p>
+<!-- Compiler Log Snippet Container -->
+<div class="bg-canvas-default rounded-lg p-2.5 space-y-1 border border-border-default">
+<div class="flex items-center justify-between text-fg-muted">
+<span class="font-badge-mono text-badge-mono flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-diff-deletion-text">error</span>
+              Compiler Diagnostic Stream
+            </span>
+<span class="font-badge-mono text-badge-mono text-fg-subtle">Line 48:15</span>
+</div>
+<p class="font-code-diff text-code-diff text-diff-deletion-text leading-relaxed overflow-x-auto whitespace-pre">payments/webhook.ts(48,15): error TS2339: Property 'customer_account' does not exist on type 'DiscriminatedEvent'.</p>
+</div>
+<!-- Interactive Quick Action Buttons -->
+<div class="flex flex-col gap-2 pt-1 sm:flex-row">
+<button class="flex-1 flex items-center justify-center gap-1.5 h-9 px-3.5 rounded-md bg-[#238636] hover:bg-[#2ea043] text-white font-label-ui text-label-ui font-medium transition-all shadow-sm border border-[rgba(240,246,252,0.1)]" id="btn-accept-fix" type="button">
+<span class="material-symbols-outlined text-[16px]">auto_fix_high</span>
+            Accept Fix Suggestion
+          </button>
+<button class="flex items-center justify-center gap-1.5 h-9 px-3 rounded-md bg-[#21262d] hover:bg-[#30363d] border border-border-default text-[#c9d1d9] hover:text-fg-default font-label-ui text-label-ui transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px] text-fg-muted">terminal</span>
+            View tsc Log
+          </button>
+<button class="flex items-center justify-center gap-1.5 h-9 px-3 rounded-md bg-[#21262d] hover:bg-[#30363d] border border-border-default text-fg-muted hover:text-fg-default font-label-ui text-label-ui transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">flag</span>
+            Mark False Positive
+          </button>
+</div>
+</div>
+<!-- Finding 2: Unverified Heuristic -->
+<div class="p-3 bg-canvas-subtle space-y-2">
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-1.5">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[rgba(210,153,34,0.15)] border border-accent-amber/30 text-accent-amber font-badge-mono text-badge-mono font-medium">
+<span class="material-symbols-outlined text-[13px]">help</span>
+              Unverified Heuristic
+            </span>
+<span class="font-badge-mono text-badge-mono text-fg-muted">payments/webhook.ts:74</span>
+</div>
+<span class="font-badge-mono text-badge-mono text-fg-subtle bg-canvas-default border border-border-default px-1.5 py-0.5 rounded">Advisory</span>
+</div>
+<p class="font-body-sm text-body-sm text-fg-muted">
+          Idempotency TTL of 300 seconds might conflict with Stripe retry policy of up to 72 hours. Heuristic observation: cannot be checked statically via compiler.
+        </p>
+<div class="flex items-center gap-2 pt-1">
+<button class="px-2.5 py-1 rounded-md bg-[#21262d] hover:bg-[#30363d] border border-border-default font-label-ui text-label-ui text-[#c9d1d9] hover:text-fg-default transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[14px] text-fg-muted">tune</span>
+            Adjust TTL Threshold
+          </button>
+<button class="px-2.5 py-1 rounded-md bg-[#21262d] hover:bg-[#30363d] border border-border-default font-label-ui text-label-ui text-fg-muted hover:text-fg-default transition-colors" type="button">
+            Dismiss
+          </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Concrete Execution Action Bar -->
+<div class="sticky bottom-20 z-40 bg-[#161b22]/95 border border-border-default backdrop-blur-md rounded-xl p-3 shadow-xl space-y-2">
+<div class="flex items-center justify-between px-1 text-fg-muted">
+<span class="font-badge-mono text-badge-mono flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-diff-addition-text"></span>
+        Review Agent ready for synchronized push
+      </span>
+<span class="font-badge-mono text-badge-mono text-fg-muted">Checks: <span class="text-diff-deletion-text">1 failed</span>, <span class="text-diff-addition-text">5 passed</span></span>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<button class="flex items-center justify-center gap-1.5 h-10 px-3 rounded-md bg-[#21262d] hover:bg-[#30363d] border border-border-default text-[#c9d1d9] hover:text-fg-default font-label-ui text-label-ui transition-colors font-medium" data-action="trigger-recheck" id="btn-recheck" type="button">
+<span class="material-symbols-outlined text-[18px]">refresh</span>
+        Trigger Re-check
+      </button>
+<button class="flex items-center justify-center gap-1.5 h-10 px-3 rounded-md bg-[#238636] hover:bg-[#2ea043] text-white border border-[rgba(240,246,252,0.1)] font-label-ui text-label-ui font-medium transition-all shadow-sm" data-action="post-to-github" id="btn-github-post" type="button">
+<span class="material-symbols-outlined text-[18px]">send</span>
+        Post to GitHub PR
+      </button>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    const recheckBtn = document.getElementById('btn-recheck');
+    const githubBtn = document.getElementById('btn-github-post');
+    const acceptFixBtn = document.getElementById('btn-accept-fix');
+
+    if (recheckBtn) {
+      recheckBtn.addEventListener('click', function() {
+        const icon = this.querySelector('.material-symbols-outlined');
+        if (icon) {
+          icon.classList.add('animate-spin');
+          setTimeout(() => {
+            icon.classList.remove('animate-spin');
+          }, 1000);
+        }
+      });
+    }
+
+    if (acceptFixBtn) {
+      acceptFixBtn.addEventListener('click', function() {
+        this.innerHTML = '<span class="material-symbols-outlined text-[16px]">check</span> Fix Applied to Workspace';
+        this.classList.remove('bg-[#238636]', 'hover:bg-[#2ea043]', 'text-white');
+        this.classList.add('bg-diff-addition-line', 'border-diff-addition-text/30', 'text-diff-addition-text');
+      });
+    }
+
+    if (githubBtn) {
+      githubBtn.addEventListener('click', function() {
+        const prevText = this.innerHTML;
+        this.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span> Syncing...';
+        setTimeout(() => {
+          this.innerHTML = '<span class="material-symbols-outlined text-[18px]">done_all</span> Posted to PR #104';
+          setTimeout(() => {
+            this.innerHTML = prevText;
+          }, 2000);
+        }, 800);
+      });
+    }
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-[#161b22]/90 border-t border-border-default backdrop-blur-xl shadow-[0_-1px_8px_rgba(0,0,0,0.3)]" data-active-classes="text-fg-default font-semibold"><div class="flex justify-around items-center h-16 px-2"><a class="flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] px-2 py-1 text-fg-muted hover:text-fg-default transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[20px]">grid_view</span><span class="font-label-ui text-label-ui">Dashboard</span></a><a aria-current="page" class="flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] px-2 py-1 transition-colors text-fg-default font-semibold" data-path="repositories" href="#"><span class="material-symbols-outlined text-[20px] text-diff-addition-text">source_environment</span><span class="font-label-ui text-label-ui">Repositories</span></a><a class="flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] px-2 py-1 text-fg-muted hover:text-fg-default transition-colors" data-path="codechat" href="#"><span class="material-symbols-outlined text-[20px]">terminal</span><span class="font-label-ui text-label-ui">CodeChat</span></a><a class="flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] px-2 py-1 text-fg-muted hover:text-fg-default transition-colors" data-path="incident-tracer" href="#"><span class="material-symbols-outlined text-[20px]">troubleshoot</span><span class="font-label-ui text-label-ui">Tracer</span></a></div></nav></body></html>

@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;background-color:#0d1117;color:#f0f6fc;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "canvas-default": "#0d1117",
+          "canvas-subtle": "#161b22",
+          "canvas-inset": "#010409",
+          "border-default": "#30363d",
+          "border-muted": "#21262d",
+          "fg-default": "#f0f6fc",
+          "fg-muted": "#8b949e",
+          "fg-subtle": "#6e7681",
+          "accent-green-emphasis": "#238636",
+          "accent-green-hover": "#2ea043",
+          "accent-blue": "#58a6ff",
+          "accent-amber": "#d29922",
+          "accent-red": "#f85149",
+          "accent-purple": "#8957e5",
+          "diff-addition-text": "#3fb950",
+          "diff-addition-line": "rgba(46, 160, 67, 0.15)",
+          "diff-deletion-text": "#f85149",
+          "diff-deletion-line": "rgba(248, 81, 73, 0.15)"
+        },
+        borderRadius: {
+          "DEFAULT": "0.125rem",
+          "lg": "0.25rem",
+          "xl": "0.5rem",
+          "full": "0.75rem"
+        },
+        fontFamily: {
+          "sans": ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "Noto Sans", "sans-serif"],
+          "mono": ["JetBrains Mono", "SFMono-Regular", "Consolas", "Liberation Mono", "Menlo", "monospace"]
+        },
+        fontSize: {
+          "headline-hero-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+          "headline-section-mobile": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+          "title-card": ["16px", { "lineHeight": "24px", "fontWeight": "600" }],
+          "title-card-sm": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+          "label-ui": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+          "body-base": ["14px", { "lineHeight": "21px", "fontWeight": "400" }],
+          "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+          "badge-mono": ["11px", { "lineHeight": "16px", "fontWeight": "500" }],
+          "code-diff": ["12px", { "lineHeight": "20px", "fontWeight": "400" }],
+          "code-gutter": ["12px", { "lineHeight": "20px", "fontWeight": "400" }]
+        }
+      }
+    }
+  };
+</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head><body class="bg-canvas-default text-fg-default min-h-screen flex flex-col antialiased"><header class="fixed top-0 w-full z-50 pt-safe bg-canvas-subtle/95 backdrop-blur-md border-b border-border-default"><div class="h-16 px-4 flex items-center justify-between gap-3"><div class="flex items-center gap-3 min-w-0"><img alt="Kareixo Brand Logo" class="h-7 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1U11nvsulNHh2_HelpBRUogSW2FzODnR-drsURGwiWGF0cpmbDUMJ8us9hZYTtcrXtnL2HhoVPgS3MXNx4xq3zxkj8ndIkfPQ8CjwEMxHG4YL_B54KJoGlZre1iZad9hgmHFwxuDPvdSBrT7LXZs2-w8KJlZVXcxMuB4eJKwMouKUBQfnQQD6zDrsFhE941x5GNBlmxFKOW9_1SRmC03nDJzqlt1fwbBo70guFdMlSkvszH00WneN3ZkO_F"/><div class="flex flex-col min-w-0"><div class="flex items-center gap-2"><span class="font-sans text-title-card-sm font-semibold text-fg-default tracking-tight truncate">Kareixo</span><span class="font-mono text-badge-mono text-fg-muted px-1.5 py-0.5 rounded border border-border-default bg-canvas-inset">v2.4</span></div><div class="flex items-center gap-2 mt-0.5"><div class="flex items-center gap-1.5 bg-diff-addition-line border border-diff-addition-text/20 px-2 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-diff-addition-text animate-pulse"></span><span class="font-mono text-[10px] leading-tight text-diff-addition-text font-medium">GitHub App: Active</span></div><div class="flex items-center gap-1.5 bg-border-muted px-2 py-0.5 rounded-full border border-border-default"><span class="w-1.5 h-1.5 rounded-full bg-accent-blue"></span><span class="font-mono text-[10px] leading-tight text-fg-muted">Webhook: 12ms</span></div></div></div></div><div class="flex items-center gap-2 flex-shrink-0"><span class="font-sans text-body-sm text-fg-muted hidden sm:inline-block">Dashboard</span><div class="w-8 h-8 rounded-full bg-border-muted border border-border-default flex items-center justify-center text-fg-default hover:border-fg-muted transition-colors"><span class="material-symbols-outlined text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-24 bg-canvas-default"><div class="flex flex-col w-full px-4 sm:px-6 py-4 gap-4">
+<!-- Status & Quick Control Strip -->
+<section class="bg-canvas-subtle border border-border-default rounded-xl p-4 flex flex-col gap-3 shadow-sm">
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="relative flex items-center justify-center w-8 h-8 rounded-lg bg-canvas-inset border border-border-default text-fg-default">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+<span class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-accent-green-emphasis"></span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-sans text-title-card-sm text-fg-default font-semibold truncate">@karanray06</span>
+<span class="font-mono text-badge-mono text-fg-muted bg-border-muted px-1.5 py-0.2 rounded">workspace</span>
+</div>
+<p class="font-sans text-body-sm text-fg-muted truncate">GitHub App · Synced across 3 clusters</p>
+</div>
+</div>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-accent-green-emphasis hover:bg-accent-green-hover text-white font-sans text-label-ui shadow-sm active:scale-95 transition-all border border-white/10" data-action="connect-repo">
+<span class="material-symbols-outlined text-[16px]">add_link</span>
+<span class="font-semibold">Connect</span>
+</button>
+</div>
+<div class="flex flex-wrap items-center gap-2 pt-1 border-t border-border-default/60">
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-canvas-inset border border-border-default text-diff-addition-text">
+<span class="w-1.5 h-1.5 rounded-full bg-diff-addition-text animate-ping"></span>
+<span class="font-mono text-badge-mono text-fg-default">Syncing main branches</span>
+</div>
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-canvas-inset border border-border-default text-accent-blue">
+<span class="material-symbols-outlined text-[13px]">timer</span>
+<span class="font-mono text-badge-mono text-fg-muted">p99 webhook: 12ms</span>
+</div>
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-canvas-inset border border-border-default text-fg-muted">
+<span class="material-symbols-outlined text-[13px]">memory</span>
+<span class="font-mono text-badge-mono">AST Cache: 98.4% hit</span>
+</div>
+</div>
+</section>
+<!-- Verification Metrics Strip (2x2 on mobile) -->
+<section class="grid grid-cols-2 gap-2.5">
+<div class="bg-canvas-subtle border border-border-default rounded-xl p-3 flex flex-col justify-between shadow-sm">
+<div class="flex items-center justify-between text-fg-muted mb-1">
+<span class="font-sans text-label-ui">PRs Analyzed</span>
+<span class="material-symbols-outlined text-[16px] text-accent-purple">fact_check</span>
+</div>
+<div class="flex items-baseline gap-1.5">
+<span class="font-sans text-headline-section-mobile font-bold text-fg-default">142</span>
+<span class="font-mono text-badge-mono text-diff-addition-text">+18/wk</span>
+</div>
+<p class="font-mono text-badge-mono text-fg-subtle mt-1">Autonomous pass</p>
+</div>
+<div class="bg-canvas-subtle border border-border-default rounded-xl p-3 flex flex-col justify-between shadow-sm">
+<div class="flex items-center justify-between text-fg-muted mb-1">
+<span class="font-sans text-label-ui">tsc Verified</span>
+<span class="material-symbols-outlined text-[16px] text-diff-addition-text">verified</span>
+</div>
+<div class="flex items-baseline gap-1.5">
+<span class="font-sans text-headline-section-mobile font-bold text-diff-addition-text">94.2%</span>
+<span class="font-mono text-badge-mono text-fg-muted">strict</span>
+</div>
+<p class="font-mono text-badge-mono text-fg-subtle mt-1">TypeScript 5.4.2</p>
+</div>
+<div class="bg-canvas-subtle border border-border-default rounded-xl p-3 flex flex-col justify-between shadow-sm">
+<div class="flex items-center justify-between text-fg-muted mb-1">
+<span class="font-sans text-label-ui">Claims Held</span>
+<span class="material-symbols-outlined text-[16px] text-accent-amber">pause_circle</span>
+</div>
+<div class="flex items-baseline gap-1.5">
+<span class="font-sans text-headline-section-mobile font-bold text-accent-amber">18</span>
+<span class="font-mono text-badge-mono text-fg-muted">queued</span>
+</div>
+<p class="font-mono text-badge-mono text-fg-subtle mt-1">Pending runtime tests</p>
+</div>
+<div class="bg-canvas-subtle border border-border-default rounded-xl p-3 flex flex-col justify-between shadow-sm">
+<div class="flex items-center justify-between text-fg-muted mb-1">
+<span class="font-sans text-label-ui">Root Causes</span>
+<span class="material-symbols-outlined text-[16px] text-accent-blue">commit</span>
+</div>
+<div class="flex items-baseline gap-1.5">
+<span class="font-sans text-headline-section-mobile font-bold text-fg-default">11</span>
+<span class="font-mono text-badge-mono text-accent-blue">100% SHA</span>
+</div>
+<p class="font-mono text-badge-mono text-fg-subtle mt-1">Bugs traced to commits</p>
+</div>
+</section>
+<!-- Interactive Telemetry Engine Showcase -->
+<section class="bg-canvas-subtle border border-border-default rounded-xl p-4 shadow-sm flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-accent-blue">auto_awesome</span>
+<h2 class="font-sans text-title-card-sm text-fg-default font-semibold">Ground Truth System</h2>
+</div>
+<span class="font-mono text-badge-mono text-fg-subtle">Compiler Validation</span>
+</div>
+<p class="font-sans text-body-sm text-fg-muted leading-relaxed">
+      Kareixo replaces LLM hallucinations with verified assertions. Every PR assertion undergoes concrete AST compilation, strict typechecking, or git trace simulation.
+    </p>
+<!-- Badge Showcase Matrix -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+<div class="bg-canvas-inset border border-border-default rounded-lg p-2.5 flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-diff-addition-line border border-diff-addition-text/30 text-diff-addition-text font-mono text-badge-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-diff-addition-text"></span>
+            CONFIRMED
+          </span>
+<span class="material-symbols-outlined text-[15px] text-diff-addition-text">check_circle</span>
+</div>
+<p class="font-sans text-body-sm text-fg-muted">Reproduced via TypeScript <code class="font-mono text-code-diff text-fg-default bg-border-muted border border-border-default px-1 py-0.5 rounded">tsc</code> compiler or concrete git diff tree match.</p>
+</div>
+<div class="bg-canvas-inset border border-border-default rounded-lg p-2.5 flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-accent-amber/10 border border-accent-amber/30 text-accent-amber font-mono text-badge-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-amber"></span>
+            UNVERIFIED
+          </span>
+<span class="material-symbols-outlined text-[15px] text-accent-amber">help</span>
+</div>
+<p class="font-sans text-body-sm text-fg-muted">Statistical or heuristic observation. Lacks isolated unit test reproduction.</p>
+</div>
+<div class="bg-canvas-inset border border-border-default rounded-lg p-2.5 flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-diff-deletion-line border border-accent-red/30 text-accent-red font-mono text-badge-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-red"></span>
+            REJECTED
+          </span>
+<span class="material-symbols-outlined text-[15px] text-accent-red">cancel</span>
+</div>
+<p class="font-sans text-body-sm text-fg-muted">Compiler mismatch or assertion contradicted by commit history state.</p>
+</div>
+</div>
+</section>
+<!-- Active Repositories List -->
+<section class="flex flex-col gap-3">
+<div class="flex items-center justify-between px-0.5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-fg-muted">source_environment</span>
+<h2 class="font-sans text-title-card-sm text-fg-default font-semibold">Connected Repositories</h2>
+</div>
+<span class="font-mono text-badge-mono text-fg-subtle">3 active trees</span>
+</div>
+<!-- Repo Card 1 -->
+<div class="bg-canvas-subtle border border-border-default rounded-xl p-3.5 flex flex-col gap-3 shadow-sm hover:border-fg-subtle transition-colors">
+<div class="flex items-start justify-between gap-2">
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-fg-muted">account_tree</span>
+<span class="font-sans text-title-card-sm text-accent-blue font-semibold hover:underline cursor-pointer truncate">karanray06/core-payment-service</span>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<span class="font-mono text-badge-mono text-fg-muted px-1.5 py-0.5 rounded bg-canvas-inset border border-border-default">TypeScript · Node 20</span>
+<span class="font-mono text-badge-mono text-accent-amber px-1.5 py-0.5 rounded bg-accent-amber/10 border border-accent-amber/20">2 Open PRs</span>
+</div>
+</div>
+<span class="font-mono text-badge-mono text-fg-subtle shrink-0">4m ago</span>
+</div>
+<!-- Compact Code Diff Snippet -->
+<div class="bg-canvas-inset border border-border-default rounded-lg p-2.5 font-mono text-code-diff flex flex-col gap-1">
+<div class="flex items-center justify-between text-fg-muted text-code-gutter pb-1 border-b border-border-default/50">
+<span class="truncate text-fg-subtle">src/webhooks/billing.ts</span>
+<span class="text-diff-addition-text font-mono text-badge-mono font-medium">3 Confirmed</span>
+</div>
+<div class="text-diff-deletion-text bg-diff-deletion-line px-1.5 py-0.5 rounded flex items-center gap-2">
+<span class="text-fg-subtle select-none">- 84</span>
+<span class="truncate">const event = payload.body.event;</span>
+</div>
+<div class="text-diff-addition-text bg-diff-addition-line px-1.5 py-0.5 rounded flex items-center gap-2">
+<span class="text-fg-subtle select-none">+ 84</span>
+<span class="truncate">if (!isWebhookEvent(payload)) return null;</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-diff-addition-text"></span>
+<span class="font-mono text-badge-mono text-fg-muted">AST Index: Realtime</span>
+</div>
+<a class="font-sans text-label-ui text-accent-blue flex items-center gap-0.5 hover:underline" href="#">
+<span>Inspect tree</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- Repo Card 2 -->
+<div class="bg-canvas-subtle border border-border-default rounded-xl p-3.5 flex flex-col gap-2.5 shadow-sm hover:border-fg-subtle transition-colors">
+<div class="flex items-start justify-between gap-2">
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-fg-muted">code</span>
+<span class="font-sans text-title-card-sm text-accent-blue font-semibold hover:underline cursor-pointer truncate">karanray06/auth-gateway</span>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<span class="font-mono text-badge-mono text-fg-muted px-1.5 py-0.5 rounded bg-canvas-inset border border-border-default">Go 1.22 · TS SDK</span>
+<span class="font-mono text-badge-mono text-diff-addition-text px-1.5 py-0.5 rounded bg-diff-addition-line border border-diff-addition-text/20">0 open PRs</span>
+</div>
+</div>
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-diff-addition-line border border-diff-addition-text/20 text-diff-addition-text font-mono text-badge-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-diff-addition-text"></span>
+          tsc clean
+        </span>
+</div>
+<div class="flex items-center justify-between text-fg-muted font-sans text-body-sm pt-1">
+<span>No regressions detected across 42 commits</span>
+<span class="font-mono text-badge-mono text-fg-subtle">SHA: e3b991c</span>
+</div>
+</div>
+<!-- Repo Card 3 -->
+<div class="bg-canvas-subtle border border-border-default rounded-xl p-3.5 flex flex-col gap-2.5 shadow-sm hover:border-fg-subtle transition-colors">
+<div class="flex items-start justify-between gap-2">
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-fg-muted">web</span>
+<span class="font-sans text-title-card-sm text-accent-blue font-semibold hover:underline cursor-pointer truncate">karanray06/frontend-app</span>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<span class="font-mono text-badge-mono text-fg-muted px-1.5 py-0.5 rounded bg-canvas-inset border border-border-default">Next.js 14 · React 18</span>
+<span class="font-mono text-badge-mono text-accent-blue px-1.5 py-0.5 rounded bg-accent-blue/10 border border-accent-blue/20">1 open PR</span>
+</div>
+</div>
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-canvas-inset border border-border-default text-accent-blue font-mono text-badge-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-blue animate-pulse"></span>
+          tsc compiling
+        </span>
+</div>
+<div class="flex items-center justify-between text-fg-muted font-sans text-body-sm pt-1">
+<span class="truncate">PR #88: Dynamic route ISR cache header fix</span>
+<span class="font-mono text-badge-mono shrink-0 text-fg-subtle">ETA: 4s</span>
+</div>
+</div>
+</section>
+<!-- Live Verified Activity Feed -->
+<section class="flex flex-col gap-3">
+<div class="flex items-center justify-between px-0.5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-fg-muted">dynamic_feed</span>
+<h2 class="font-sans text-title-card-sm text-fg-default font-semibold">Recent Verification Feed</h2>
+</div>
+<div class="flex items-center gap-1 bg-canvas-inset p-0.5 rounded-md border border-border-default">
+<button class="px-2 py-0.5 rounded bg-border-muted text-fg-default font-mono text-badge-mono border border-border-default hover:text-fg-default" data-action="filter-pr">
+          All
+        </button>
+<button class="px-2 py-0.5 rounded text-fg-muted font-mono text-badge-mono hover:text-fg-default" data-action="filter-pr">
+          Confirmed
+        </button>
+</div>
+</div>
+<!-- Feed Item 1: Review Agent -->
+<div class="bg-canvas-subtle border border-border-default rounded-xl p-3.5 flex flex-col gap-2.5 shadow-sm">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="px-1.5 py-0.5 rounded bg-accent-green-emphasis text-white font-mono text-badge-mono font-medium">Review Agent</span>
+<span class="font-sans text-title-card-sm text-fg-default font-medium">PR #104 · core-payment-service</span>
+</div>
+<span class="font-mono text-badge-mono text-fg-subtle shrink-0">2m ago</span>
+</div>
+<p class="font-sans text-body-base text-fg-default">
+        Type narrowing missing on <code class="font-mono text-code-diff text-accent-blue bg-canvas-inset border border-border-default px-1 py-0.5 rounded">WebhookPayload.event</code>
+</p>
+<div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-diff-addition-line border border-diff-addition-text/30 text-diff-addition-text font-mono text-badge-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-diff-addition-text"></span>
+            CONFIRMED
+          </span>
+<span class="font-mono text-code-gutter text-fg-muted">Error TS2339 reproduced</span>
+</div>
+<button class="font-sans text-label-ui text-accent-blue hover:underline">
+          Apply Patch
+        </button>
+</div>
+</div>
+<!-- Feed Item 2: Incident Tracer -->
+<div class="bg-canvas-subtle border border-border-default rounded-xl p-3.5 flex flex-col gap-2.5 shadow-sm">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="px-1.5 py-0.5 rounded bg-border-muted border border-border-default text-accent-blue font-mono text-badge-mono">Incident Tracer</span>
+<span class="font-sans text-title-card-sm text-fg-default font-medium">Trace #48</span>
+</div>
+<span class="font-mono text-badge-mono text-fg-subtle shrink-0">11m ago</span>
+</div>
+<p class="font-sans text-body-base text-fg-default">
+        Unhandled NullReference in <code class="font-mono text-code-diff text-accent-blue bg-canvas-inset border border-border-default px-1 py-0.5 rounded">billing.ts:84</code>
+</p>
+<div class="bg-canvas-inset border border-border-default rounded-lg p-2 flex items-center justify-between font-mono text-code-diff">
+<div class="flex items-center gap-2 truncate">
+<span class="material-symbols-outlined text-[14px] text-accent-blue">commit</span>
+<span class="text-fg-muted truncate">Traced to commit <code class="text-fg-default font-semibold">8f2a1b9</code></span>
+</div>
+<span class="font-mono text-badge-mono text-fg-subtle shrink-0">@alex</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-diff-addition-line border border-diff-addition-text/30 text-diff-addition-text font-mono text-badge-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-diff-addition-text"></span>
+          CONFIRMED
+        </span>
+<a class="font-sans text-label-ui text-accent-blue hover:underline" href="#">
+          View blame graph
+        </a>
+</div>
+</div>
+<!-- Feed Item 3: CodeChat -->
+<div class="bg-canvas-subtle border border-border-default rounded-xl p-3.5 flex flex-col gap-2.5 shadow-sm">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="px-1.5 py-0.5 rounded bg-border-muted border border-border-default text-accent-purple font-mono text-badge-mono">CodeChat</span>
+<span class="font-sans text-title-card-sm text-fg-default font-medium">auth-gateway</span>
+</div>
+<span class="font-mono text-badge-mono text-fg-subtle shrink-0">27m ago</span>
+</div>
+<p class="font-sans text-body-base text-fg-muted">
+        User Query: <span class="text-fg-default">“Session token invalidation flow on multi-device signout”</span>
+</p>
+<div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-accent-amber/10 border border-accent-amber/30 text-accent-amber font-mono text-badge-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-amber"></span>
+            UNVERIFIED
+          </span>
+<span class="font-mono text-code-gutter text-fg-muted">Heuristic match (4 files)</span>
+</div>
+<span class="font-mono text-badge-mono text-fg-subtle">Requires unit test</span>
+</div>
+</div>
+</section>
+<!-- Interactive Terminal Sandbox / Quick Prompt -->
+<section class="bg-canvas-subtle border border-border-default rounded-xl p-4 shadow-sm flex flex-col gap-2.5 mb-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-diff-addition-text">terminal</span>
+<span class="font-sans text-title-card-sm text-fg-default font-semibold">Instant Code Audit</span>
+</div>
+<span class="font-mono text-badge-mono text-fg-subtle">v2-evaluator</span>
+</div>
+<div class="relative flex items-center">
+<input class="w-full bg-canvas-inset border border-border-default text-fg-default font-sans text-body-sm rounded-lg px-3 py-2.5 pr-20 placeholder:text-fg-subtle focus:outline-none focus:border-accent-blue" id="quick-prompt-input" placeholder="Ask Kareixo: 'Trace memory leak in payment worker' or paste PR URL..." type="text"/>
+<button class="absolute right-1.5 px-3 py-1 rounded bg-accent-green-emphasis hover:bg-accent-green-hover text-white font-sans text-label-ui border border-white/10 transition-colors" id="quick-prompt-btn">
+        Run
+      </button>
+</div>
+<div class="flex items-center gap-1.5 overflow-x-auto py-0.5">
+<span class="font-mono text-badge-mono text-fg-subtle shrink-0">Quick commands:</span>
+<button class="font-mono text-badge-mono px-2 py-0.5 rounded bg-canvas-inset border border-border-default text-fg-muted hover:text-fg-default hover:border-fg-subtle shrink-0 transition-colors" data-prompt="/tsc-check core-payment-service">
+        /tsc-check
+      </button>
+<button class="font-mono text-badge-mono px-2 py-0.5 rounded bg-canvas-inset border border-border-default text-fg-muted hover:text-fg-default hover:border-fg-subtle shrink-0 transition-colors" data-prompt="/verify-open-prs">
+        /verify-open-prs
+      </button>
+<button class="font-mono text-badge-mono px-2 py-0.5 rounded bg-canvas-inset border border-border-default text-fg-muted hover:text-fg-default hover:border-fg-subtle shrink-0 transition-colors" data-prompt="/trace-incident #48">
+        /trace-incident #48
+      </button>
+</div>
+</section>
+</div>
+<script>
+  (function() {
+    // Micro-interactions for Dashboard
+    const quickInput = document.getElementById('quick-prompt-input');
+    const quickBtn = document.getElementById('quick-prompt-btn');
+
+    document.querySelectorAll('[data-prompt]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (quickInput) {
+          quickInput.value = btn.getAttribute('data-prompt');
+          quickInput.focus();
+        }
+      });
+    });
+
+    if (quickBtn && quickInput) {
+      quickBtn.addEventListener('click', () => {
+        const val = quickInput.value.trim();
+        if (val) {
+          quickBtn.textContent = 'Verifying...';
+          setTimeout(() => {
+            quickBtn.textContent = 'Run';
+            quickInput.value = '';
+          }, 800);
+        }
+      });
+    }
+
+    // Filter interaction simulation
+    document.querySelectorAll('[data-action="filter-pr"]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('[data-action="filter-pr"]').forEach(b => {
+          b.classList.remove('bg-border-muted', 'text-fg-default', 'border', 'border-border-default');
+          b.classList.add('text-fg-muted');
+        });
+        e.currentTarget.classList.remove('text-fg-muted');
+        e.currentTarget.classList.add('bg-border-muted', 'text-fg-default', 'border', 'border-border-default');
+      });
+    });
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-canvas-subtle/95 backdrop-blur-md border-t border-border-default" data-active-classes="text-accent-blue font-semibold"><div class="flex justify-around items-center h-16 px-2"><a aria-current="page" class="flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] px-2 py-1 transition-colors text-accent-blue font-semibold" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[20px]">grid_view</span><span class="font-sans text-[11px] leading-tight">Dashboard</span></a><a class="flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] px-2 py-1 text-fg-muted hover:text-fg-default transition-colors" data-path="repositories" href="#"><span class="material-symbols-outlined text-[20px]">source_environment</span><span class="font-sans text-[11px] leading-tight">Repositories</span></a><a class="flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] px-2 py-1 text-fg-muted hover:text-fg-default transition-colors" data-path="codechat" href="#"><span class="material-symbols-outlined text-[20px]">terminal</span><span class="font-sans text-[11px] leading-tight">CodeChat</span></a><a class="flex flex-col items-center justify-center gap-1 min-w-[44px] min-h-[44px] px-2 py-1 text-fg-muted hover:text-fg-default transition-colors" data-path="incident-tracer" href="#"><span class="material-symbols-outlined text-[20px]">troubleshoot</span><span class="font-sans text-[11px] leading-tight">Tracer</span></a></div></nav></body></html>

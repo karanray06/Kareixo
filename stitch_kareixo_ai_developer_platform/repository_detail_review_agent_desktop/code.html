@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><title>Kareixo Developer Platform</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base { html, body { margin: 0; padding: 0; } body { overscroll-behavior: none; } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface-container-low": "#181c22", "accent-purple-light": "#a371f7", "fg-subtle": "#6e7681", "surface-dim": "#10141a", "diff-deletion-line": "rgba(248, 81, 73, 0.15)", "surface-variant": "#31353c", "canvas-default": "#0d1117", "surface-bright": "#353940", "diff-addition-line": "rgba(46, 160, 67, 0.15)", "canvas-subtle": "#161b22", "outline": "#899485", "on-secondary-fixed": "#001c38", "accent-red": "#f85149", "fg-default": "#f0f6fc", "surface-container": "#1c2026", "on-secondary-fixed-variant": "#004882", "accent-purple": "#8957e5", "on-primary": "#00390e", "on-primary-fixed-variant": "#005319", "secondary-container": "#0071c7", "primary-container": "#238636", "canvas-inset": "#010409", "on-error-container": "#ffdad6", "secondary-fixed": "#d3e4ff", "on-secondary-container": "#f0f4ff", "tertiary-fixed-dim": "#d3bbff", "error": "#ffb4ab", "on-secondary": "#00315c", "secondary-fixed-dim": "#a2c9ff", "primary-fixed-dim": "#7bdb80", "accent-green-emphasis": "#238636", "accent-green-hover": "#2ea043", "inverse-on-surface": "#2d3137", "inverse-primary": "#006e23", "primary": "#7bdb80", "diff-deletion-text": "#f85149", "surface-container-high": "#262a31", "surface-container-lowest": "#0a0e14", "on-surface": "#dfe2eb", "tertiary-fixed": "#ebddff", "on-surface-variant": "#becaba", "on-primary-container": "#f9fff3", "fg-muted": "#8b949e", "tertiary": "#d3bbff", "secondary": "#a2c9ff", "surface-tint": "#7bdb80", "border-muted": "#21262d", "on-primary-fixed": "#002106", "surface-container-highest": "#31353c", "on-background": "#dfe2eb", "surface": "#10141a", "tertiary-container": "#8957e5", "primary-fixed": "#97f999", "error-container": "#93000a", "accent-amber": "#d29922", "on-tertiary-fixed": "#250059", "border-default": "#30363d", "accent-blue": "#58a6ff", "on-tertiary-fixed-variant": "#591db3", "outline-variant": "#3f4a3d", "on-error": "#690005", "background": "#10141a", "on-tertiary": "#3f008d", "inverse-surface": "#dfe2eb", "on-tertiary-container": "#fffdff", "diff-addition-text": "#3fb950" }, borderRadius: { DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem" }, spacing: { "gutter-mobile": "0.75rem", "space-sm": "0.5rem", margin: "2rem", "space-xl": "2rem", "margin-mobile": "1rem", "space-xs": "0.25rem", "space-md": "1rem", "space-lg": "1.5rem", gutter: "1rem" }, fontFamily: { "headline-hero-mobile": ["Noto Sans"], "code-diff": ["JetBrains Mono"], "badge-mono": ["JetBrains Mono"], "title-card": ["Noto Sans"], "title-card-sm": ["Noto Sans"], "code-gutter": ["JetBrains Mono"], "body-base": ["Noto Sans"], "body-sm": ["Noto Sans"], "headline-hero": ["Noto Sans"], "headline-section-mobile": ["Noto Sans"], "headline-section": ["Noto Sans"], "label-ui": ["Noto Sans"] }, fontSize: { "headline-hero-mobile": ["28px", { lineHeight: "36px", fontWeight: "600" }], "code-diff": ["12px", { lineHeight: "20px", fontWeight: "400" }], "badge-mono": ["11px", { lineHeight: "16px", fontWeight: "500" }], "title-card": ["16px", { lineHeight: "24px", fontWeight: "600" }], "title-card-sm": ["14px", { lineHeight: "20px", fontWeight: "600" }], "code-gutter": ["12px", { lineHeight: "20px", fontWeight: "400" }], "body-base": ["14px", { lineHeight: "21px", fontWeight: "400" }], "body-sm": ["12px", { lineHeight: "18px", fontWeight: "400" }], "headline-hero": ["40px", { lineHeight: "48px", fontWeight: "600" }], "headline-section-mobile": ["20px", { lineHeight: "28px", fontWeight: "600" }], "headline-section": ["24px", { lineHeight: "32px", fontWeight: "600" }], "label-ui": ["12px", { lineHeight: "16px", fontWeight: "500" }] } } } };</script></head><body class="bg-canvas-default text-on-surface font-body-base antialiased min-h-screen flex flex-col selection:bg-accent-blue selection:text-canvas-inset"><header class="fixed top-0 left-0 w-full z-50 bg-canvas-subtle/95 backdrop-blur-md"><div class="h-16 w-full px-gutter flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md min-w-0 flex-shrink-0"><div class="flex items-center gap-space-sm"><img alt="Kareixo brand logo featuring five overlapping soft organic rounded blob shapes in mint, warm yellow, soft coral, lavender, and sky-blue with subtle dark slate outline, alongside modern clean typography for Kareixo. Brand logo. - Primary color: #7c3aed
+- Font: geist
+- Mode: dark
+- Roundness: rounded-sm
+" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1U11nvsulNHh2_HelpBRUogSW2FzODnR-drsURGwiWGF0cpmbDUMJ8us9hZYTtcrXtnL2HhoVPgS3MXNx4xq3zxkj8ndIkfPQ8CjwEMxHG4YL_B54KJoGlZre1iZad9hgmHFwxuDPvdSBrT7LXZs2-w8KJlZVXcxMuB4eJKwMouKUBQfnQQD6zDrsFhE941x5GNBlmxFKOW9_1SRmC03nDJzqlt1fwbBo70guFdMlSkvszH00WneN3ZkO_F"/><span class="font-title-card text-title-card text-fg-default tracking-tight hidden sm:inline-block">Kareixo</span><span class="font-badge-mono text-badge-mono px-space-xs py-0.5 rounded bg-surface-container text-fg-muted">v2.4</span></div><div class="h-5 w-px bg-border-default hidden md:block"></div><div class="hidden md:flex items-center gap-space-xs bg-canvas-inset px-space-sm py-1.5 rounded-lg text-fg-default cursor-pointer group hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-fg-muted text-[18px] group-hover:text-accent-blue transition-colors">folder_open</span><span class="font-code-diff text-code-diff text-fg-default font-medium">karanray06/core-payment-service</span><span class="flex items-center gap-0.5 text-fg-muted font-badge-mono text-badge-mono px-1.5 py-0.5 bg-surface-container rounded"><span class="material-symbols-outlined text-[14px] text-accent-purple">alt_route</span>main</span><span class="font-badge-mono text-badge-mono text-fg-subtle">a9f4c3d</span><span class="material-symbols-outlined text-fg-muted text-[16px]">expand_more</span></div><div class="hidden xl:flex items-center gap-space-sm pl-space-xs"><div class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-diff-addition-line text-diff-addition-text font-badge-mono text-badge-mono"><span class="w-2 h-2 rounded-full bg-accent-green-emphasis animate-pulse"></span>GitHub App: Active</div><div class="flex items-center gap-space-xs font-code-diff text-code-diff text-fg-muted"><span class="text-fg-subtle">•</span><span>12ms</span><span class="text-fg-subtle">•</span><span>AST Cache: <span class="text-diff-addition-text font-medium">98.4%</span></span></div></div></div><nav class="hidden lg:flex items-center gap-space-xs" data-active-classes="text-fg-default bg-surface-container font-semibold rounded-lg"><a class="px-3 py-1.5 text-on-surface-variant hover:text-fg-default hover:bg-surface-container-high rounded-lg transition-colors font-label-ui text-label-ui" data-path="dashboard" href="#">Dashboard</a><a aria-current="page" class="px-3 py-1.5 transition-colors text-fg-default bg-surface-container font-semibold rounded-lg" data-path="repositories" href="#">Repositories</a><a class="px-3 py-1.5 text-on-surface-variant hover:text-fg-default hover:bg-surface-container-high rounded-lg transition-colors font-label-ui text-label-ui" data-path="codechat" href="#">CodeChat</a><a class="px-3 py-1.5 text-on-surface-variant hover:text-fg-default hover:bg-surface-container-high rounded-lg transition-colors font-label-ui text-label-ui" data-path="incident-tracer" href="#">Incident Tracer</a><a class="px-3 py-1.5 text-on-surface-variant hover:text-fg-default hover:bg-surface-container-high rounded-lg transition-colors font-label-ui text-label-ui" data-path="settings" href="#">Settings</a></nav><div class="flex items-center gap-space-sm flex-shrink-0"><button class="flex items-center gap-space-sm bg-canvas-inset px-3 py-1.5 rounded-lg text-fg-muted hover:text-fg-default hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-[18px]">search</span><span class="hidden md:inline font-body-sm text-body-sm text-fg-subtle">Type <kbd class="px-1.5 py-0.5 rounded bg-surface-container font-badge-mono text-badge-mono text-fg-muted">Cmd+K</kbd> to search</span></button><a class="hidden sm:flex items-center text-fg-muted hover:text-fg-default p-1.5 rounded-lg hover:bg-surface-container transition-colors" href="#" title="Documentation"><span class="material-symbols-outlined text-[20px]">menu_book</span></a><button class="relative p-1.5 text-fg-muted hover:text-fg-default rounded-lg hover:bg-surface-container transition-colors" title="Notifications" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-accent-blue"></span></button><div class="h-5 w-px bg-border-default hidden sm:block"></div><div class="flex items-center gap-space-sm pl-space-xs cursor-pointer group"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0 shadow-sm"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden 2xl:flex flex-col text-left"><span class="font-label-ui text-label-ui text-fg-default font-medium leading-none">karanray06</span><span class="font-code-gutter text-code-gutter text-fg-subtle leading-none mt-1">workspace</span></div><span class="material-symbols-outlined text-fg-muted text-[16px] hidden sm:inline">arrow_drop_down</span></div></div></div></header><main class="w-full pt-16 flex-1 bg-canvas-default"><div class="flex flex-col w-full">
+<div class="w-full px-gutter py-space-md flex flex-col gap-space-lg max-w-[1720px] mx-auto">
+<div class="flex flex-col gap-space-sm bg-canvas-subtle p-space-md rounded-xl shadow-sm">
+<div class="flex flex-wrap items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="font-headline-section text-headline-section text-fg-default font-semibold tracking-tight">
+            fix(stripe): handle idempotency key collisions
+          </span>
+<span class="font-headline-section text-headline-section text-fg-muted font-normal">#104</span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-diff-addition-line text-diff-addition-text font-badge-mono text-badge-mono font-medium tracking-wide">
+<span class="material-symbols-outlined text-[16px] text-diff-addition-text">adjust</span>
+            Open
+          </span>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container text-fg-default hover:bg-surface-bright font-title-card-sm text-title-card-sm transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px] text-fg-muted">history</span>
+<span>Commits (3)</span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container text-fg-default hover:bg-surface-bright font-title-card-sm text-title-card-sm transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px] text-accent-blue">sync</span>
+<span>Sync Head</span>
+</button>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-x-space-md gap-y-space-xs text-body-sm font-body-sm text-fg-muted">
+<div class="flex items-center gap-1.5">
+<span class="font-label-ui text-label-ui font-medium text-fg-default hover:text-accent-blue cursor-pointer">@devon</span>
+<span>wants to merge 3 commits into</span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container-high text-accent-blue font-badge-mono text-badge-mono">
+<span class="material-symbols-outlined text-[14px]">alt_route</span>main
+          </span>
+<span>from</span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container-high text-accent-purple-light font-badge-mono text-badge-mono">
+<span class="material-symbols-outlined text-[14px]">call_split</span>fix/idempotency-race
+          </span>
+</div>
+<span class="text-fg-subtle">•</span>
+<div class="flex items-center gap-1 text-fg-subtle font-code-diff text-code-diff">
+<span class="material-symbols-outlined text-[15px]">schedule</span>
+<span>Analyzed 4 mins ago by Kareixo Agent v2.4.1</span>
+</div>
+</div>
+<div class="flex items-center gap-space-lg pt-space-xs text-body-sm font-body-sm">
+<div class="flex items-center gap-2 text-fg-default">
+<span class="material-symbols-outlined text-[18px] text-accent-blue">overview</span>
+<span class="font-medium">Overview</span>
+</div>
+<div class="flex items-center gap-2 text-fg-default font-semibold">
+<span class="material-symbols-outlined text-[18px] text-accent-purple">policy</span>
+<span>Agent Inspection</span>
+<span class="px-2 py-0.5 rounded-full bg-error/20 text-error font-badge-mono text-badge-mono">1 issue</span>
+</div>
+<div class="flex items-center gap-2 text-fg-muted hover:text-fg-default cursor-pointer">
+<span class="material-symbols-outlined text-[18px]">history_toggle_off</span>
+<span>Check Runs (6)</span>
+</div>
+<div class="flex items-center gap-2 text-fg-muted hover:text-fg-default cursor-pointer">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+<span>Compiler Logs</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<div class="lg:col-span-8 flex flex-col gap-space-md">
+<div class="bg-surface-container-low rounded-xl shadow-md overflow-hidden">
+<div class="px-space-md py-space-sm bg-surface-container flex flex-wrap items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-fg-muted text-[20px]">description</span>
+<span class="font-code-diff text-code-diff font-semibold text-fg-default">payments/webhook.ts</span>
+<span class="font-badge-mono text-badge-mono px-2 py-0.5 rounded bg-surface-container-high text-fg-subtle">9d1b7f2</span>
+<span class="font-badge-mono text-badge-mono text-fg-muted">File 1 of 6</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="font-badge-mono text-badge-mono text-diff-addition-text bg-diff-addition-line px-2 py-0.5 rounded">+28</span>
+<span class="font-badge-mono text-badge-mono text-diff-deletion-text bg-diff-deletion-line px-2 py-0.5 rounded">-4</span>
+<button class="text-fg-muted hover:text-fg-default p-1 rounded hover:bg-surface-bright transition-colors" title="Toggle Unified/Split" type="button">
+<span class="material-symbols-outlined text-[18px]">view_column</span>
+</button>
+</div>
+</div>
+<div class="w-full bg-canvas-inset overflow-x-auto font-code-diff text-code-diff">
+<table class="w-full border-collapse">
+<tbody>
+<tr class="hover:bg-surface-container-low/40">
+<td class="w-12 py-0.5 px-space-xs text-right text-fg-subtle select-none bg-canvas-inset">40</td>
+<td class="w-12 py-0.5 px-space-xs text-right text-fg-subtle select-none bg-canvas-inset">40</td>
+<td class="w-6 py-0.5 text-center text-fg-subtle select-none bg-canvas-inset"></td>
+<td class="py-0.5 px-space-md text-fg-muted whitespace-pre">  const sig = req.headers['stripe-signature'];</td>
+</tr>
+<tr class="hover:bg-surface-container-low/40">
+<td class="w-12 py-0.5 px-space-xs text-right text-fg-subtle select-none bg-canvas-inset">41</td>
+<td class="w-12 py-0.5 px-space-xs text-right text-fg-subtle select-none bg-canvas-inset">41</td>
+<td class="w-6 py-0.5 text-center text-fg-subtle select-none bg-canvas-inset"></td>
+<td class="py-0.5 px-space-md text-fg-muted whitespace-pre">  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;</td>
+</tr>
+<tr class="hover:bg-surface-container-low/40">
+<td class="w-12 py-0.5 px-space-xs text-right text-fg-subtle select-none bg-canvas-inset">42</td>
+<td class="w-12 py-0.5 px-space-xs text-right text-fg-subtle select-none bg-canvas-inset">42</td>
+<td class="w-6 py-0.5 text-center text-fg-subtle select-none bg-canvas-inset"></td>
+<td class="py-0.5 px-space-md text-fg-muted whitespace-pre"></td>
+</tr>
+<tr class="bg-diff-deletion-line hover:bg-diff-deletion-line/70">
+<td class="w-12 py-0.5 px-space-xs text-right text-diff-deletion-text select-none bg-diff-deletion-line/30">43</td>
+<td class="w-12 py-0.5 px-space-xs text-right text-fg-subtle select-none bg-diff-deletion-line/30"></td>
+<td class="w-6 py-0.5 text-center text-diff-deletion-text select-none font-bold">-</td>
+<td class="py-0.5 px-space-md text-fg-default whitespace-pre"><span class="text-diff-deletion-text font-medium">- const payload = req.body as StripeEvent;</span></td>
+</tr>
+<tr class="bg-diff-deletion-line hover:bg-diff-deletion-line/70">
+<td class="w-12 py-0.5 px-space-xs text-right text-diff-deletion-text select-none bg-diff-deletion-line/30">44</td>
+<td class="w-12 py-0.5 px-space-xs text-right text-fg-subtle select-none bg-diff-deletion-line/30"></td>
+<td class="w-6 py-0.5 text-center text-diff-deletion-text select-none font-bold">-</td>
+<td class="py-0.5 px-space-md text-fg-default whitespace-pre"><span class="text-diff-deletion-text font-medium">- await redis.set(`idemp:${payload.id}`, 'PROCESSING', 'EX', 300);</span></td>
+</tr>
+<tr class="bg-diff-addition-line hover:bg-diff-addition-line/70">
+<td class="w-12 py-0.5 px-space-xs text-right text-fg-subtle select-none bg-diff-addition-line/30"></td>
+<td class="w-12 py-0.5 px-space-xs text-right text-diff-addition-text select-none bg-diff-addition-line/30">43</td>
+<td class="w-6 py-0.5 text-center text-diff-addition-text select-none font-bold">+</td>
+<td class="py-0.5 px-space-md text-fg-default whitespace-pre"><span class="text-diff-addition-text font-medium">+ const event = stripe.webhooks.constructEvent(req.rawBody, sig, endpointSecret);</span></td>
+</tr>
+<tr class="bg-diff-addition-line hover:bg-diff-addition-line/70">
+<td class="w-12 py-0.5 px-space-xs text-right text-fg-subtle select-none bg-diff-addition-line/30"></td>
+<td class="w-12 py-0.5 px-space-xs text-right text-diff-addition-text select-none bg-diff-addition-line/30">44</td>
+<td class="w-6 py-0.5 text-center text-diff-addition-text select-none font-bold">+</td>
+<td class="py-0.5 px-space-md text-fg-default whitespace-pre"><span class="text-diff-addition-text font-medium">+ const idempotencyLock = await redis.setnx(`idemp:${event.id}`, 'LOCKED');</span></td>
+</tr>
+<tr class="bg-diff-addition-line hover:bg-diff-addition-line/70">
+<td class="w-12 py-0.5 px-space-xs text-right text-fg-subtle select-none bg-diff-addition-line/30"></td>
+<td class="w-12 py-0.5 px-space-xs text-right text-diff-addition-text select-none bg-diff-addition-line/30">45</td>
+<td class="w-6 py-0.5 text-center text-diff-addition-text select-none font-bold">+</td>
+<td class="py-0.5 px-space-md text-fg-default whitespace-pre"><span class="text-diff-addition-text font-medium">+ if (!idempotencyLock) {</span></td>
+</tr>
+<tr class="bg-diff-addition-line hover:bg-diff-addition-line/70">
+<td class="w-12 py-0.5 px-space-xs text-right text-fg-subtle select-none bg-diff-addition-line/30"></td>
+<td class="w-12 py-0.5 px-space-xs text-right text-diff-addition-text select-none bg-diff-addition-line/30">46</td>
+<td class="w-6 py-0.5 text-center text-diff-addition-text select-none font-bold">+</td>
+<td class="py-0.5 px-space-md text-fg-default whitespace-pre"><span class="text-diff-addition-text font-medium">+   return res.status(200).json({ received: true, deduplicated: true });</span></td>
+</tr>
+<tr class="bg-diff-addition-line hover:bg-diff-addition-line/70">
+<td class="w-12 py-0.5 px-space-xs text-right text-fg-subtle select-none bg-diff-addition-line/30"></td>
+<td class="w-12 py-0.5 px-space-xs text-right text-diff-addition-text select-none bg-diff-addition-line/30">47</td>
+<td class="w-6 py-0.5 text-center text-diff-addition-text select-none font-bold">+</td>
+<td class="py-0.5 px-space-md text-fg-default whitespace-pre"><span class="text-diff-addition-text font-medium">+ }</span></td>
+</tr>
+<tr class="bg-diff-addition-line hover:bg-diff-addition-line/70">
+<td class="w-12 py-0.5 px-space-xs text-right text-fg-subtle select-none bg-diff-addition-line/30"></td>
+<td class="w-12 py-0.5 px-space-xs text-right text-diff-addition-text select-none bg-diff-addition-line/30">48</td>
+<td class="w-6 py-0.5 text-center text-diff-addition-text select-none font-bold">+</td>
+<td class="py-0.5 px-space-md text-fg-default whitespace-pre"><span class="text-diff-addition-text font-medium">+ await routeDispatchedEvent(event.data.object.customer_account, event);</span></td>
+</tr>
+<tr class="hover:bg-surface-container-low/40">
+<td class="w-12 py-0.5 px-space-xs text-right text-fg-subtle select-none bg-canvas-inset">45</td>
+<td class="w-12 py-0.5 px-space-xs text-right text-fg-subtle select-none bg-canvas-inset">49</td>
+<td class="w-6 py-0.5 text-center text-fg-subtle select-none bg-canvas-inset"></td>
+<td class="py-0.5 px-space-md text-fg-muted whitespace-pre">  res.status(200).json({ status: 'queued' });</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-space-md bg-surface-container-lowest flex flex-col gap-space-md">
+<div class="bg-surface-container p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+<div class="flex flex-wrap items-center justify-between gap-space-xs">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-diff-addition-line text-diff-addition-text font-badge-mono text-badge-mono font-medium">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                    Confirmed Finding
+                  </span>
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-accent-blue font-badge-mono text-badge-mono font-semibold">
+                    Rule TS-2339
+                  </span>
+<span class="px-2 py-0.5 rounded bg-canvas-inset text-fg-muted font-badge-mono text-badge-mono">
+                    Deterministic AST Check
+                  </span>
+</div>
+<div class="text-fg-subtle font-code-diff text-code-diff flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">bolt</span>
+                  Verified against compiler target ES2022
+                </div>
+</div>
+<div class="font-body-base text-body-base text-fg-default leading-relaxed">
+                Constructed event type <code class="px-1.5 py-0.5 rounded bg-canvas-inset text-accent-purple-light font-code-diff text-code-diff">Stripe.DiscriminatedEvent</code> does not expose <code class="px-1.5 py-0.5 rounded bg-canvas-inset text-accent-red font-code-diff text-code-diff">.customer_account</code> property without runtime discriminator guard. Cross-checked with <code class="px-1.5 py-0.5 rounded bg-canvas-inset text-fg-default font-code-diff text-code-diff">tsc --noEmit</code> which returns compilation failure on line 48.
+              </div>
+<div class="bg-canvas-inset p-space-sm rounded-lg flex flex-col gap-1 overflow-x-auto shadow-inner">
+<div class="flex items-center gap-2 text-fg-subtle font-badge-mono text-badge-mono">
+<span class="material-symbols-outlined text-accent-red text-[16px]">error</span>
+<span>tsc stderr diagnostic output</span>
+</div>
+<div class="font-code-diff text-code-diff text-accent-red pl-6 select-all">
+                  payments/webhook.ts(48,15): error TS2339: Property 'customer_account' does not exist on type 'DiscriminatedEvent'.
+                </div>
+</div>
+<div class="bg-surface-container-high p-space-sm rounded-lg flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-title-card-sm text-title-card-sm text-diff-addition-text font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">auto_fix_high</span>
+                    Suggested Automated Fix
+                  </span>
+<span class="font-badge-mono text-badge-mono text-fg-subtle">Confidence: 99.8%</span>
+</div>
+<div class="font-code-diff text-code-diff bg-canvas-inset p-space-sm rounded text-fg-default overflow-x-auto">
+<span class="text-diff-deletion-text line-through block">- await routeDispatchedEvent(event.data.object.customer_account, event);</span>
+<span class="text-diff-addition-text block">+ const accountId = 'customer' in event.data.object ? String(event.data.object.customer) : undefined;</span>
+<span class="text-diff-addition-text block">+ await routeDispatchedEvent(accountId, event);</span>
+</div>
+</div>
+<div class="flex flex-wrap items-center justify-between gap-space-sm pt-space-xs">
+<div class="flex items-center gap-space-xs flex-wrap">
+<button class="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-primary-container hover:bg-accent-green-hover text-on-primary font-title-card-sm text-title-card-sm font-semibold transition-all shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">done_all</span>
+                    Accept Fix Suggestion
+                  </button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-fg-default font-title-card-sm text-title-card-sm transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px] text-fg-muted">terminal</span>
+                    View tsc Log
+                  </button>
+</div>
+<button class="flex items-center gap-1 px-2.5 py-1 text-fg-muted hover:text-accent-red font-title-card-sm text-title-card-sm transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">flag</span>
+                  Mark False Positive
+                </button>
+</div>
+</div>
+<div class="bg-surface-container p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+<div class="flex flex-wrap items-center justify-between gap-space-xs">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-accent-amber/15 text-accent-amber font-badge-mono text-badge-mono font-medium">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+                    Unverified Heuristic
+                  </span>
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-fg-default font-badge-mono text-badge-mono font-semibold">
+                    HR-STRIPE-RETRY
+                  </span>
+</div>
+<span class="font-badge-mono text-badge-mono text-fg-subtle">Runtime Semantics</span>
+</div>
+<div class="font-body-base text-body-base text-fg-default leading-relaxed">
+                Idempotency TTL of 300 seconds might conflict with Stripe retry policy of up to 72 hours. Heuristic observation: cannot be checked statically via compiler. If a retry arrives at minute 6, it will trigger duplicate fulfillment.
+              </div>
+<div class="flex items-center gap-space-xs pt-space-xs">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-fg-default font-title-card-sm text-title-card-sm transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px] text-accent-amber">tune</span>
+                  Adjust TTL Threshold (259200s)
+                </button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-canvas-inset hover:bg-surface-container-high text-fg-muted font-title-card-sm text-title-card-sm transition-colors" type="button">
+                  Dismiss
+                </button>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container p-space-md rounded-xl shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[24px] text-accent-green-emphasis">verified</span>
+<div>
+<div class="font-title-card text-title-card text-fg-default">AST Pipeline Verification Pass Complete</div>
+<div class="font-body-sm text-body-sm text-fg-muted">All remaining 5 modified files satisfy strict structural boundary invariants.</div>
+</div>
+</div>
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-high text-fg-default font-title-card-sm text-title-card-sm hover:bg-surface-bright transition-colors" type="button">
+            Expand All (5 Files)
+          </button>
+</div>
+</div>
+<div class="lg:col-span-4 flex flex-col gap-space-md">
+<div class="bg-surface-container p-space-md rounded-xl shadow-md flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-accent-purple">smart_toy</span>
+<span class="font-title-card text-title-card text-fg-default font-semibold">Review Agent</span>
+</div>
+<span class="font-badge-mono text-badge-mono px-2 py-0.5 rounded bg-surface-container-high text-fg-muted">v2.4.1 (Strict)</span>
+</div>
+<div class="p-space-sm bg-canvas-inset rounded-lg flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-fg-muted">Compiler Engine</span>
+<span class="font-code-diff text-code-diff text-fg-default">TypeScript v5.3.3</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-fg-muted">Compiler Status</span>
+<span class="inline-flex items-center gap-1 font-badge-mono text-badge-mono text-error font-medium">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+                1 Emitted Error
+              </span>
+</div>
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-fg-muted">AST Traversal</span>
+<span class="font-badge-mono text-badge-mono text-fg-default">6 files changed • 142 lines</span>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<span class="font-label-ui text-label-ui text-fg-muted font-medium uppercase tracking-wider">Finding Distribution</span>
+<div class="grid grid-cols-3 gap-2">
+<div class="p-2 bg-canvas-inset rounded-lg flex flex-col items-center">
+<span class="font-title-card text-title-card text-diff-addition-text font-bold">2</span>
+<span class="font-badge-mono text-badge-mono text-fg-subtle">Confirmed</span>
+</div>
+<div class="p-2 bg-canvas-inset rounded-lg flex flex-col items-center">
+<span class="font-title-card text-title-card text-accent-amber font-bold">1</span>
+<span class="font-badge-mono text-badge-mono text-fg-subtle">Unverified</span>
+</div>
+<div class="p-2 bg-canvas-inset rounded-lg flex flex-col items-center">
+<span class="font-title-card text-title-card text-fg-muted font-bold">0</span>
+<span class="font-badge-mono text-badge-mono text-fg-subtle">Rejected</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<span class="font-label-ui text-label-ui text-fg-muted font-medium uppercase tracking-wider">CI / Check Run Status</span>
+<div class="p-space-sm bg-surface-container-high rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-error">cancel</span>
+<span class="font-title-card-sm text-title-card-sm text-fg-default">1 failed, 5 passed</span>
+</div>
+<span class="font-badge-mono text-badge-mono text-fg-subtle">3m 14s total</span>
+</div>
+</div>
+<div class="flex flex-col gap-space-sm pt-space-xs">
+<button class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary-container hover:bg-accent-green-hover text-on-primary font-title-card-sm text-title-card-sm font-semibold transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">publish</span>
+              Post to GitHub PR
+            </button>
+<button class="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-surface-container-high hover:bg-surface-bright text-fg-default font-title-card-sm text-title-card-sm transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px] text-accent-blue">refresh</span>
+              Trigger Re-check
+            </button>
+<button class="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-canvas-inset hover:bg-surface-bright text-error font-title-card-sm text-title-card-sm transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">undo</span>
+              Generate Rollback PR
+            </button>
+</div>
+</div>
+<div class="bg-surface-container p-space-md rounded-xl shadow-md flex flex-col gap-space-sm">
+<div class="flex items-center justify-between pb-space-xs">
+<span class="font-title-card text-title-card text-fg-default font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-fg-muted">account_tree</span>
+              Modified Files (6)
+            </span>
+<span class="font-badge-mono text-badge-mono text-diff-addition-text">+96 / -46</span>
+</div>
+<div class="flex flex-col gap-1">
+<div class="p-2 rounded-lg bg-surface-bright flex items-center justify-between cursor-pointer transition-colors">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-[18px] text-error">error</span>
+<span class="font-code-diff text-code-diff text-fg-default truncate font-medium">payments/webhook.ts</span>
+</div>
+<span class="font-badge-mono text-badge-mono text-error font-medium">+28/-4</span>
+</div>
+<div class="p-2 rounded-lg hover:bg-surface-container-high flex items-center justify-between cursor-pointer transition-colors">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-[18px] text-diff-addition-text">check_circle</span>
+<span class="font-code-diff text-code-diff text-fg-muted hover:text-fg-default truncate">src/types/stripe.ts</span>
+</div>
+<span class="font-badge-mono text-badge-mono text-fg-subtle">+34/-2</span>
+</div>
+<div class="p-2 rounded-lg hover:bg-surface-container-high flex items-center justify-between cursor-pointer transition-colors">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-[18px] text-diff-addition-text">check_circle</span>
+<span class="font-code-diff text-code-diff text-fg-muted hover:text-fg-default truncate">src/queue/worker.ts</span>
+</div>
+<span class="font-badge-mono text-badge-mono text-fg-subtle">+18/-12</span>
+</div>
+<div class="p-2 rounded-lg hover:bg-surface-container-high flex items-center justify-between cursor-pointer transition-colors">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-[18px] text-diff-addition-text">check_circle</span>
+<span class="font-code-diff text-code-diff text-fg-muted hover:text-fg-default truncate">config/redis.conf.ts</span>
+</div>
+<span class="font-badge-mono text-badge-mono text-fg-subtle">+6/-1</span>
+</div>
+<div class="p-2 rounded-lg hover:bg-surface-container-high flex items-center justify-between cursor-pointer transition-colors">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-[18px] text-diff-addition-text">check_circle</span>
+<span class="font-code-diff text-code-diff text-fg-muted hover:text-fg-default truncate">tests/webhook.test.ts</span>
+</div>
+<span class="font-badge-mono text-badge-mono text-fg-subtle">+10/-27</span>
+</div>
+<div class="p-2 rounded-lg hover:bg-surface-container-high flex items-center justify-between cursor-pointer transition-colors">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-[18px] text-diff-addition-text">check_circle</span>
+<span class="font-code-diff text-code-diff text-fg-muted hover:text-fg-default truncate">package.json</span>
+</div>
+<span class="font-badge-mono text-badge-mono text-fg-subtle">0/0</span>
+</div>
+</div>
+</div>
+<div class="p-space-md rounded-xl bg-surface-container-lowest flex flex-col gap-space-xs shadow-inner">
+<div class="flex items-center gap-2 text-fg-muted font-badge-mono text-badge-mono">
+<span class="material-symbols-outlined text-[16px] text-accent-blue">security</span>
+<span>Deterministic AST Gate</span>
+</div>
+<p class="font-body-sm text-body-sm text-fg-subtle">
+            PR branch cannot be fast-forward merged until <code class="text-error font-code-diff text-code-diff">payments/webhook.ts:48</code> is resolved or manually authorized with signed override token.
+          </p>
+</div>
+</div>
+</div>
+</div>
+</div></main><footer class="w-full bg-canvas-subtle mt-auto"><div class="w-full px-gutter py-space-md flex flex-col sm:flex-row items-center justify-between gap-space-sm text-fg-muted font-body-sm text-body-sm"><span>© 2025 Kareixo Developer Systems. GitHub Dark Engine.</span><div class="flex items-center gap-space-md"><span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-accent-green-emphasis"></span>Telemetry Online</span><a class="hover:text-fg-default transition-colors" href="#">Security Policy</a><a class="hover:text-fg-default transition-colors" href="#">API Specs</a><a class="hover:text-fg-default transition-colors" href="#">System Status</a></div></div></footer></body></html>

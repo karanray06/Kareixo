@@ -1,4 +1,4 @@
-import Navbar from "@/components/landing/Navbar";
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import CodeChatClient from "./CodeChatClient";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
@@ -32,16 +32,15 @@ export default async function CodeChatPage() {
     installationId: inst.installationId,
   }));
 
-  return (
-    <div className="flex flex-col h-screen bg-[var(--bg-base)]">
-      <div className="flex-none">
-        <Navbar />
-      </div>
+  const headerRepos = repoResults.map(({ repo }) => ({
+    fullName: repo.fullName,
+  }));
 
-      <div className="flex-1 pt-20 pb-4 px-4 max-w-[1600px] mx-auto w-full">
-        <div className="h-full rounded-2xl border border-[var(--color-outline)]/20 overflow-hidden shadow-2xl">
-          <CodeChatClient repos={repos} />
-        </div>
+  return (
+    <div className="flex flex-col h-screen bg-canvas-default">
+      <DashboardHeader user={session.user} repos={headerRepos} />
+      <div className="flex-1 pt-16 overflow-hidden">
+        <CodeChatClient repos={repos} />
       </div>
     </div>
   );

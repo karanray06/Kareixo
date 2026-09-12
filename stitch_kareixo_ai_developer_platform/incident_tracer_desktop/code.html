@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><title>Kareixo Developer Platform</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base { html, body { margin: 0; padding: 0; } body { overscroll-behavior: none; } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface-container-low": "#181c22", "accent-purple-light": "#a371f7", "fg-subtle": "#6e7681", "surface-dim": "#10141a", "diff-deletion-line": "rgba(248, 81, 73, 0.15)", "surface-variant": "#31353c", "canvas-default": "#0d1117", "surface-bright": "#353940", "diff-addition-line": "rgba(46, 160, 67, 0.15)", "canvas-subtle": "#161b22", "outline": "#899485", "on-secondary-fixed": "#001c38", "accent-red": "#f85149", "fg-default": "#f0f6fc", "surface-container": "#1c2026", "on-secondary-fixed-variant": "#004882", "accent-purple": "#8957e5", "on-primary": "#00390e", "on-primary-fixed-variant": "#005319", "secondary-container": "#0071c7", "primary-container": "#238636", "canvas-inset": "#010409", "on-error-container": "#ffdad6", "secondary-fixed": "#d3e4ff", "on-secondary-container": "#f0f4ff", "tertiary-fixed-dim": "#d3bbff", "error": "#ffb4ab", "on-secondary": "#00315c", "secondary-fixed-dim": "#a2c9ff", "primary-fixed-dim": "#7bdb80", "accent-green-emphasis": "#238636", "accent-green-hover": "#2ea043", "inverse-on-surface": "#2d3137", "inverse-primary": "#006e23", "primary": "#7bdb80", "diff-deletion-text": "#f85149", "surface-container-high": "#262a31", "surface-container-lowest": "#0a0e14", "on-surface": "#dfe2eb", "tertiary-fixed": "#ebddff", "on-surface-variant": "#becaba", "on-primary-container": "#f9fff3", "fg-muted": "#8b949e", "tertiary": "#d3bbff", "secondary": "#a2c9ff", "surface-tint": "#7bdb80", "border-muted": "#21262d", "on-primary-fixed": "#002106", "surface-container-highest": "#31353c", "on-background": "#dfe2eb", "surface": "#10141a", "tertiary-container": "#8957e5", "primary-fixed": "#97f999", "error-container": "#93000a", "accent-amber": "#d29922", "on-tertiary-fixed": "#250059", "border-default": "#30363d", "accent-blue": "#58a6ff", "on-tertiary-fixed-variant": "#591db3", "outline-variant": "#3f4a3d", "on-error": "#690005", "background": "#10141a", "on-tertiary": "#3f008d", "inverse-surface": "#dfe2eb", "on-tertiary-container": "#fffdff", "diff-addition-text": "#3fb950" }, borderRadius: { DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem" }, spacing: { "gutter-mobile": "0.75rem", "space-sm": "0.5rem", margin: "2rem", "space-xl": "2rem", "margin-mobile": "1rem", "space-xs": "0.25rem", "space-md": "1rem", "space-lg": "1.5rem", gutter: "1rem" }, fontFamily: { "headline-hero-mobile": ["Noto Sans"], "code-diff": ["JetBrains Mono"], "badge-mono": ["JetBrains Mono"], "title-card": ["Noto Sans"], "title-card-sm": ["Noto Sans"], "code-gutter": ["JetBrains Mono"], "body-base": ["Noto Sans"], "body-sm": ["Noto Sans"], "headline-hero": ["Noto Sans"], "headline-section-mobile": ["Noto Sans"], "headline-section": ["Noto Sans"], "label-ui": ["Noto Sans"] }, fontSize: { "headline-hero-mobile": ["28px", { lineHeight: "36px", fontWeight: "600" }], "code-diff": ["12px", { lineHeight: "20px", fontWeight: "400" }], "badge-mono": ["11px", { lineHeight: "16px", fontWeight: "500" }], "title-card": ["16px", { lineHeight: "24px", fontWeight: "600" }], "title-card-sm": ["14px", { lineHeight: "20px", fontWeight: "600" }], "code-gutter": ["12px", { lineHeight: "20px", fontWeight: "400" }], "body-base": ["14px", { lineHeight: "21px", fontWeight: "400" }], "body-sm": ["12px", { lineHeight: "18px", fontWeight: "400" }], "headline-hero": ["40px", { lineHeight: "48px", fontWeight: "600" }], "headline-section-mobile": ["20px", { lineHeight: "28px", fontWeight: "600" }], "headline-section": ["24px", { lineHeight: "32px", fontWeight: "600" }], "label-ui": ["12px", { lineHeight: "16px", fontWeight: "500" }] } } } };</script></head><body class="bg-canvas-default text-on-surface font-body-base antialiased min-h-screen flex flex-col selection:bg-accent-blue selection:text-canvas-inset"><header class="fixed top-0 left-0 w-full z-50 bg-canvas-subtle/95 backdrop-blur-md"><div class="h-16 w-full px-gutter flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md min-w-0 flex-shrink-0"><div class="flex items-center gap-space-sm"><img alt="Kareixo brand logo featuring five overlapping soft organic rounded blob shapes in mint, warm yellow, soft coral, lavender, and sky-blue with subtle dark slate outline, alongside modern clean typography for Kareixo. Brand logo. - Primary color: #7c3aed
+- Font: geist
+- Mode: dark
+- Roundness: rounded-sm
+" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1U11nvsulNHh2_HelpBRUogSW2FzODnR-drsURGwiWGF0cpmbDUMJ8us9hZYTtcrXtnL2HhoVPgS3MXNx4xq3zxkj8ndIkfPQ8CjwEMxHG4YL_B54KJoGlZre1iZad9hgmHFwxuDPvdSBrT7LXZs2-w8KJlZVXcxMuB4eJKwMouKUBQfnQQD6zDrsFhE941x5GNBlmxFKOW9_1SRmC03nDJzqlt1fwbBo70guFdMlSkvszH00WneN3ZkO_F"/><span class="font-title-card text-title-card text-fg-default tracking-tight hidden sm:inline-block">Kareixo</span><span class="font-badge-mono text-badge-mono px-space-xs py-0.5 rounded bg-surface-container text-fg-muted">v2.4</span></div><div class="h-5 w-px bg-border-default hidden md:block"></div><div class="hidden md:flex items-center gap-space-xs bg-canvas-inset px-space-sm py-1.5 rounded-lg text-fg-default cursor-pointer group hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-fg-muted text-[18px] group-hover:text-accent-blue transition-colors">folder_open</span><span class="font-code-diff text-code-diff text-fg-default font-medium">karanray06/core-payment-service</span><span class="flex items-center gap-0.5 text-fg-muted font-badge-mono text-badge-mono px-1.5 py-0.5 bg-surface-container rounded"><span class="material-symbols-outlined text-[14px] text-accent-purple">alt_route</span>main</span><span class="font-badge-mono text-badge-mono text-fg-subtle">a9f4c3d</span><span class="material-symbols-outlined text-fg-muted text-[16px]">expand_more</span></div><div class="hidden xl:flex items-center gap-space-sm pl-space-xs"><div class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-diff-addition-line text-diff-addition-text font-badge-mono text-badge-mono"><span class="w-2 h-2 rounded-full bg-accent-green-emphasis animate-pulse"></span>GitHub App: Active</div><div class="flex items-center gap-space-xs font-code-diff text-code-diff text-fg-muted"><span class="text-fg-subtle">•</span><span>12ms</span><span class="text-fg-subtle">•</span><span>AST Cache: <span class="text-diff-addition-text font-medium">98.4%</span></span></div></div></div><nav class="hidden lg:flex items-center gap-space-xs" data-active-classes="text-fg-default bg-surface-container font-semibold rounded-lg"><a class="px-3 py-1.5 text-on-surface-variant hover:text-fg-default hover:bg-surface-container-high rounded-lg transition-colors font-label-ui text-label-ui" data-path="dashboard" href="#">Dashboard</a><a class="px-3 py-1.5 text-on-surface-variant hover:text-fg-default hover:bg-surface-container-high rounded-lg transition-colors font-label-ui text-label-ui" data-path="repositories" href="#">Repositories</a><a class="px-3 py-1.5 text-on-surface-variant hover:text-fg-default hover:bg-surface-container-high rounded-lg transition-colors font-label-ui text-label-ui" data-path="codechat" href="#">CodeChat</a><a aria-current="page" class="px-3 py-1.5 transition-colors text-fg-default bg-surface-container font-semibold rounded-lg" data-path="incident-tracer" href="#">Incident Tracer</a><a class="px-3 py-1.5 text-on-surface-variant hover:text-fg-default hover:bg-surface-container-high rounded-lg transition-colors font-label-ui text-label-ui" data-path="settings" href="#">Settings</a></nav><div class="flex items-center gap-space-sm flex-shrink-0"><button class="flex items-center gap-space-sm bg-canvas-inset px-3 py-1.5 rounded-lg text-fg-muted hover:text-fg-default hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-[18px]">search</span><span class="hidden md:inline font-body-sm text-body-sm text-fg-subtle">Type <kbd class="px-1.5 py-0.5 rounded bg-surface-container font-badge-mono text-badge-mono text-fg-muted">Cmd+K</kbd> to search</span></button><a class="hidden sm:flex items-center text-fg-muted hover:text-fg-default p-1.5 rounded-lg hover:bg-surface-container transition-colors" href="#" title="Documentation"><span class="material-symbols-outlined text-[20px]">menu_book</span></a><button class="relative p-1.5 text-fg-muted hover:text-fg-default rounded-lg hover:bg-surface-container transition-colors" title="Notifications" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-accent-blue"></span></button><div class="h-5 w-px bg-border-default hidden sm:block"></div><div class="flex items-center gap-space-sm pl-space-xs cursor-pointer group"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0 shadow-sm"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden 2xl:flex flex-col text-left"><span class="font-label-ui text-label-ui text-fg-default font-medium leading-none">karanray06</span><span class="font-code-gutter text-code-gutter text-fg-subtle leading-none mt-1">workspace</span></div><span class="material-symbols-outlined text-fg-muted text-[16px] hidden sm:inline">arrow_drop_down</span></div></div></div></header><main class="w-full pt-16 flex-1 bg-canvas-default"><div class="flex flex-col w-full">
+<!-- Sub-Header / Incident Control Bar -->
+<section class="w-full bg-canvas-subtle border-b border-default px-margin py-space-md">
+<div class="max-w-[1440px] mx-auto flex flex-wrap items-center justify-between gap-space-md">
+<!-- Title & Context Engine -->
+<div class="flex flex-wrap items-center gap-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-accent-red">
+<span class="material-symbols-outlined text-[20px]">radar</span>
+</div>
+<div>
+<div class="flex items-center gap-space-sm">
+<h1 class="font-headline-section text-headline-section text-fg-default tracking-tight">Incident Tracer</h1>
+<span class="font-badge-mono text-badge-mono px-2 py-0.5 rounded-full bg-surface-container-high text-accent-purple-light flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">account_tree</span>
+                AST Blame Engine
+              </span>
+</div>
+</div>
+</div>
+<!-- Repo & Branch Pointer -->
+<div class="flex items-center gap-space-xs bg-canvas-inset px-space-sm py-1 rounded-lg text-fg-default">
+<span class="material-symbols-outlined text-fg-muted text-[16px]">waves</span>
+<span class="font-code-diff text-code-diff font-medium">karanray06/core-payment-service</span>
+<span class="font-code-diff text-code-diff text-fg-subtle">@</span>
+<span class="font-badge-mono text-badge-mono text-accent-purple flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]">alt_route</span>main
+          </span>
+<span class="font-badge-mono text-badge-mono text-fg-muted px-1 rounded bg-surface-container">c710df8</span>
+</div>
+</div>
+<!-- Action Cluster -->
+<div class="flex items-center gap-space-sm">
+<button class="flex items-center gap-space-xs px-3 py-1.5 rounded bg-surface-container hover:bg-surface-container-high text-fg-default font-label-ui text-label-ui transition-colors" id="btn-sync" type="button">
+<span class="material-symbols-outlined text-[16px] text-accent-blue">sync_alt</span>
+<span>Load Sentry / Datadog</span>
+<span class="font-badge-mono text-badge-mono px-1 py-0.2 rounded bg-surface-variant text-fg-muted">Webhook</span>
+</button>
+<button class="flex items-center gap-space-xs px-3 py-1.5 rounded bg-surface-container hover:bg-surface-container-high text-fg-default font-label-ui text-label-ui transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px] text-fg-muted">history</span>
+<span>History</span>
+<span class="font-badge-mono text-badge-mono px-1.5 py-0.2 rounded-full bg-surface-variant text-fg-subtle">18</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Incident Telemetry & Diagnostic Ribbon -->
+<section class="w-full bg-surface-container-lowest px-margin py-space-sm">
+<div class="max-w-[1440px] mx-auto flex flex-wrap items-center justify-between gap-space-md text-fg-muted font-body-sm text-body-sm">
+<div class="flex flex-wrap items-center gap-space-lg">
+<!-- Status & Environment -->
+<div class="flex items-center gap-space-xs">
+<span class="relative flex h-2.5 w-2.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-red opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent-red"></span>
+</span>
+<span class="font-label-ui text-label-ui text-fg-default font-medium">production-us-east-1</span>
+<span class="font-badge-mono text-badge-mono px-1.5 rounded bg-surface-container-high text-accent-red">P0 CRITICAL</span>
+</div>
+<!-- Event ID -->
+<div class="flex items-center gap-1.5">
+<span class="text-fg-subtle">Sentry ID:</span>
+<code class="font-badge-mono text-badge-mono text-fg-default px-1.5 py-0.5 rounded bg-surface-container">evt_98f4201c</code>
+<button class="text-fg-subtle hover:text-fg-default transition-colors" onclick="navigator.clipboard.writeText('evt_98f4201c')" title="Copy Event ID" type="button">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+</button>
+</div>
+<!-- Timestamp -->
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-fg-subtle">schedule</span>
+<span>First Detected:</span>
+<span class="font-body-base text-body-base text-fg-default font-medium">14m ago</span>
+<span class="font-badge-mono text-badge-mono text-fg-subtle">(18:42:09 UTC)</span>
+</div>
+<!-- Impact Magnitude -->
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-accent-red">error</span>
+<span>Failed Executions:</span>
+<span class="font-code-diff text-code-diff text-accent-red font-semibold">1,482 jobs</span>
+<span class="font-badge-mono text-badge-mono text-fg-subtle">(+120/min)</span>
+</div>
+</div>
+<!-- Quick Sparkline Metric -->
+<div class="flex items-center gap-space-sm">
+<span class="font-badge-mono text-badge-mono text-fg-subtle">ERROR RATE VELOCITY</span>
+<svg class="w-24 h-5 text-accent-red overflow-visible" fill="none" viewbox="0 0 96 20">
+<path d="M0 18 L16 17 L32 18 L48 14 L64 12 L80 4 L96 2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<circle class="animate-pulse" cx="96" cy="2" fill="currentColor" r="2.5"></circle>
+</svg>
+</div>
+</div>
+</section>
+<!-- Main 50/50 Desktop Trace & Blame Workspace -->
+<main class="w-full px-margin py-space-lg">
+<div class="max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-space-lg items-start">
+<!-- LEFT COLUMN: Production Stack Trace & Origin Analysis -->
+<div class="flex flex-col gap-space-md min-w-0">
+<!-- Stack Trace Console Card -->
+<div class="w-full rounded-xl bg-canvas-subtle shadow-md overflow-hidden flex flex-col">
+<!-- Console Top Bar -->
+<div class="px-space-md py-space-sm bg-surface-container flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-accent-red">terminal</span>
+<span class="font-title-card-sm text-title-card-sm text-fg-default">Live Production Stack Trace</span>
+<span class="font-badge-mono text-badge-mono px-1.5 py-0.5 rounded bg-surface-variant text-fg-muted">Node v20.11.1</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="text-fg-muted hover:text-fg-default p-1 rounded transition-colors text-[14px] flex items-center gap-1 font-label-ui text-label-ui" id="toggle-trace-btn" type="button">
+<span class="material-symbols-outlined text-[16px]">unfold_less</span>
+<span>Collapse</span>
+</button>
+</div>
+</div>
+<!-- Interactive Stack Frame Viewport -->
+<div class="p-space-md bg-canvas-inset overflow-x-auto transition-all duration-200" id="trace-terminal-body">
+<!-- Exception Headline -->
+<div class="flex items-start gap-space-sm pb-space-sm mb-space-sm border-b border-muted">
+<span class="px-1.5 py-0.5 rounded bg-diff-deletion-line text-diff-deletion-text font-badge-mono text-badge-mono font-semibold uppercase tracking-wider">Exception</span>
+<div class="font-code-diff text-code-diff text-accent-red font-medium break-all">
+                TypeError: Cannot read properties of undefined (reading 'customer_id')
+              </div>
+</div>
+<!-- Trace Lines with Active AST Pin -->
+<div class="font-code-diff text-code-diff flex flex-col gap-1 text-fg-muted">
+<!-- Culprit Line (Active Highlighted Frame) -->
+<div class="group relative flex items-center gap-space-sm px-2 py-1 rounded bg-diff-deletion-line cursor-pointer text-fg-default">
+<span class="material-symbols-outlined text-[15px] text-accent-red">arrow_right</span>
+<span class="text-accent-blue font-medium">at processSubscription</span>
+<span class="text-fg-subtle">(</span>
+<span class="text-fg-default underline decoration-accent-red underline-offset-4">src/workers/billing.ts:142:31</span>
+<span class="text-fg-subtle">)</span>
+<span class="ml-auto font-badge-mono text-badge-mono text-accent-red bg-surface-container px-1.5 py-0.2 rounded">CRASH LOCUS</span>
+</div>
+<!-- Frame 2 -->
+<div class="flex items-center gap-space-sm px-2 py-1 rounded hover:bg-surface-container-high transition-colors">
+<span class="w-[15px]"></span>
+<span class="text-fg-default">at async executeQueueJob</span>
+<span class="text-fg-subtle">(</span>
+<span class="text-fg-muted">src/queue/runner.ts:58:12</span>
+<span class="text-fg-subtle">)</span>
+</div>
+<!-- Frame 3 -->
+<div class="flex items-center gap-space-sm px-2 py-1 rounded hover:bg-surface-container-high transition-colors">
+<span class="w-[15px]"></span>
+<span class="text-fg-subtle">at async processTicksAndRejections</span>
+<span class="text-fg-subtle">(</span>
+<span class="text-fg-subtle">node:internal/process/task_queues:95:5</span>
+<span class="text-fg-subtle">)</span>
+</div>
+<!-- Collapsed Runtime Boilerplate -->
+<div class="text-fg-subtle text-[11px] pl-6 pt-1">
+                + 6 internal async scheduler frames omitted
+              </div>
+</div>
+</div>
+<!-- Trace Status & Analysis Trigger Bar -->
+<div class="px-space-md py-space-sm bg-surface-container flex flex-wrap items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-xs font-code-diff text-code-diff text-fg-muted">
+<span class="material-symbols-outlined text-[16px] text-diff-addition-text">verified</span>
+<span>Parsed <code class="text-fg-default font-medium">billing.ts:142</code></span>
+<span class="text-fg-subtle">•</span>
+<span>Verified against commit tree</span>
+</div>
+<button class="flex items-center gap-space-xs px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-variant text-accent-blue font-label-ui text-label-ui transition-all shadow-sm active:scale-95" id="retrace-btn" type="button">
+<span class="material-symbols-outlined text-[16px]">travel_explore</span>
+<span>Trace to Origin Commit</span>
+<span class="font-badge-mono text-badge-mono px-1 rounded bg-canvas-inset text-fg-muted">180ms</span>
+</button>
+</div>
+</div>
+<!-- Root Cause Identified Card -->
+<div class="w-full rounded-xl bg-canvas-subtle shadow-md overflow-hidden flex flex-col">
+<!-- Confidence Header Banner -->
+<div class="px-space-md py-2.5 bg-diff-addition-line flex items-center justify-between">
+<div class="flex items-center gap-space-xs text-diff-addition-text font-badge-mono text-badge-mono font-semibold">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span>VERIFIED VIA AST DIFF (100% CONFIDENCE)</span>
+</div>
+<span class="font-badge-mono text-badge-mono text-diff-addition-text bg-canvas-inset/60 px-2 py-0.5 rounded">
+              L4 Heuristic Passed
+            </span>
+</div>
+<!-- Committer & Source Commit Attribution -->
+<div class="p-space-md flex flex-col gap-space-md">
+<!-- Author Card -->
+<div class="flex items-start justify-between p-space-md rounded-xl bg-surface-container">
+<div class="flex items-start gap-space-md">
+<div class="w-10 h-10 rounded-full bg-accent-purple/20 flex items-center justify-center text-accent-purple-light font-bold">
+                  AC
+                </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-title-card-sm text-title-card-sm text-fg-default font-semibold">@alex.chen</span>
+<span class="font-body-sm text-body-sm text-fg-muted">committed 3 days ago</span>
+</div>
+<p class="font-body-base text-body-base text-fg-default font-medium mt-0.5">
+                    refactor(billing): normalize customer object payload in queue worker
+                  </p>
+<div class="flex items-center gap-space-xs mt-2">
+<a class="font-badge-mono text-badge-mono px-2 py-0.5 rounded bg-surface-container-high text-accent-purple hover:underline flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[13px]">merge</span>
+                      PR #98
+                    </a>
+<span class="font-badge-mono text-badge-mono px-2 py-0.5 rounded bg-surface-container-high text-fg-muted font-code-diff">
+                      8f2a1b9
+                    </span>
+<span class="font-body-sm text-body-sm text-fg-subtle">•</span>
+<span class="font-body-sm text-body-sm text-diff-addition-text">+14</span>
+<span class="font-body-sm text-body-sm text-diff-deletion-text">-9</span>
+</div>
+</div>
+</div>
+<div class="hidden sm:flex flex-col items-end gap-1">
+<span class="font-badge-mono text-badge-mono text-fg-subtle">BLAME DISTANCE</span>
+<span class="font-code-diff text-code-diff text-fg-default font-semibold">1 commit back</span>
+</div>
+</div>
+<!-- Synthesized Proof Card -->
+<div class="flex flex-col gap-space-xs p-space-md rounded-xl bg-canvas-inset">
+<div class="flex items-center gap-space-xs text-accent-amber font-title-card-sm text-title-card-sm">
+<span class="material-symbols-outlined text-[18px]">psychology</span>
+<span>Synthesized Proof &amp; Mechanics</span>
+</div>
+<p class="font-body-base text-body-base text-fg-default leading-relaxed">
+                Git diff verification confirms line 142 in <code class="font-code-diff text-code-diff px-1.5 py-0.5 rounded bg-surface-container text-accent-blue">src/workers/billing.ts</code> was introduced in commit <code class="font-code-diff text-code-diff px-1.5 py-0.5 rounded bg-surface-container text-accent-purple">8f2a1b9</code> where <code class="font-code-diff text-code-diff px-1 rounded bg-diff-deletion-line text-diff-deletion-text">payload.user.customer_id</code> was changed to <code class="font-code-diff text-code-diff px-1 rounded bg-diff-addition-line text-diff-addition-text">payload.customer.id</code> without updating the upstream legacy queue runner payload serialization contract.
+              </p>
+<div class="flex items-center gap-space-sm mt-space-xs pt-space-xs border-t border-muted text-fg-muted font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[16px] text-accent-blue">schema</span>
+<span>Contract mismatch: BullMQ Job Schema v1.2 vs v2.0 parser</span>
+</div>
+</div>
+<!-- AST Callpath Tree Widget -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="font-badge-mono text-badge-mono text-fg-subtle uppercase tracking-wider">AST Pipeline</span>
+<span class="font-code-diff text-code-diff text-fg-muted">QueueJobPayload → SubscriptionsWorker → crash</span>
+</div>
+<span class="font-badge-mono text-badge-mono text-diff-addition-text flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-green-emphasis"></span>
+                Node Path Matched
+              </span>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN: Inline Blame & AST Diff Inspector + Remediation -->
+<div class="flex flex-col gap-space-md min-w-0">
+<!-- AST Code Diff & Blame Viewport -->
+<div class="w-full rounded-xl bg-canvas-subtle shadow-md overflow-hidden flex flex-col">
+<!-- Diff Card Header -->
+<div class="px-space-md py-space-sm bg-surface-container flex flex-wrap items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[18px] text-accent-purple">difference</span>
+<div class="flex items-center gap-1.5 font-code-diff text-code-diff">
+<span class="text-fg-subtle">src/workers/</span>
+<span class="text-fg-default font-semibold">billing.ts</span>
+</div>
+<span class="font-badge-mono text-badge-mono px-1.5 py-0.5 rounded bg-surface-container-high text-fg-muted">
+                Lines 139–145
+              </span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="font-badge-mono text-badge-mono text-diff-addition-text bg-diff-addition-line px-2 py-0.5 rounded flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">pin_drop</span>
+                BLAME MATCH: 100%
+              </span>
+<button class="text-fg-muted hover:text-fg-default p-1 transition-colors" title="Toggle Unified / Split Diff" type="button">
+<span class="material-symbols-outlined text-[18px]">splitscreen</span>
+</button>
+</div>
+</div>
+<!-- Code Diff Table (GitHub dark style with gutter, deletions, additions) -->
+<div class="w-full bg-canvas-default overflow-x-auto font-code-diff text-code-diff leading-5 select-text">
+<!-- Line 139 -->
+<div class="flex items-stretch hover:bg-surface-container transition-colors">
+<div class="w-12 py-0.5 px-2 text-right bg-canvas-inset text-fg-subtle select-none font-code-gutter border-r border-muted flex-shrink-0">139</div>
+<div class="w-12 py-0.5 px-2 text-right bg-canvas-inset text-fg-subtle select-none font-code-gutter border-r border-muted flex-shrink-0">139</div>
+<div class="py-0.5 px-3 text-fg-subtle w-6 select-none flex-shrink-0"></div>
+<div class="py-0.5 px-2 text-fg-muted whitespace-pre"><span class="text-accent-purple-light">export async function</span> <span class="text-accent-blue">processSubscription</span>(job: Job) {</div>
+</div>
+<!-- Line 140 -->
+<div class="flex items-stretch hover:bg-surface-container transition-colors">
+<div class="w-12 py-0.5 px-2 text-right bg-canvas-inset text-fg-subtle select-none font-code-gutter border-r border-muted flex-shrink-0">140</div>
+<div class="w-12 py-0.5 px-2 text-right bg-canvas-inset text-fg-subtle select-none font-code-gutter border-r border-muted flex-shrink-0">140</div>
+<div class="py-0.5 px-3 text-fg-subtle w-6 select-none flex-shrink-0"></div>
+<div class="py-0.5 px-2 text-fg-muted whitespace-pre"> <span class="text-accent-purple-light">const</span> { correlationId, attempts } = job.data;</div>
+</div>
+<!-- Line 141 -->
+<div class="flex items-stretch hover:bg-surface-container transition-colors">
+<div class="w-12 py-0.5 px-2 text-right bg-canvas-inset text-fg-subtle select-none font-code-gutter border-r border-muted flex-shrink-0">141</div>
+<div class="w-12 py-0.5 px-2 text-right bg-canvas-inset text-fg-subtle select-none font-code-gutter border-r border-muted flex-shrink-0">141</div>
+<div class="py-0.5 px-3 text-fg-subtle w-6 select-none flex-shrink-0"></div>
+<div class="py-0.5 px-2 text-fg-muted whitespace-pre">  logger.info({ correlationId }, <span class="text-primary-fixed-dim">"Parsing billing message"</span>);</div>
+</div>
+<!-- Line 142 DELETION (Prior state) -->
+<div class="flex items-stretch bg-diff-deletion-line text-fg-default">
+<div class="w-12 py-0.5 px-2 text-right bg-canvas-inset text-diff-deletion-text select-none font-code-gutter border-r border-muted flex-shrink-0">142</div>
+<div class="w-12 py-0.5 px-2 text-right bg-canvas-inset text-fg-subtle select-none font-code-gutter border-r border-muted flex-shrink-0"></div>
+<div class="py-0.5 px-3 text-diff-deletion-text w-6 select-none flex-shrink-0 font-bold">-</div>
+<div class="py-0.5 px-2 text-fg-default whitespace-pre flex-1"> <span class="text-accent-purple-light">const</span> customerId = <span class="bg-accent-red/25 text-white px-1 rounded">job.data.user.customerId</span>;</div>
+</div>
+<!-- Line 142 ADDITION (Current crashing state) -->
+<div class="flex items-stretch bg-diff-addition-line text-fg-default relative">
+<div class="w-12 py-0.5 px-2 text-right bg-canvas-inset text-fg-subtle select-none font-code-gutter border-r border-muted flex-shrink-0"></div>
+<div class="w-12 py-0.5 px-2 text-right bg-canvas-inset text-diff-addition-text select-none font-code-gutter border-r border-muted flex-shrink-0">142</div>
+<div class="py-0.5 px-3 text-diff-addition-text w-6 select-none flex-shrink-0 font-bold">+</div>
+<div class="py-0.5 px-2 text-fg-default whitespace-pre flex-1"> <span class="text-accent-purple-light">const</span> customerId = <span class="bg-accent-green-emphasis/35 text-white px-1 rounded font-semibold">job.data.customer.id</span>;</div>
+</div>
+<!-- Line 143 -->
+<div class="flex items-stretch hover:bg-surface-container transition-colors">
+<div class="w-12 py-0.5 px-2 text-right bg-canvas-inset text-fg-subtle select-none font-code-gutter border-r border-muted flex-shrink-0">143</div>
+<div class="w-12 py-0.5 px-2 text-right bg-canvas-inset text-fg-subtle select-none font-code-gutter border-r border-muted flex-shrink-0">143</div>
+<div class="py-0.5 px-3 text-fg-subtle w-6 select-none flex-shrink-0"></div>
+<div class="py-0.5 px-2 text-fg-muted whitespace-pre"> <span class="text-accent-purple-light">return await</span> stripe.subscriptions.retrieve(customerId);</div>
+</div>
+<!-- Line 144 -->
+<div class="flex items-stretch hover:bg-surface-container transition-colors">
+<div class="w-12 py-0.5 px-2 text-right bg-canvas-inset text-fg-subtle select-none font-code-gutter border-r border-muted flex-shrink-0">144</div>
+<div class="w-12 py-0.5 px-2 text-right bg-canvas-inset text-fg-subtle select-none font-code-gutter border-r border-muted flex-shrink-0">144</div>
+<div class="py-0.5 px-3 text-fg-subtle w-6 select-none flex-shrink-0"></div>
+<div class="py-0.5 px-2 text-fg-muted whitespace-pre">}</div>
+</div>
+</div>
+<!-- Diagnostic Crash Mechanism Box -->
+<div class="p-space-md bg-surface-container-high border-t border-muted flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs text-accent-amber font-title-card-sm text-title-card-sm">
+<span class="material-symbols-outlined text-[18px]">warning</span>
+<span>Runtime Crash Mechanism</span>
+</div>
+<p class="font-body-sm text-body-sm text-fg-default">
+              Legacy events dispatched prior to PR #98 contained user under <code class="font-code-diff text-code-diff px-1.5 py-0.5 rounded bg-canvas-inset text-accent-blue">job.data.user</code>. Ingesting them into new worker causes unhandled null-pointer dereference at execution step because <code class="font-code-diff text-code-diff px-1.5 py-0.5 rounded bg-canvas-inset text-accent-red">job.data.customer</code> is undefined.
+            </p>
+</div>
+</div>
+<!-- Remediation Strategies Card -->
+<div class="w-full rounded-xl bg-canvas-subtle shadow-md p-space-md flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[20px] text-accent-green-hover">healing</span>
+<h2 class="font-title-card text-title-card text-fg-default">Remediation Strategies</h2>
+</div>
+<span class="font-badge-mono text-badge-mono px-2 py-0.5 rounded bg-diff-addition-line text-diff-addition-text">
+              Automated Rollback Ready
+            </span>
+</div>
+<p class="font-body-base text-body-base text-fg-muted">
+            Deterministic rollback or one-click compatibility patch available. Generating a targeted hotfix guarantees zero downtime across in-flight BullMQ queue items.
+          </p>
+<!-- Proposed Patch Preview Box -->
+<div class="p-space-sm rounded-lg bg-canvas-inset flex flex-col gap-1.5 font-code-diff text-code-diff text-fg-default">
+<div class="flex items-center justify-between text-fg-subtle font-badge-mono text-badge-mono">
+<span>SUGGESTED FALLBACK PATCH</span>
+<span class="text-accent-blue">OPT-IN</span>
+</div>
+<div class="p-2 rounded bg-surface-container font-code-diff text-code-diff text-diff-addition-text">
+              + const customerId = job.data.customer?.id ?? job.data.user?.customerId;
+            </div>
+</div>
+<!-- Primary & Secondary Remediation Actions -->
+<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-space-sm pt-space-xs">
+<!-- Primary Action (GitHub Green) -->
+<button class="flex-1 flex items-center justify-center gap-space-xs px-4 py-2.5 rounded-lg bg-accent-green-emphasis hover:bg-accent-green-hover text-white font-label-ui text-label-ui font-semibold shadow-sm transition-all active:scale-[0.98]" id="btn-hotfix" type="button">
+<span class="material-symbols-outlined text-[18px]">fork_right</span>
+<span>Create Hotfix Branch with Revert</span>
+</button>
+<!-- CodeChat Synthesis -->
+<button class="flex items-center justify-center gap-space-xs px-3 py-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-accent-purple-light font-label-ui text-label-ui transition-colors" id="btn-chat" type="button">
+<span class="material-symbols-outlined text-[18px]">smart_toy</span>
+<span>Send to CodeChat for Patch Synthesis</span>
+</button>
+</div>
+<!-- Tertiary Link Bar -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm pt-space-sm border-t border-muted text-fg-muted font-body-sm text-body-sm">
+<a class="flex items-center gap-1 hover:text-accent-blue transition-colors" href="#">
+<span class="material-symbols-outlined text-[16px]">open_in_new</span>
+<span>Open Commit in GitHub</span>
+</a>
+<button class="flex items-center gap-1 hover:text-fg-default transition-colors" onclick="alert('Postmortem summary exported to Markdown / clipboard.');" type="button">
+<span class="material-symbols-outlined text-[16px]">file_download</span>
+<span>Export Postmortem</span>
+</button>
+<span class="font-badge-mono text-badge-mono text-fg-subtle">SLA TIMER: 11m left</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<script>
+  // Trace console collapse/expand interaction
+  const toggleBtn = document.getElementById('toggle-trace-btn');
+  const terminalBody = document.getElementById('trace-terminal-body');
+
+  if (toggleBtn && terminalBody) {
+    let collapsed = false;
+    toggleBtn.addEventListener('click', () => {
+      collapsed = !collapsed;
+      if (collapsed) {
+        terminalBody.classList.add('hidden');
+        toggleBtn.innerHTML = '<span class="material-symbols-outlined text-[16px]">unfold_more</span><span>Expand</span>';
+      } else {
+        terminalBody.classList.remove('hidden');
+        toggleBtn.innerHTML = '<span class="material-symbols-outlined text-[16px]">unfold_less</span><span>Collapse</span>';
+      }
+    });
+  }
+
+  // Hotfix Action Simulator
+  const hotfixBtn = document.getElementById('btn-hotfix');
+  if (hotfixBtn) {
+    hotfixBtn.addEventListener('click', () => {
+      const originalText = hotfixBtn.innerHTML;
+      hotfixBtn.disabled = true;
+      hotfixBtn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span><span>Branching hotfix/revert-8f2a1b9...</span>';
+      setTimeout(() => {
+        hotfixBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">check</span><span>Branch hotfix/revert-8f2a1b9 pushed!</span>';
+        setTimeout(() => {
+          hotfixBtn.disabled = false;
+          hotfixBtn.innerHTML = originalText;
+        }, 3000);
+      }, 1000);
+    });
+  }
+
+  // Re-trace Engine Trigger
+  const retraceBtn = document.getElementById('retrace-btn');
+  if (retraceBtn) {
+    retraceBtn.addEventListener('click', () => {
+      const orig = retraceBtn.innerHTML;
+      retraceBtn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">sync</span><span>Evaluating AST Tree...</span>';
+      setTimeout(() => {
+        retraceBtn.innerHTML = orig;
+      }, 700);
+    });
+  }
+
+  // Load Sentry / Datadog sync simulation
+  const syncBtn = document.getElementById('btn-sync');
+  if (syncBtn) {
+    syncBtn.addEventListener('click', () => {
+      const orig = syncBtn.innerHTML;
+      syncBtn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">sync</span><span>Syncing Sentry...</span>';
+      setTimeout(() => {
+        syncBtn.innerHTML = orig;
+      }, 800);
+    });
+  }
+</script></main><footer class="w-full bg-canvas-subtle mt-auto"><div class="w-full px-gutter py-space-md flex flex-col sm:flex-row items-center justify-between gap-space-sm text-fg-muted font-body-sm text-body-sm"><span>© 2025 Kareixo Developer Systems. GitHub Dark Engine.</span><div class="flex items-center gap-space-md"><span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-accent-green-emphasis"></span>Telemetry Online</span><a class="hover:text-fg-default transition-colors" href="#">Security Policy</a><a class="hover:text-fg-default transition-colors" href="#">API Specs</a><a class="hover:text-fg-default transition-colors" href="#">System Status</a></div></div></footer></body></html>
