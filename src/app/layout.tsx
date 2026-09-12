@@ -54,7 +54,7 @@ export default function RootLayout({
       lang="en"
       className={`${interDisplay.variable} ${inter.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="antialiased min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)]">{children}</body>
+      <body className="antialiased min-h-screen bg-canvas-default text-fg-default">{children}</body>
     </html>
   );
 }

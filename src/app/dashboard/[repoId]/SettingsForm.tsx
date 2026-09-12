@@ -60,9 +60,9 @@ export default function SettingsForm({
   return (
     <div className="space-y-8">
       {/* Categories */}
-      <section className="bg-[var(--bg-surface)] border border-[var(--border-base)] rounded-xl p-6 shadow-sm">
+      <section className="bg-[var(--color-surface)] border border-[var(--color-border-default)] rounded-xl p-6 shadow-sm">
         <h2 className="text-lg font-semibold mb-1">Review Categories</h2>
-        <p className="text-sm text-[var(--text-secondary)]">
+        <p className="text-sm text-[var(--color-fg-muted)]">
           Select what kinds of issues Kareixo should flag during reviews.
         </p>
         <div className="flex flex-wrap gap-2 mt-4">
@@ -74,8 +74,8 @@ export default function SettingsForm({
                 onClick={() => toggleCategory(cat)}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium capitalize border transition-all ${
                   active
-                    ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-accent-fg)]"
-                    : "border-[var(--border-base)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:border-[var(--border-strong)]"
+                    ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-on-primary)]"
+                    : "border-[var(--color-border-default)] bg-[var(--color-surface)] text-[var(--color-fg-muted)] hover:border-[var(--color-border-default)]"
                 }`}
               >
                 {cat}
@@ -86,9 +86,9 @@ export default function SettingsForm({
       </section>
 
       {/* Model Tier */}
-      <section className="bg-[var(--bg-surface)] border border-[var(--border-base)] rounded-xl p-6 shadow-sm">
+      <section className="bg-[var(--color-surface)] border border-[var(--color-border-default)] rounded-xl p-6 shadow-sm">
         <h2 className="text-lg font-semibold mb-1">Model Tier</h2>
-        <p className="text-sm text-[var(--text-secondary)]">
+        <p className="text-sm text-[var(--color-fg-muted)]">
           Choose between fast reviews (default models) and deep reviews (stronger, slower models like DeepSeek).
         </p>
         <div className="flex gap-6 mt-5">
@@ -99,7 +99,7 @@ export default function SettingsForm({
               value="fast"
               checked={tier === "fast"}
               onChange={() => setTier("fast")}
-              className="accent-[var(--color-accent)] w-4 h-4"
+              className="accent-[var(--color-primary)] w-4 h-4"
             />
             <span className="font-medium text-sm">Fast</span>
           </label>
@@ -110,7 +110,7 @@ export default function SettingsForm({
               value="deep"
               checked={tier === "deep"}
               onChange={() => setTier("deep")}
-              className="accent-[var(--color-accent)] w-4 h-4"
+              className="accent-[var(--color-primary)] w-4 h-4"
             />
             <span className="font-medium text-sm">Deep</span>
           </label>
@@ -118,9 +118,9 @@ export default function SettingsForm({
       </section>
 
       {/* Custom Instructions */}
-      <section className="bg-[var(--bg-surface)] border border-[var(--border-base)] rounded-xl p-6 shadow-sm">
+      <section className="bg-[var(--color-surface)] border border-[var(--color-border-default)] rounded-xl p-6 shadow-sm">
         <h2 className="text-lg font-semibold mb-1">Custom Instructions (Team Rules)</h2>
-        <p className="text-sm text-[var(--text-secondary)] mb-4">
+        <p className="text-sm text-[var(--color-fg-muted)] mb-4">
           Add specific instructions for this repository in plain text. Kareixo will obey them.
         </p>
         <textarea

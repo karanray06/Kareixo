@@ -28,30 +28,29 @@ export default function Navbar() {
           <div className="flex items-center gap-8">
             <Link
               href="/"
-              className="text-[var(--text-primary)] font-semibold text-lg tracking-tight flex items-center gap-2"
+              className="text-fg-default font-semibold text-lg tracking-tight flex items-center gap-2"
               onClick={() => setMobileMenuOpen(false)}
             >
-              {/* Kareixo Logo */}
               <img src="/logo.png" alt="Kareixo Logo" className="w-7 h-7 rounded-md object-contain" />
               Kareixo
             </Link>
 
             {/* Desktop Links */}
-            <div className="hidden md:flex items-center gap-6 text-sm font-medium text-[var(--text-secondary)]">
-              <Link href="#product" className="hover:text-[var(--text-primary)] transition-colors">
+            <div className="hidden md:flex items-center gap-6 text-sm font-medium text-fg-muted">
+              <Link href="#product" className="hover:text-fg-default transition-colors">
                 Product
               </Link>
-              <Link href="#how-it-works" className="hover:text-[var(--text-primary)] transition-colors">
+              <Link href="#how-it-works" className="hover:text-fg-default transition-colors">
                 How it works
               </Link>
-              <Link href="#security" className="hover:text-[var(--text-primary)] transition-colors">
+              <Link href="#security" className="hover:text-fg-default transition-colors">
                 Security
               </Link>
               <a
                 href="https://github.com/karanray06/Kareixo"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-[var(--text-primary)] transition-colors flex items-center gap-1.5"
+                className="hover:text-fg-default transition-colors flex items-center gap-1.5"
               >
                 GitHub
               </a>
@@ -59,7 +58,7 @@ export default function Navbar() {
           </div>
 
           <div className="hidden md:flex items-center gap-4">
-            <Link href="/dashboard" className="text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
+            <Link href="/dashboard" className="text-sm font-medium text-fg-muted hover:text-fg-default transition-colors">
               Sign in
             </Link>
             <a
@@ -74,7 +73,7 @@ export default function Navbar() {
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors p-1"
+              className="text-fg-muted hover:text-fg-default transition-colors p-1"
             >
               {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -84,13 +83,13 @@ export default function Navbar() {
 
       {/* Mobile overlay menu */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-[var(--bg-base)] pt-24 px-6 pb-6 flex flex-col md:hidden">
-          <div className="flex flex-col gap-6 text-lg font-medium text-[var(--text-primary)]">
+        <div className="fixed inset-0 z-40 bg-canvas-default pt-24 px-6 pb-6 flex flex-col md:hidden">
+          <div className="flex flex-col gap-6 text-lg font-medium text-fg-default">
             <Link href="#product" onClick={() => setMobileMenuOpen(false)}>Product</Link>
             <Link href="#how-it-works" onClick={() => setMobileMenuOpen(false)}>How it works</Link>
             <Link href="#security" onClick={() => setMobileMenuOpen(false)}>Security</Link>
             <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>Sign in</Link>
-            <div className="pt-4 border-t border-[var(--border-base)] flex flex-col gap-4">
+            <div className="pt-4 border-t border-border-default flex flex-col gap-4">
               <a
                 href="https://github.com/apps/kareixo-reviewer/installations/new"
                 className="btn btn-primary w-full"
