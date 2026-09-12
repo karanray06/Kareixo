@@ -2,45 +2,42 @@
  * Auth scoping test: verifies that dashboard queries are properly scoped by userId.
  * 
  * Tests the core invariant: User A's data must never be visible to User B.
- * This tests the DB query layer directly (not HTTP), since the dashboard
- * is a Server Component that queries DB inline.
+ * 
+ * The dashboard pages are client components that fetch data from API routes.
+ * The API routes contain the actual DB queries scoped by userId.
+ * The dashboard layout (server component) gates access via auth().
  */
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 
 describe("Dashboard auth scoping", () => {
-  it("should scope repository queries by userId", async () => {
-    // This test verifies the query structure in dashboard/page.tsx
-    // by checking that every dashboard query joins through github_installations
-    // and filters by userId.
-    //
-    // Since the dashboard is a Server Component (not an API route), we verify
-    // the code structure rather than making HTTP calls.
-    
+  it("should scope repository API queries by userId", async () => {
+    // The dashboard page fetches from /api/repositories, which scopes by userId.
+    // Verify the API route has proper auth scoping.
     const fs = await import("fs");
     const path = await import("path");
     
-    const dashboardPath = path.resolve(__dirname, "../app/dashboard/page.tsx");
-    const dashboardCode = fs.readFileSync(dashboardPath, "utf-8");
+    const repoApiPath = path.resolve(__dirname, "../app/api/repositories/route.ts");
+    const repoApiCode = fs.readFileSync(repoApiPath, "utf-8");
 
-    // Verify all database queries filter by userId
-    // The dashboard page should have .where(eq(github_installations.userId, userId))
-    // for every query that returns user-specific data
-    const userIdFilters = (dashboardCode.match(/eq\(github_installations\.userId,\s*userId\)/g) || []).length;
-    
-    // There should be at least 3 userId-scoped queries: repos, reviews, stats
-    expect(userIdFilters).toBeGreaterThanOrEqual(3);
+    // Verify user-scoped queries in the API route
+    expect(repoApiCode).toContain("github_installations.userId");
+    expect(repoApiCode).toContain("session.user.id");
+    expect(repoApiCode).toContain("Unauthorized");
   });
 
-  it("should scope repo settings page by userId", async () => {
+  it("should scope repo detail API by userId", async () => {
+    // The [repoId] page fetches from /api/repositories/[id], which verifies ownership.
     const fs = await import("fs");
     const path = await import("path");
     
-    const repoSettingsPath = path.resolve(__dirname, "../app/dashboard/[repoId]/page.tsx");
-    const repoSettingsCode = fs.readFileSync(repoSettingsPath, "utf-8");
+    const repoDetailApiPath = path.resolve(__dirname, "../app/api/repositories/[id]/route.ts");
+    const repoDetailApiCode = fs.readFileSync(repoDetailApiPath, "utf-8");
     
-    // Verify the repo settings page checks ownership
-    expect(repoSettingsCode).toContain("github_installations.userId");
-    expect(repoSettingsCode).toContain("session.user.id");
+    // Verify the API verifies ownership via userId
+    expect(repoDetailApiCode).toContain("github_installations.userId");
+    expect(repoDetailApiCode).toContain("session.user.id");
+    expect(repoDetailApiCode).toContain("Unauthorized");
+    expect(repoDetailApiCode).toContain("not found or unauthorized");
   });
 
   it("should scope repository PATCH API by userId", async () => {
@@ -54,6 +51,19 @@ describe("Dashboard auth scoping", () => {
     expect(repoApiCode).toContain("github_installations.userId");
     expect(repoApiCode).toContain("session.user.id");
     expect(repoApiCode).toContain("Unauthorized");
+  });
+
+  it("should gate dashboard layout behind auth", async () => {
+    const fs = await import("fs");
+    const path = await import("path");
+    
+    const layoutPath = path.resolve(__dirname, "../app/dashboard/layout.tsx");
+    const layoutCode = fs.readFileSync(layoutPath, "utf-8");
+
+    // The layout should redirect unauthenticated users
+    expect(layoutCode).toContain("auth");
+    expect(layoutCode).toContain("redirect");
+    expect(layoutCode).toContain("session");
   });
 
   it("should NOT expose global stats without scoping", async () => {
