@@ -13,9 +13,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   // Fetch repos for the header repo switcher
-  const db = getDb();
   let repos: { fullName: string; defaultBranch?: string }[] = [];
   try {
+    const db = getDb();
     const repoResults = await db
       .select({ repo: repositories })
       .from(repositories)
