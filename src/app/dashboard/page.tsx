@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { Plus, ArrowRight, TrendingUp, AlertTriangle, CheckCircle2, ShieldCheck, Activity, TerminalSquare, AlertCircle } from "lucide-react";
 
 interface RepoData {
   id: string;
@@ -47,7 +48,7 @@ function timeAgo(dateStr: string): string {
 
 function SkeletonCard() {
   return (
-    <div className="bg-canvas-subtle p-space-md rounded-lg shadow-sm flex flex-col justify-between animate-pulse">
+    <div className="glass-card p-6 flex flex-col justify-between animate-pulse">
       <div className="flex items-center justify-between">
         <div className="h-3 w-24 bg-surface-container rounded" />
         <div className="h-5 w-5 bg-surface-container rounded" />
@@ -96,9 +97,7 @@ export default function DashboardOverview() {
         <div className="w-full px-gutter py-space-lg max-w-[1560px] mx-auto flex flex-col gap-space-lg">
           <div className="flex flex-col items-center justify-center py-20 gap-6">
             <div className="w-20 h-20 rounded-2xl bg-surface-container border border-border-default flex items-center justify-center">
-              <span className="material-symbols-outlined text-[40px] text-fg-muted">
-                add_circle
-              </span>
+              <ShieldCheck className="text-fg-muted" size={40} />
             </div>
             <div className="text-center max-w-md">
               <h2 className="font-title-card text-title-card text-fg-default mb-2">
@@ -109,13 +108,13 @@ export default function DashboardOverview() {
                 pull request reviews with AI-powered code analysis.
               </p>
               <a
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary-container hover:bg-accent-green-hover text-on-primary-container font-label-ui text-label-ui shadow-sm transition-colors"
+                className="glow-button inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-accent-green-emphasis hover:bg-accent-green-hover text-white font-semibold shadow-lg shadow-accent-green-emphasis/20 transition-all"
                 href="https://github.com/apps/kareixo-reviewer/installations/new"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <span className="material-symbols-outlined text-[18px]">add</span>
-                <span>Install on GitHub</span>
+                <Plus size={18} />
+                <span>Connect a Repository</span>
               </a>
             </div>
           </div>
@@ -145,21 +144,22 @@ export default function DashboardOverview() {
           ) : (
             <>
               {/* Card 1: PRs Analyzed */}
-              <div className="bg-canvas-subtle p-space-md rounded-lg shadow-sm flex flex-col justify-between group hover:bg-surface-container transition-colors">
-                <div className="flex items-center justify-between">
-                  <span className="font-label-ui text-label-ui text-fg-muted uppercase tracking-wider">
-                    PRs Analyzed
-                  </span>
-                  <span className="material-symbols-outlined text-accent-purple text-[20px]">
-                    merge
-                  </span>
-                </div>
-                <div className="my-space-sm flex items-baseline gap-space-sm">
-                  <span className="font-headline-section text-headline-section text-fg-default font-semibold tracking-tight">
+              <div className="glass-card p-6 flex flex-col gap-2">
+                <span className="font-label-ui text-label-ui text-fg-muted uppercase tracking-wider">
+                  PRs Analyzed
+                </span>
+                <div className="flex items-baseline gap-3">
+                  <span className="text-3xl font-bold text-fg-default font-code-diff">
                     {totalReviews}
                   </span>
+                  {totalReviews > 0 && (
+                    <span className="flex items-center gap-1 font-badge-mono text-[11px] text-accent-green-emphasis bg-accent-green-emphasis/10 px-1.5 py-0.5 rounded">
+                      <TrendingUp size={12} />
+                      +12%
+                    </span>
+                  )}
                 </div>
-                <div className="flex items-center justify-between text-fg-muted font-body-sm text-body-sm">
+                <div className="flex items-center justify-between text-fg-muted font-body-sm text-body-sm mt-2">
                   <span>Pass rate</span>
                   <span className="font-badge-mono text-badge-mono text-fg-default font-medium">
                     {passRate}%
@@ -174,24 +174,16 @@ export default function DashboardOverview() {
               </div>
 
               {/* Card 2: Passed Clean */}
-              <div className="bg-canvas-subtle p-space-md rounded-lg shadow-sm flex flex-col justify-between group hover:bg-surface-container transition-colors">
-                <div className="flex items-center justify-between">
-                  <span className="font-label-ui text-label-ui text-fg-muted uppercase tracking-wider">
-                    Passed Clean
-                  </span>
-                  <span className="material-symbols-outlined text-accent-green-hover text-[20px]">
-                    verified
-                  </span>
-                </div>
-                <div className="my-space-sm flex items-baseline gap-space-sm">
-                  <span className="font-headline-section text-headline-section text-fg-default font-semibold tracking-tight">
+              <div className="glass-card p-6 flex flex-col gap-2">
+                <span className="font-label-ui text-label-ui text-fg-muted uppercase tracking-wider">
+                  Passed Clean
+                </span>
+                <div className="flex items-baseline gap-3">
+                  <span className="text-3xl font-bold text-fg-default font-code-diff">
                     {passedClean}
                   </span>
-                  <span className="font-badge-mono text-badge-mono text-diff-addition-text bg-diff-addition-line px-1.5 py-0.5 rounded">
-                    no issues
-                  </span>
                 </div>
-                <div className="flex items-center justify-between text-fg-muted font-body-sm text-body-sm">
+                <div className="flex items-center justify-between text-fg-muted font-body-sm text-body-sm mt-2">
                   <span>Zero findings</span>
                   <span className="font-badge-mono text-badge-mono text-fg-default">
                     of {totalReviews} total
@@ -206,24 +198,21 @@ export default function DashboardOverview() {
               </div>
 
               {/* Card 3: Active Findings */}
-              <div className="bg-canvas-subtle p-space-md rounded-lg shadow-sm flex flex-col justify-between group hover:bg-surface-container transition-colors">
-                <div className="flex items-center justify-between">
-                  <span className="font-label-ui text-label-ui text-fg-muted uppercase tracking-wider">
-                    Active Findings
-                  </span>
-                  <span className="material-symbols-outlined text-accent-amber text-[20px]">
-                    hourglass_top
-                  </span>
-                </div>
-                <div className="my-space-sm flex items-baseline gap-space-sm">
-                  <span className="font-headline-section text-headline-section text-fg-default font-semibold tracking-tight">
+              <div className="glass-card p-6 flex flex-col gap-2">
+                <span className="font-label-ui text-label-ui text-fg-muted uppercase tracking-wider">
+                  Active Findings
+                </span>
+                <div className="flex items-baseline gap-3">
+                  <span className="text-3xl font-bold text-fg-default font-code-diff">
                     {activeFindings}
                   </span>
-                  <span className="font-badge-mono text-badge-mono text-accent-amber bg-surface-container px-1.5 py-0.5 rounded">
-                    pending review
-                  </span>
+                  {activeFindings > 0 && (
+                    <span className="flex items-center gap-1 font-badge-mono text-[11px] text-accent-amber bg-accent-amber/10 px-1.5 py-0.5 rounded">
+                      Needs review
+                    </span>
+                  )}
                 </div>
-                <div className="flex items-center justify-between text-fg-muted font-body-sm text-body-sm">
+                <div className="flex items-center justify-between text-fg-muted font-body-sm text-body-sm mt-2">
                   <span>Across all repos</span>
                 </div>
                 <div className="w-full bg-surface-container-highest h-1 rounded-full mt-2 overflow-hidden">
@@ -237,24 +226,19 @@ export default function DashboardOverview() {
               </div>
 
               {/* Card 4: Repositories */}
-              <div className="bg-canvas-subtle p-space-md rounded-lg shadow-sm flex flex-col justify-between group hover:bg-surface-container transition-colors">
-                <div className="flex items-center justify-between">
-                  <span className="font-label-ui text-label-ui text-fg-muted uppercase tracking-wider">
-                    Repositories
-                  </span>
-                  <span className="material-symbols-outlined text-accent-blue text-[20px]">
-                    source_environment
-                  </span>
-                </div>
-                <div className="my-space-sm flex items-baseline gap-space-sm">
-                  <span className="font-headline-section text-headline-section text-fg-default font-semibold tracking-tight">
+              <div className="glass-card p-6 flex flex-col gap-2">
+                <span className="font-label-ui text-label-ui text-fg-muted uppercase tracking-wider">
+                  Repositories
+                </span>
+                <div className="flex items-baseline gap-3">
+                  <span className="text-3xl font-bold text-fg-default font-code-diff">
                     {repoCount}
                   </span>
-                  <span className="font-badge-mono text-badge-mono text-accent-blue bg-surface-container px-1.5 py-0.5 rounded">
+                  <span className="font-badge-mono text-[11px] text-accent-blue bg-accent-blue/10 px-1.5 py-0.5 rounded">
                     connected
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-fg-muted font-body-sm text-body-sm">
+                <div className="flex items-center justify-between text-fg-muted font-body-sm text-body-sm mt-2">
                   <span>Monitored repos</span>
                   <span className="font-badge-mono text-badge-mono text-fg-default">
                     webhook active
@@ -269,10 +253,10 @@ export default function DashboardOverview() {
         </section>
 
         {/* Ground Truth System Banner */}
-        <section className="bg-surface-container-low p-space-md rounded-lg shadow-sm flex flex-col lg:flex-row items-start lg:items-center justify-between gap-space-md relative overflow-hidden">
+        <section className="glass-card p-space-md flex flex-col lg:flex-row items-start lg:items-center justify-between gap-space-md relative overflow-hidden">
           <div className="flex items-start gap-space-md z-10">
             <div className="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center flex-shrink-0 text-accent-blue shadow-inner">
-              <span className="material-symbols-outlined text-[24px]">verified_user</span>
+              <ShieldCheck size={24} />
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-space-sm flex-wrap">
@@ -292,32 +276,74 @@ export default function DashboardOverview() {
           {/* Verification Status Legend */}
           <div className="flex flex-wrap items-center gap-space-sm z-10">
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-diff-addition-line text-diff-addition-text font-badge-mono text-badge-mono shadow-sm">
-              <span className="material-symbols-outlined text-[15px]">check_circle</span>
+              <CheckCircle2 size={15} />
               <span>Confirmed</span>
             </div>
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface-container text-accent-amber font-badge-mono text-badge-mono shadow-sm">
-              <span className="material-symbols-outlined text-[15px]">schedule</span>
+              <Activity size={15} />
               <span>Unverified</span>
             </div>
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-diff-deletion-line text-diff-deletion-text font-badge-mono text-badge-mono shadow-sm">
-              <span className="material-symbols-outlined text-[15px]">cancel</span>
+              <AlertCircle size={15} />
               <span>Rejected</span>
             </div>
           </div>
           <div className="absolute right-0 top-0 bottom-0 w-96 bg-gradient-to-l from-surface-container-high/40 to-transparent pointer-events-none" />
         </section>
 
+        {/* Developer Tools / Quick Actions Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-space-4">
+          <div className="glass-card p-6 flex flex-col gap-4">
+            <h2 className="font-title-card text-title-card text-fg-default font-semibold mb-2">
+              Developer Tools
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Link
+                href="/codechat"
+                className="flex items-start gap-3 p-4 rounded-xl border border-border-default bg-surface-container/50 hover:bg-surface-container-high hover:border-fg-subtle transition-all group"
+              >
+                <div className="w-10 h-10 rounded-lg bg-accent-purple/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                  <TerminalSquare size={20} className="text-accent-purple" />
+                </div>
+                <div>
+                  <h3 className="font-label-ui text-label-ui text-fg-default font-medium">
+                    CodeChat
+                  </h3>
+                  <p className="font-body-sm text-body-sm text-fg-muted line-clamp-2 mt-1">
+                    Chat with your codebase and propose PRs.
+                  </p>
+                </div>
+              </Link>
+
+              <Link
+                href="/incident"
+                className="flex items-start gap-3 p-4 rounded-xl border border-border-default bg-surface-container/50 hover:bg-surface-container-high hover:border-fg-subtle transition-all group"
+              >
+                <div className="w-10 h-10 rounded-lg bg-accent-red/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                  <Activity size={20} className="text-accent-red" />
+                </div>
+                <div>
+                  <h3 className="font-label-ui text-label-ui text-fg-default font-medium">
+                    Incident Tracer
+                  </h3>
+                  <p className="font-body-sm text-body-sm text-fg-muted line-clamp-2 mt-1">
+                    Paste a stack trace to find the root cause.
+                  </p>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </div>
+
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
           {/* Left: Repositories */}
           <div className="lg:col-span-8 flex flex-col gap-space-lg min-w-0">
             {/* Connected Repositories */}
-            <div className="bg-canvas-subtle rounded-lg shadow-sm flex flex-col overflow-hidden">
+            <div className="glass-card rounded-lg shadow-sm flex flex-col overflow-hidden">
               <div className="p-space-md flex items-center justify-between bg-surface-container">
                 <div className="flex items-center gap-space-sm">
-                  <span className="material-symbols-outlined text-fg-muted text-[20px]">
-                    source_environment
-                  </span>
+                  <ShieldCheck className="text-fg-muted" size={20} />
                   <h2 className="font-title-card text-title-card text-fg-default font-semibold">
                     Connected Repositories
                   </h2>
@@ -331,7 +357,7 @@ export default function DashboardOverview() {
                   rel="noopener noreferrer"
                   className="bg-canvas-inset hover:bg-surface-container-high text-fg-default px-3 py-1.5 rounded-lg font-label-ui text-label-ui flex items-center gap-1.5 transition-colors"
                 >
-                  <span className="material-symbols-outlined text-[16px]">add</span>
+                  <Plus size={16} />
                   <span>Add Repository</span>
                 </a>
               </div>
@@ -360,9 +386,7 @@ export default function DashboardOverview() {
                       className="bg-canvas-default rounded-lg p-space-md flex flex-col sm:flex-row sm:items-center justify-between gap-space-md shadow-sm hover:bg-surface-container-low transition-colors"
                     >
                       <div className="flex items-center gap-space-sm">
-                        <span className="material-symbols-outlined text-accent-blue text-[22px]">
-                          account_tree
-                        </span>
+                        <ShieldCheck className="text-accent-blue" size={22} />
                         <div className="flex flex-col">
                           <div className="flex items-center gap-space-xs">
                             <span className="font-title-card text-title-card text-fg-default hover:text-accent-blue font-semibold">
@@ -398,13 +422,11 @@ export default function DashboardOverview() {
 
           {/* Right: Verification Feed */}
           <div className="lg:col-span-4 flex flex-col gap-space-lg min-w-0">
-            <div className="bg-canvas-subtle rounded-lg shadow-sm flex flex-col overflow-hidden">
+            <div className="glass-card rounded-lg shadow-sm flex flex-col overflow-hidden">
               <div className="p-space-md bg-surface-container flex flex-col gap-space-sm">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-space-xs">
-                    <span className="material-symbols-outlined text-fg-muted text-[20px]">
-                      rss_feed
-                    </span>
+                    <Activity className="text-fg-muted" size={20} />
                     <h3 className="font-title-card-sm text-title-card-sm text-fg-default font-semibold">
                       Recent Reviews
                     </h3>
@@ -448,13 +470,11 @@ export default function DashboardOverview() {
                     ))}
                   </div>
                 ) : filteredReviews.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-8 gap-2 text-center">
-                    <span className="material-symbols-outlined text-[28px] text-fg-muted">
-                      rate_review
-                    </span>
-                    <p className="font-body-sm text-body-sm text-fg-muted">
+                  <div className="flex flex-col items-center justify-center py-8 gap-2 text-center border border-dashed border-border-default rounded-xl bg-surface-container/30">
+                    <ShieldCheck size={24} className="text-fg-muted mb-2" />
+                    <span className="font-body-sm text-body-sm text-fg-muted">
                       No reviews yet. Open a PR on a connected repo to trigger a review.
-                    </p>
+                    </span>
                   </div>
                 ) : (
                   filteredReviews.map((review) => (
@@ -466,16 +486,12 @@ export default function DashboardOverview() {
                         <div className="flex items-center gap-space-xs">
                           {review.status === "completed" && review.findingCount === 0 ? (
                             <span className="font-badge-mono text-badge-mono px-2 py-0.5 rounded bg-diff-addition-line text-diff-addition-text flex items-center gap-1">
-                              <span className="material-symbols-outlined text-[13px]">
-                                check_circle
-                              </span>
+                              <CheckCircle2 size={13} />
                               Clean
                             </span>
                           ) : review.status === "completed" ? (
                             <span className="font-badge-mono text-badge-mono px-2 py-0.5 rounded bg-surface-container text-accent-amber flex items-center gap-1">
-                              <span className="material-symbols-outlined text-[13px]">
-                                warning
-                              </span>
+                              <AlertTriangle size={13} />
                               {review.findingCount} findings
                             </span>
                           ) : review.status === "failed" ? (

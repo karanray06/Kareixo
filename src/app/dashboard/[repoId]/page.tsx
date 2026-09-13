@@ -2,6 +2,7 @@
 
 import { useEffect, useState, use } from "react";
 import Link from "next/link";
+import { AlertTriangle, GitBranch, ExternalLink, RefreshCw, FileCheck2, GitMerge, CheckCircle2, Bot } from "lucide-react";
 
 interface RepoDetailData {
   repository: {
@@ -81,7 +82,7 @@ export default function RepositoryDetails({ params }: { params: Promise<{ repoId
   if (!data?.repository) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4">
-        <span className="material-symbols-outlined text-[40px] text-fg-muted">error</span>
+        <AlertTriangle size={40} className="text-fg-muted" />
         <p className="font-body-base text-body-base text-fg-muted">Repository not found</p>
         <Link
           href="/dashboard"
@@ -107,12 +108,10 @@ export default function RepositoryDetails({ params }: { params: Promise<{ repoId
     <div className="flex flex-col w-full">
       <div className="w-full px-gutter py-space-md flex flex-col gap-space-lg max-w-[1720px] mx-auto">
         {/* Repository Header */}
-        <div className="flex flex-col gap-space-sm bg-canvas-subtle p-space-md rounded-xl shadow-sm">
+        <div className="flex flex-col gap-space-sm glass-card p-6">
           <div className="flex flex-wrap items-center justify-between gap-space-md">
             <div className="flex items-center gap-space-sm flex-wrap">
-              <span className="material-symbols-outlined text-accent-blue text-[24px]">
-                account_tree
-              </span>
+              <GitBranch className="text-accent-blue" size={24} />
               <span className="font-headline-section text-headline-section text-fg-muted font-medium">
                 {owner}
               </span>
@@ -123,26 +122,23 @@ export default function RepositoryDetails({ params }: { params: Promise<{ repoId
             </div>
             <div className="flex items-center gap-space-xs">
               <a
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container text-fg-default hover:bg-surface-bright font-title-card-sm text-title-card-sm transition-colors shadow-sm"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border-default hover:bg-surface-container-high transition-colors text-fg-default font-title-card-sm text-title-card-sm"
                 href={`https://github.com/${repo.fullName}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <span className="material-symbols-outlined text-[18px] text-fg-muted">
-                  open_in_new
-                </span>
+                <ExternalLink size={16} className="text-fg-muted" />
                 <span>GitHub</span>
               </a>
               <button
                 onClick={handleRescan}
                 disabled={rescanning}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container text-fg-default hover:bg-surface-bright font-title-card-sm text-title-card-sm transition-colors shadow-sm disabled:opacity-60"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border-default hover:bg-surface-container-high transition-colors text-fg-default font-title-card-sm text-title-card-sm disabled:opacity-60"
               >
-                <span
-                  className={`material-symbols-outlined text-[18px] text-accent-blue ${rescanning ? "animate-spin" : ""}`}
-                >
-                  sync
-                </span>
+                <RefreshCw
+                  size={16}
+                  className={`text-accent-blue ${rescanning ? "animate-spin" : ""}`}
+                />
                 <span>{rescanning ? "Syncing..." : "Sync"}</span>
               </button>
             </div>
@@ -176,7 +172,7 @@ export default function RepositoryDetails({ params }: { params: Promise<{ repoId
           <div className="lg:col-span-8 flex flex-col gap-space-md">
             {/* Stats cards row */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-space-md">
-              <div className="bg-canvas-subtle p-space-md rounded-lg shadow-sm">
+              <div className="glass-card p-6 flex flex-col gap-2">
                 <div className="flex items-center justify-between text-body-sm font-body-sm">
                   <span className="text-fg-muted">Total Reviews</span>
                   <span className="font-badge-mono text-badge-mono text-fg-default">
@@ -187,7 +183,7 @@ export default function RepositoryDetails({ params }: { params: Promise<{ repoId
                   <div className="bg-accent-purple h-full rounded-full" style={{ width: "100%" }} />
                 </div>
               </div>
-              <div className="bg-canvas-subtle p-space-md rounded-lg shadow-sm">
+              <div className="glass-card p-6 flex flex-col gap-2">
                 <div className="flex items-center justify-between text-body-sm font-body-sm">
                   <span className="text-fg-muted">Passed Clean</span>
                   <span className="font-badge-mono text-badge-mono text-diff-addition-text">
@@ -201,7 +197,7 @@ export default function RepositoryDetails({ params }: { params: Promise<{ repoId
                   />
                 </div>
               </div>
-              <div className="bg-canvas-subtle p-space-md rounded-lg shadow-sm">
+              <div className="glass-card p-6 flex flex-col gap-2">
                 <div className="flex items-center justify-between text-body-sm font-body-sm">
                   <span className="text-fg-muted">Active Findings</span>
                   <span className="font-badge-mono text-badge-mono text-accent-amber">
@@ -220,12 +216,10 @@ export default function RepositoryDetails({ params }: { params: Promise<{ repoId
             </div>
 
             {/* Recent Reviews */}
-            <div className="bg-canvas-subtle rounded-lg shadow-sm flex flex-col overflow-hidden">
-              <div className="px-space-md py-space-sm bg-surface-container flex items-center justify-between">
+            <div className="glass-card flex flex-col overflow-hidden">
+              <div className="px-space-md py-space-sm bg-surface-container/50 border-b border-border-default flex items-center justify-between">
                 <div className="flex items-center gap-space-sm">
-                  <span className="material-symbols-outlined text-fg-muted text-[20px]">
-                    rate_review
-                  </span>
+                  <FileCheck2 size={20} className="text-fg-muted" />
                   <span className="font-title-card text-title-card text-fg-default font-semibold">
                     Recent Reviews
                   </span>
@@ -237,10 +231,8 @@ export default function RepositoryDetails({ params }: { params: Promise<{ repoId
 
               <div className="p-space-md flex flex-col gap-space-sm">
                 {recentReviews.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-8 gap-2 text-center">
-                    <span className="material-symbols-outlined text-[28px] text-fg-muted">
-                      rate_review
-                    </span>
+                  <div className="flex flex-col items-center justify-center py-8 gap-2 text-center border border-dashed border-border-default rounded-xl bg-surface-container/30">
+                    <FileCheck2 size={28} className="text-fg-muted mb-2" />
                     <p className="font-body-sm text-body-sm text-fg-muted">
                       No reviews yet for this repository.
                     </p>
@@ -249,22 +241,22 @@ export default function RepositoryDetails({ params }: { params: Promise<{ repoId
                   recentReviews.map((review) => (
                     <div
                       key={review.id}
-                      className="bg-canvas-default p-space-md rounded-lg flex flex-col gap-space-sm shadow-sm hover:bg-surface-container-low transition-colors"
+                      className="bg-canvas-default p-space-md rounded-lg flex flex-col gap-space-sm shadow-sm border border-border-default hover:bg-surface-container-low transition-colors"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-space-sm">
-                          <span className="material-symbols-outlined text-accent-purple text-[18px]">
-                            merge
-                          </span>
+                          <GitMerge size={18} className="text-accent-purple" />
                           <span className="font-title-card-sm text-title-card-sm text-fg-default font-semibold">
                             PR #{review.prNumber}
                           </span>
                           {review.status === "completed" && review.findingCount === 0 ? (
-                            <span className="font-badge-mono text-badge-mono px-2 py-0.5 rounded bg-diff-addition-line text-diff-addition-text">
+                            <span className="font-badge-mono text-badge-mono px-2 py-0.5 rounded bg-diff-addition-line text-diff-addition-text flex items-center gap-1">
+                              <CheckCircle2 size={12} />
                               Clean
                             </span>
                           ) : review.status === "completed" ? (
-                            <span className="font-badge-mono text-badge-mono px-2 py-0.5 rounded bg-surface-container text-accent-amber">
+                            <span className="font-badge-mono text-badge-mono px-2 py-0.5 rounded bg-accent-amber/10 text-accent-amber flex items-center gap-1">
+                              <AlertTriangle size={12} />
                               {review.findingCount} findings
                             </span>
                           ) : review.status === "failed" ? (
@@ -295,17 +287,15 @@ export default function RepositoryDetails({ params }: { params: Promise<{ repoId
 
           {/* Right: Review Agent Info */}
           <div className="lg:col-span-4 flex flex-col gap-space-md">
-            <div className="bg-surface-container p-space-md rounded-xl shadow-md flex flex-col gap-space-md">
+            <div className="glass-card p-6 flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[20px] text-accent-purple">
-                    smart_toy
-                  </span>
+                  <Bot size={20} className="text-accent-purple" />
                   <span className="font-title-card text-title-card text-fg-default font-semibold">
                     Review Agent
                   </span>
                 </div>
-                <span className="font-badge-mono text-badge-mono px-2 py-0.5 rounded bg-surface-container-high text-fg-muted">
+                <span className="font-badge-mono text-badge-mono px-2 py-0.5 rounded bg-accent-purple/10 text-accent-purple border border-accent-purple/20">
                   Gemini
                 </span>
               </div>
@@ -362,14 +352,14 @@ export default function RepositoryDetails({ params }: { params: Promise<{ repoId
                 </div>
               </div>
 
-              <div className="flex flex-col gap-space-sm pt-space-xs">
+              <div className="flex flex-col gap-space-sm pt-space-xs mt-2">
                 <a
                   href={`https://github.com/${repo.fullName}/pulls`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary-container hover:bg-accent-green-hover text-on-primary font-title-card-sm text-title-card-sm font-semibold transition-colors shadow-sm"
+                  className="glow-button w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-accent-green-emphasis hover:bg-accent-green-hover text-white font-title-card-sm text-title-card-sm font-semibold transition-all shadow-lg shadow-accent-green-emphasis/20"
                 >
-                  <span className="material-symbols-outlined text-[18px]">open_in_new</span>
+                  <ExternalLink size={18} />
                   View Pull Requests on GitHub
                 </a>
               </div>

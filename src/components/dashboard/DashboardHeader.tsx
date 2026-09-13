@@ -4,6 +4,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { FolderOpen, GitBranch, ChevronDown, Check, Search, RefreshCw, CheckCircle, AlertCircle, Bell, X, BellOff, User } from "lucide-react";
 
 interface DashboardHeaderProps {
   user: {
@@ -88,23 +89,17 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
                 onClick={() => setShowRepoSwitcher(!showRepoSwitcher)}
                 className="flex items-center gap-space-xs bg-canvas-inset px-space-sm py-1.5 rounded-lg text-fg-default cursor-pointer group hover:bg-surface-container transition-colors"
               >
-                <span className="material-symbols-outlined text-fg-muted text-[18px] group-hover:text-accent-blue transition-colors">
-                  folder_open
-                </span>
+                <FolderOpen size={18} className="text-fg-muted group-hover:text-accent-blue transition-colors" />
                 <span className="font-code-diff text-code-diff text-fg-default font-medium">
                   {activeRepo.fullName}
                 </span>
                 {activeRepo.defaultBranch && (
                   <span className="flex items-center gap-0.5 text-fg-muted font-badge-mono text-badge-mono px-1.5 py-0.5 bg-surface-container rounded">
-                    <span className="material-symbols-outlined text-[14px] text-accent-purple">
-                      alt_route
-                    </span>
+                    <GitBranch size={14} className="text-accent-purple" />
                     {activeRepo.defaultBranch}
                   </span>
                 )}
-                <span className="material-symbols-outlined text-fg-muted text-[16px]">
-                  expand_more
-                </span>
+                <ChevronDown size={16} className="text-fg-muted" />
               </button>
 
               {/* Repo dropdown */}
@@ -120,9 +115,11 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
                       }`}
                       onClick={() => setShowRepoSwitcher(false)}
                     >
-                      <span className="material-symbols-outlined text-[16px]">
-                        {repo.fullName === activeRepo.fullName ? "check" : "folder_open"}
-                      </span>
+                      {repo.fullName === activeRepo.fullName ? (
+                        <Check size={16} />
+                      ) : (
+                        <FolderOpen size={16} />
+                      )}
                       {repo.fullName}
                     </button>
                   ))}
@@ -166,7 +163,7 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
             className="flex items-center gap-space-sm bg-canvas-inset px-3 py-1.5 rounded-lg text-fg-muted hover:text-fg-default hover:bg-surface-container transition-colors"
             type="button"
           >
-            <span className="material-symbols-outlined text-[18px]">search</span>
+            <Search size={18} />
             <span className="hidden md:inline font-body-sm text-body-sm text-fg-subtle">
               Type{" "}
               <kbd className="px-1.5 py-0.5 rounded bg-surface-container font-badge-mono text-badge-mono text-fg-muted">
@@ -182,15 +179,13 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
             onClick={handleSync}
             disabled={syncing}
           >
-            <span
-              className={`material-symbols-outlined text-[16px] ${syncing ? "animate-spin" : ""}`}
-            >
-              {syncStatus === "success"
-                ? "check_circle"
-                : syncStatus === "error"
-                  ? "error"
-                  : "sync"}
-            </span>
+            {syncStatus === "success" ? (
+              <CheckCircle size={16} />
+            ) : syncStatus === "error" ? (
+              <AlertCircle size={16} />
+            ) : (
+              <RefreshCw size={16} className={syncing ? "animate-spin" : ""} />
+            )}
             <span className="hidden xl:inline">
               {syncing
                 ? "Syncing..."
@@ -210,7 +205,7 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
               type="button"
               onClick={() => setShowNotifications(!showNotifications)}
             >
-              <span className="material-symbols-outlined text-[20px]">notifications</span>
+              <Bell size={20} />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-accent-blue" />
             </button>
 
@@ -224,13 +219,11 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
                     className="text-fg-muted hover:text-fg-default transition-colors"
                     onClick={() => setShowNotifications(false)}
                   >
-                    <span className="material-symbols-outlined text-[18px]">close</span>
+                    <X size={18} />
                   </button>
                 </div>
                 <div className="flex flex-col items-center justify-center py-6 gap-2 text-center">
-                  <span className="material-symbols-outlined text-[28px] text-fg-muted">
-                    notifications_off
-                  </span>
+                  <BellOff size={28} className="text-fg-muted" />
                   <p className="font-body-sm text-body-sm text-fg-muted">
                     No new notifications
                   </p>
@@ -251,9 +244,7 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
               />
             ) : (
               <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0 shadow-sm">
-                <span className="material-symbols-outlined text-on-primary text-[18px]">
-                  person
-                </span>
+                <User size={18} className="text-on-primary" />
               </div>
             )}
             <div className="hidden 2xl:flex flex-col text-left">
@@ -264,9 +255,7 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
                 workspace
               </span>
             </div>
-            <span className="material-symbols-outlined text-fg-muted text-[16px] hidden sm:inline">
-              arrow_drop_down
-            </span>
+            <ChevronDown size={16} className="text-fg-muted hidden sm:inline" />
           </div>
         </div>
       </div>

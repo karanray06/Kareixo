@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { FileCheck2, Clock, ArrowRight } from "lucide-react";
 
 interface Review {
   id: string;
@@ -139,7 +140,7 @@ export default function ReviewsPage() {
             {[...Array(5)].map((_, i) => (
               <div
                 key={i}
-                className="bg-surface rounded-xl border border-border p-space-4 flex flex-col gap-3 animate-pulse"
+                className="glass-card p-4 flex flex-col gap-3 animate-pulse"
               >
                 <div className="flex items-center gap-2">
                   <div className="h-4 w-20 bg-surface-container rounded"></div>
@@ -152,10 +153,8 @@ export default function ReviewsPage() {
           </div>
         ) : filteredReviews.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 gap-6">
-            <div className="w-20 h-20 rounded-2xl bg-surface-subtle border border-border flex items-center justify-center">
-              <span className="material-symbols-outlined text-[40px] text-text-muted">
-                rate_review
-              </span>
+            <div className="w-20 h-20 rounded-2xl bg-surface-container border border-border-default flex items-center justify-center shadow-lg">
+              <FileCheck2 size={40} className="text-fg-muted" />
             </div>
             <div className="text-center max-w-md">
               <h2 className="font-title-card text-title-card text-text-primary mb-2">
@@ -175,7 +174,7 @@ export default function ReviewsPage() {
               return (
                 <div
                   key={review.id}
-                  className="group bg-surface rounded-xl border border-border p-space-4 hover:border-border-strong hover:shadow-md transition-all flex flex-col gap-space-3"
+                  className="group glass-card p-4 hover:border-fg-subtle hover:shadow-lg transition-all flex flex-col gap-3"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div className="flex items-center gap-2.5 flex-wrap">
@@ -194,26 +193,24 @@ export default function ReviewsPage() {
 
                   <div className="flex flex-wrap items-center justify-between gap-3 pt-1 text-body-sm text-text-secondary">
                     <div className="flex items-center gap-space-3 flex-wrap font-badge-mono text-[12px]">
-                      <span className="text-text-muted">{review.repoFullName}</span>
-                      <span className="text-text-muted">·</span>
-                      <span className="flex items-center gap-1 text-text-secondary">
-                        <span className="material-symbols-outlined text-[14px]">schedule</span>
+                      <span className="text-fg-muted">{review.repoFullName}</span>
+                      <span className="text-fg-muted">·</span>
+                      <span className="flex items-center gap-1 text-fg-subtle">
+                        <Clock size={14} />
                         {timeAgo(review.createdAt)}
                       </span>
-                      <span className="text-text-muted">·</span>
-                      <span className="text-text-muted">
+                      <span className="text-fg-muted">·</span>
+                      <span className="text-fg-muted">
                         {review.findingCount} finding{review.findingCount !== 1 ? "s" : ""}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 ml-auto">
                       <Link
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-subtle hover:bg-surface-container text-text-primary font-label-ui text-label-ui border border-border transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border-default hover:bg-surface-container text-fg-default font-label-ui text-label-ui transition-colors"
                         href={`/dashboard/${review.repositoryId}`}
                       >
                         <span>View Details</span>
-                        <span className="material-symbols-outlined text-[14px]">
-                          arrow_forward
-                        </span>
+                        <ArrowRight size={14} />
                       </Link>
                     </div>
                   </div>

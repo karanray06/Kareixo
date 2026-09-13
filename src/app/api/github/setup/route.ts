@@ -34,6 +34,20 @@ export async function GET(req: Request) {
             userId: session.user.id,
           },
         });
+
+      // Automatically trigger a sync to populate the user's repositories immediately
+      try {
+        const syncUrl = new URL("/api/repositories/sync", req.url).toString();
+        await fetch(syncUrl, {
+          method: "POST",
+          headers: {
+            // Forward the cookie so the sync route can authenticate the user
+            cookie: req.headers.get("cookie") || "",
+          },
+        });
+      } catch (err) {
+        console.error("Auto-sync failed during setup:", err);
+      }
     }
   }
 

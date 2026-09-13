@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession, signOut } from "next-auth/react";
+import { User, ShieldCheck, Code2, Settings, ExternalLink, SlidersHorizontal, ArrowRight, Award, AlertTriangle, LogOut } from "lucide-react";
 
 export default function SettingsPage() {
   const { data: session } = useSession();
@@ -22,39 +23,35 @@ export default function SettingsPage() {
           {/* Main Content */}
           <div className="lg:col-span-2 flex flex-col gap-space-6">
             {/* Account */}
-            <div className="bg-surface rounded-xl border border-border p-space-6 flex flex-col gap-space-4 shadow-sm">
-              <div className="flex items-center gap-2 pb-space-3 border-b border-border">
-                <span className="material-symbols-outlined text-[18px] text-text-secondary">
-                  person
-                </span>
-                <h2 className="font-title-card-sm text-title-card-sm text-text-primary">
+            <div className="glass-card p-6 flex flex-col gap-4">
+              <div className="flex items-center gap-2 pb-3 border-b border-border-default">
+                <User size={18} className="text-fg-subtle" />
+                <h2 className="font-title-card-sm text-title-card-sm text-fg-default font-semibold">
                   Account
                 </h2>
               </div>
 
-              <div className="flex items-center gap-space-4">
+              <div className="flex items-center gap-4">
                 {session?.user?.image ? (
                   <img
                     alt="Profile"
-                    className="w-16 h-16 rounded-full object-cover border-2 border-border"
+                    className="w-16 h-16 rounded-full object-cover border-2 border-border-default shadow-md"
                     src={session.user.image}
                   />
                 ) : (
-                  <div className="w-16 h-16 rounded-full bg-surface-container border-2 border-border flex items-center justify-center font-bold text-xl text-text-primary">
+                  <div className="w-16 h-16 rounded-full bg-surface-container border-2 border-border-default flex items-center justify-center font-bold text-xl text-fg-default shadow-md">
                     {session?.user?.name?.charAt(0) || "U"}
                   </div>
                 )}
                 <div className="flex flex-col gap-0.5">
-                  <span className="font-title-card-sm text-title-card-sm text-text-primary">
+                  <span className="font-title-card-sm text-title-card-sm text-fg-default font-semibold">
                     {session?.user?.name || "User"}
                   </span>
-                  <span className="font-badge-mono text-badge-mono text-text-secondary">
+                  <span className="font-badge-mono text-badge-mono text-fg-muted">
                     {session?.user?.email || "No email"}
                   </span>
-                  <span className="font-badge-mono text-[11px] text-text-muted flex items-center gap-1 mt-1">
-                    <span className="material-symbols-outlined text-[14px]">
-                      verified
-                    </span>
+                  <span className="font-badge-mono text-[11px] text-fg-subtle flex items-center gap-1.5 mt-1">
+                    <ShieldCheck size={14} className="text-accent-blue" />
                     Connected via GitHub OAuth
                   </span>
                 </div>
@@ -62,59 +59,53 @@ export default function SettingsPage() {
             </div>
 
             {/* GitHub App */}
-            <div className="bg-surface rounded-xl border border-border p-space-6 flex flex-col gap-space-4 shadow-sm">
-              <div className="flex items-center gap-2 pb-space-3 border-b border-border">
-                <span className="material-symbols-outlined text-[18px] text-text-secondary">
-                  code
-                </span>
-                <h2 className="font-title-card-sm text-title-card-sm text-text-primary">
+            <div className="glass-card p-6 flex flex-col gap-4">
+              <div className="flex items-center gap-2 pb-3 border-b border-border-default">
+                <Code2 size={18} className="text-fg-subtle" />
+                <h2 className="font-title-card-sm text-title-card-sm text-fg-default font-semibold">
                   GitHub App Installation
                 </h2>
               </div>
 
-              <p className="font-body-base text-body-base text-text-secondary">
+              <p className="font-body-base text-body-base text-fg-muted">
                 Manage which repositories Kareixo has access to by updating your GitHub App
                 installation settings.
               </p>
 
               <div className="flex items-center gap-3">
                 <a
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-subtle border border-border text-text-primary font-label-ui text-label-ui hover:bg-surface-container transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-container/50 border border-border-default text-fg-default font-label-ui text-label-ui hover:bg-surface-container-high transition-colors shadow-sm"
                   href="https://github.com/apps/kareixo-reviewer/installations/new"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <span className="material-symbols-outlined text-[16px]">settings</span>
+                  <Settings size={16} />
                   <span>Manage Installation</span>
-                  <span className="material-symbols-outlined text-[14px] text-text-muted">
-                    open_in_new
-                  </span>
+                  <ExternalLink size={14} className="text-fg-muted" />
                 </a>
               </div>
             </div>
 
             {/* Review Preferences */}
-            <div className="bg-surface rounded-xl border border-border p-space-6 flex flex-col gap-space-4 shadow-sm">
-              <div className="flex items-center gap-2 pb-space-3 border-b border-border">
-                <span className="material-symbols-outlined text-[18px] text-text-secondary">
-                  tune
-                </span>
-                <h2 className="font-title-card-sm text-title-card-sm text-text-primary">
+            <div className="glass-card p-6 flex flex-col gap-4">
+              <div className="flex items-center gap-2 pb-3 border-b border-border-default">
+                <SlidersHorizontal size={18} className="text-fg-subtle" />
+                <h2 className="font-title-card-sm text-title-card-sm text-fg-default font-semibold">
                   Review Preferences
                 </h2>
               </div>
 
-              <p className="font-body-base text-body-base text-text-secondary">
+              <p className="font-body-base text-body-base text-fg-muted">
                 Per-repository review settings (categories, analysis tier, custom instructions) can
                 be configured from each repository&apos;s detail page.
               </p>
 
               <a
-                className="inline-flex items-center gap-1.5 text-secondary font-label-ui text-label-ui hover:underline underline-offset-4 transition-colors self-start"
+                className="inline-flex items-center gap-1.5 text-accent-blue font-label-ui text-label-ui hover:underline underline-offset-4 transition-colors self-start"
                 href="/dashboard/repositories"
               >
                 <span>Go to Repositories</span>
-                <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                <ArrowRight size={14} />
               </a>
             </div>
           </div>
@@ -122,41 +113,39 @@ export default function SettingsPage() {
           {/* Sidebar */}
           <div className="flex flex-col gap-space-4">
             {/* Plan */}
-            <div className="bg-surface rounded-xl border border-border p-space-4 flex flex-col gap-space-3 shadow-sm">
+            <div className="glass-card p-4 flex flex-col gap-3">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px] text-secondary">
-                  workspace_premium
-                </span>
-                <h3 className="font-title-card-sm text-title-card-sm text-text-primary">
+                <Award size={18} className="text-accent-purple" />
+                <h3 className="font-title-card-sm text-title-card-sm text-fg-default font-semibold">
                   Plan
                 </h3>
               </div>
-              <div className="p-3 rounded-lg bg-surface-subtle border border-border text-center">
-                <span className="font-headline-section text-[24px] text-text-primary font-bold">
+              <div className="p-3 rounded-lg bg-surface-container/30 border border-border-default text-center">
+                <span className="font-headline-section text-[24px] text-fg-default font-bold">
                   Free
                 </span>
-                <p className="font-badge-mono text-[11px] text-text-muted mt-1">
+                <p className="font-badge-mono text-[11px] text-fg-muted mt-1">
                   Unlimited public &amp; private PR reviews
                 </p>
               </div>
             </div>
 
             {/* Danger Zone */}
-            <div className="bg-surface rounded-xl border border-error/30 p-space-4 flex flex-col gap-space-3 shadow-sm">
+            <div className="glass-card p-4 flex flex-col gap-3 border-error/30 hover:border-error/50">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px] text-error">warning</span>
-                <h3 className="font-title-card-sm text-title-card-sm text-text-primary">
+                <AlertTriangle size={18} className="text-error" />
+                <h3 className="font-title-card-sm text-title-card-sm text-fg-default font-semibold">
                   Danger Zone
                 </h3>
               </div>
-              <p className="font-body-sm text-body-sm text-text-secondary">
+              <p className="font-body-sm text-body-sm text-fg-muted">
                 Sign out of your account or disconnect the GitHub App integration.
               </p>
               <button
-                className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-error/40 text-error font-label-ui text-label-ui hover:bg-error-subtle transition-colors"
+                className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-error/40 text-error font-label-ui text-label-ui hover:bg-error/10 transition-colors shadow-sm"
                 onClick={() => signOut({ callbackUrl: "/" })}
               >
-                <span className="material-symbols-outlined text-[16px]">logout</span>
+                <LogOut size={16} />
                 <span>Sign Out</span>
               </button>
             </div>

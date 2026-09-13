@@ -4,6 +4,7 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import DiffViewer from "@/components/shared/DiffViewer";
+import { FolderOpen, Folder, FileCode2, Database, GitBranch, Search, X, MessageSquare, Bot, GitMerge, ArrowUp, User } from "lucide-react";
 
 type FileEntry = {
   name: string;
@@ -142,11 +143,13 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
           style={{ paddingLeft: `${8 + depth * 16}px` }}
         >
           {entry.type === "dir" ? (
-            <span className="material-symbols-outlined text-[16px] text-accent-amber">
-              {entry.loaded && entry.children && entry.children.length > 0 ? "folder_open" : "folder"}
-            </span>
+            entry.loaded && entry.children && entry.children.length > 0 ? (
+              <FolderOpen size={16} className="text-accent-amber shrink-0" />
+            ) : (
+              <Folder size={16} className="text-accent-amber shrink-0" />
+            )
           ) : (
-            <span className="material-symbols-outlined text-[14px]">javascript</span>
+            <FileCode2 size={14} className="shrink-0" />
           )}
           <span className="font-code-diff text-code-diff truncate">{entry.name}</span>
         </button>
@@ -172,16 +175,17 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
           {/* Repo & Branch Metadata Card */}
           <div className="bg-surface-container-low rounded-xl p-space-md shadow-sm">
             <div className="flex items-center justify-between gap-space-sm mb-space-sm">
-              <div className="flex items-center gap-space-xs min-w-0">
-                <span className="material-symbols-outlined text-primary text-[18px]">data_object</span>
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <Database size={18} className="text-accent-green-emphasis shrink-0" />
                 <select
                   value={selectedRepo?.fullName || ""}
                   onChange={(e) => {
                     const repo = repos.find((r) => r.fullName === e.target.value);
                     if (repo) setSelectedRepo(repo);
                   }}
-                  className="bg-transparent font-code-diff text-code-diff text-fg-default font-semibold truncate border-none outline-none cursor-pointer"
+                  className="bg-canvas-inset w-full font-code-diff text-code-diff text-fg-default font-semibold truncate border border-border-default rounded-md px-2 py-1 outline-none cursor-pointer hover:border-accent-blue transition-colors focus:border-accent-blue focus:ring-1 focus:ring-accent-blue/30"
                 >
+                  {repos.length === 0 && <option value="">No repos connected</option>}
                   {repos.map((r) => (
                     <option key={r.fullName} value={r.fullName}>
                       {r.fullName}
@@ -194,10 +198,8 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
               </span>
             </div>
             <div className="flex items-center justify-between text-fg-muted font-badge-mono text-badge-mono mb-3">
-              <div className="flex items-center gap-1">
-                <span className="material-symbols-outlined text-[14px] text-accent-purple">
-                  alt_route
-                </span>
+              <div className="flex items-center gap-2">
+                <GitBranch size={14} className="text-accent-purple shrink-0" />
                 <input
                   value={branch}
                   onChange={(e) => setBranch(e.target.value)}
@@ -220,9 +222,7 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
             </div>
             {/* File filter search */}
             <div className="relative">
-              <span className="material-symbols-outlined absolute left-2.5 top-2 text-fg-subtle text-[16px]">
-                search
-              </span>
+              <Search size={16} className="absolute left-2.5 top-2 text-fg-subtle" />
               <input
                 className="w-full bg-canvas-inset rounded-lg pl-8 pr-3 py-1.5 font-body-sm text-body-sm text-fg-default placeholder-fg-subtle focus:outline-none focus:bg-surface-container transition-colors"
                 placeholder="Filter files or symbols..."
@@ -277,9 +277,9 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
               </span>
               <button
                 onClick={() => setShowCodeViewer(false)}
-                className="p-1 rounded hover:bg-surface-container text-fg-muted hover:text-fg-default transition-colors"
+                className="p-1.5 rounded-lg hover:bg-surface-container-high text-fg-muted hover:text-fg-default transition-colors"
               >
-                <span className="material-symbols-outlined text-[18px]">close</span>
+                <X size={18} />
               </button>
             </div>
           )}
@@ -311,8 +311,8 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
           <div className="flex-1 overflow-y-auto px-space-md py-space-md space-y-6 bg-canvas-default min-h-0 flex flex-col">
             {messages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center space-y-4 my-auto">
-                <div className="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-fg-muted">
-                  <span className="material-symbols-outlined text-[24px]">chat</span>
+                <div className="w-16 h-16 rounded-2xl bg-surface-container border border-border-default flex items-center justify-center text-fg-muted shadow-sm">
+                  <MessageSquare size={32} />
                 </div>
                 <div>
                   <p className="font-title-card text-title-card text-fg-default font-semibold">
@@ -336,16 +336,12 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
                     className={`flex items-start gap-3.5 max-w-4xl ${m.role === "user" ? "ml-auto flex-row-reverse" : ""}`}
                   >
                     {m.role === "user" ? (
-                      <div className="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <span className="font-badge-mono text-badge-mono font-semibold text-fg-default">
-                          U
-                        </span>
+                      <div className="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center flex-shrink-0 mt-0.5 border border-border-default shadow-sm">
+                        <User size={16} className="text-fg-default" />
                       </div>
                     ) : (
-                      <div className="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center flex-shrink-0 shadow-sm mt-0.5">
-                        <span className="material-symbols-outlined text-on-primary-container text-[18px]">
-                          smart_toy
-                        </span>
+                      <div className="w-8 h-8 rounded-lg bg-accent-purple/10 border border-accent-purple/20 flex items-center justify-center flex-shrink-0 shadow-sm mt-0.5">
+                        <Bot size={18} className="text-accent-purple" />
                       </div>
                     )}
 
@@ -375,7 +371,7 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
                                     key={i}
                                     className="flex items-center gap-2 font-code-diff text-code-diff bg-diff-addition-line text-diff-addition-text rounded-md px-3 py-2"
                                   >
-                                    <span className="material-symbols-outlined text-[16px]">merge</span>
+                                    <GitMerge size={16} />
                                     <span>PR #{pr.prNumber} created</span>
                                     <a
                                       href={pr.prUrl}
@@ -396,7 +392,7 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
                                     key={i}
                                     className="flex items-center gap-2 font-code-diff text-code-diff text-fg-subtle bg-surface-container rounded-md px-3 py-2 opacity-60"
                                   >
-                                    <span className="material-symbols-outlined text-[14px]">close</span>
+                                    <X size={14} />
                                     <span>Change to {tc.result.path} discarded</span>
                                   </div>
                                 );
@@ -435,7 +431,7 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
                                 key={i}
                                 className="flex items-center gap-2 font-code-diff text-code-diff text-fg-muted bg-surface-container rounded-md px-3 py-2"
                               >
-                                <span className="material-symbols-outlined text-[14px]">search</span>
+                                <Search size={14} />
                                 <span>
                                   {tc.toolName === "readFile"
                                     ? `Reading ${tc.args?.path}`
@@ -514,9 +510,9 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
             <button
               type="submit"
               disabled={isLoading || !input.trim()}
-              className="absolute right-2 bottom-2 w-8 h-8 bg-primary-container hover:bg-accent-green-hover text-on-primary-container rounded-lg flex items-center justify-center transition-all disabled:opacity-30"
+              className="absolute right-2 bottom-2 w-8 h-8 bg-accent-green-emphasis hover:bg-accent-green-hover text-white rounded-lg flex items-center justify-center transition-all disabled:opacity-30 shadow-md"
             >
-              <span className="material-symbols-outlined text-[18px]">arrow_upward</span>
+              <ArrowUp size={18} />
             </button>
           </form>
           <div className="flex justify-center mt-2">

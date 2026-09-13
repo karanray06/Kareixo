@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import Navbar from "@/components/landing/Navbar";
+import { GitMerge, MessageSquare, Activity, ShieldCheck, Download, Upload, CheckCircle, Plus, LayoutDashboard, Check, Code2, AlertTriangle, Clock, Rocket, ArrowRight, Send } from "lucide-react";
 
 /* ── Animation helpers ── */
 function FadeIn({
@@ -34,7 +35,7 @@ function FadeIn({
 /* ── Feature card data ── */
 const FEATURES = [
   {
-    icon: "merge",
+    icon: GitMerge,
     color: "text-accent-purple",
     bg: "bg-accent-purple/10",
     title: "Deterministic Static Analysis",
@@ -43,7 +44,7 @@ const FEATURES = [
     large: true,
   },
   {
-    icon: "chat",
+    icon: MessageSquare,
     color: "text-accent-blue",
     bg: "bg-accent-blue/10",
     title: "CodeChat Intelligence",
@@ -51,7 +52,7 @@ const FEATURES = [
       "Ask questions about your codebase directly. Kareixo reads your repo files in real-time to answer architecture and implementation questions with full context.",
   },
   {
-    icon: "radar",
+    icon: Activity,
     color: "text-accent-red",
     bg: "bg-accent-red/10",
     title: "Incident Tracer",
@@ -59,7 +60,7 @@ const FEATURES = [
       "Paste a production stack trace and watch the AST Blame Engine trace each frame back to the exact commit and PR that introduced the bug.",
   },
   {
-    icon: "verified",
+    icon: ShieldCheck,
     color: "text-accent-green-emphasis",
     bg: "bg-accent-green-emphasis/10",
     title: "Zero Configuration",
@@ -71,17 +72,17 @@ const FEATURES = [
 /* ── Steps data ── */
 const STEPS = [
   {
-    icon: "download",
+    icon: Download,
     title: "Install the App",
     description: "One-click GitHub App installation. Select the repos you want reviewed.",
   },
   {
-    icon: "upload",
+    icon: Upload,
     title: "Push Your Code",
     description: "Open a pull request as you normally would. Kareixo activates automatically.",
   },
   {
-    icon: "check_circle",
+    icon: CheckCircle,
     title: "Get Reviewed",
     description: "Receive inline comments with actionable findings, verified by ground truth analysis.",
   },
@@ -123,12 +124,6 @@ export default function Home() {
           />
 
           <div className="relative z-10 max-w-[1280px] mx-auto w-full flex flex-col items-center text-center stagger-children">
-            {/* Status badge */}
-            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-border-default bg-surface-container/50 backdrop-blur-sm text-fg-muted font-badge-mono text-badge-mono mb-8">
-              <span className="w-2 h-2 rounded-full bg-accent-green-emphasis animate-pulse" />
-              Kareixo AST Engine v2.4 — Live
-            </div>
-
             {/* Main heading */}
             <h1 className="font-headline-hero text-[clamp(2rem,6vw,4rem)] leading-[1.1] tracking-[-0.03em] text-fg-default max-w-4xl font-semibold">
               Code Review That{" "}
@@ -148,14 +143,14 @@ export default function Home() {
                 href="https://github.com/apps/kareixo-reviewer/installations/new"
                 className="glow-button inline-flex items-center justify-center gap-2.5 px-6 py-3 rounded-xl bg-accent-green-emphasis hover:bg-accent-green-hover text-white font-semibold text-base transition-all shadow-lg shadow-accent-green-emphasis/20"
               >
-                <span className="material-symbols-outlined text-[18px]">add</span>
+                <Plus size={18} />
                 Install on GitHub
               </a>
               <Link
                 href="/dashboard"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-border-default bg-surface-container/30 backdrop-blur-sm text-fg-default font-semibold text-base transition-all hover:bg-surface-container-high hover:border-fg-subtle"
               >
-                <span className="material-symbols-outlined text-[18px]">dashboard</span>
+                <LayoutDashboard size={18} />
                 View Dashboard
               </Link>
             </div>
@@ -163,15 +158,15 @@ export default function Home() {
             {/* Trust line */}
             <p className="mt-8 text-fg-subtle font-body-sm text-body-sm flex flex-wrap items-center justify-center gap-x-5 gap-y-1">
               <span className="flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[14px] text-accent-green-emphasis">check</span>
+                <Check size={14} className="text-accent-green-emphasis" />
                 Free for open source
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[14px] text-accent-green-emphasis">check</span>
+                <Check size={14} className="text-accent-green-emphasis" />
                 No credit card required
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[14px] text-accent-green-emphasis">check</span>
+                <Check size={14} className="text-accent-green-emphasis" />
                 Setup in 60 seconds
               </span>
             </p>
@@ -192,7 +187,7 @@ export default function Home() {
                   <span className="terminal-dot bg-[#28c840]" />
                 </div>
                 <div className="flex items-center gap-2 ml-4">
-                  <span className="material-symbols-outlined text-[14px] text-fg-subtle">code</span>
+                  <Code2 size={14} className="text-fg-subtle" />
                   <span className="font-code-diff text-code-diff text-fg-muted">src/auth.ts</span>
                 </div>
                 <div className="ml-auto">
@@ -246,7 +241,7 @@ export default function Home() {
               {/* Annotation card */}
               <div className="mx-4 my-4">
                 <div className="flex items-start gap-3 p-4 rounded-lg border border-accent-amber/20 bg-accent-amber/5">
-                  <span className="material-symbols-outlined text-accent-amber text-[20px] mt-0.5 flex-shrink-0">warning</span>
+                  <AlertTriangle size={20} className="text-accent-amber mt-0.5 flex-shrink-0" />
                   <div className="flex flex-col gap-1.5">
                     <div className="flex items-center gap-2">
                       <span className="font-title-card-sm text-title-card-sm text-fg-default font-semibold">
@@ -261,11 +256,11 @@ export default function Home() {
                     </span>
                     <div className="flex items-center gap-3 mt-1">
                       <span className="flex items-center gap-1 font-badge-mono text-badge-mono text-accent-green-emphasis">
-                        <span className="material-symbols-outlined text-[14px]">verified</span>
+                        <ShieldCheck size={14} />
                         Auto-fixable
                       </span>
                       <span className="flex items-center gap-1 font-badge-mono text-badge-mono text-fg-subtle">
-                        <span className="material-symbols-outlined text-[14px]">schedule</span>
+                        <Clock size={14} />
                         Detected in 1.2s
                       </span>
                     </div>
@@ -299,9 +294,7 @@ export default function Home() {
               >
                 <div className="glass-card p-8 h-full group">
                   <div className={`w-12 h-12 rounded-xl ${feature.bg} flex items-center justify-center mb-5 transition-all duration-300 group-hover:scale-110`}>
-                    <span className={`material-symbols-outlined text-[24px] ${feature.color}`}>
-                      {feature.icon}
-                    </span>
+                    <feature.icon size={24} className={feature.color} />
                   </div>
                   <h3 className="font-title-card text-title-card text-fg-default font-semibold mb-2">
                     {feature.title}
@@ -356,9 +349,7 @@ export default function Home() {
                     {/* Step number + icon */}
                     <div className="relative mb-6">
                       <div className="w-[88px] h-[88px] rounded-2xl bg-surface-container border border-border-default flex items-center justify-center transition-all duration-300 hover:border-fg-subtle hover:shadow-lg hover:shadow-accent-green-emphasis/5">
-                        <span className="material-symbols-outlined text-[32px] text-fg-default">
-                          {step.icon}
-                        </span>
+                        <step.icon size={32} className="text-fg-default" />
                       </div>
                       <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-accent-green-emphasis text-white font-badge-mono text-badge-mono flex items-center justify-center font-bold">
                         {i + 1}
@@ -422,7 +413,7 @@ export default function Home() {
                     href="https://github.com/apps/kareixo-reviewer/installations/new"
                     className="glow-button inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-accent-green-emphasis hover:bg-accent-green-hover text-white font-semibold text-base transition-all shadow-lg shadow-accent-green-emphasis/20"
                   >
-                    <span className="material-symbols-outlined text-[18px]">rocket_launch</span>
+                    <Rocket size={18} />
                     Get Started for Free
                   </a>
                   <Link
@@ -430,7 +421,7 @@ export default function Home() {
                     className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-fg-muted hover:text-fg-default font-semibold text-base transition-colors"
                   >
                     View Pricing
-                    <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    <ArrowRight size={16} />
                   </Link>
                 </div>
               </div>
@@ -523,7 +514,7 @@ export default function Home() {
                   type="submit"
                   className="px-4 py-2 rounded-lg bg-accent-green-emphasis hover:bg-accent-green-hover text-white font-semibold text-sm transition-colors flex-shrink-0"
                 >
-                  <span className="material-symbols-outlined text-[16px]">send</span>
+                  <Send size={16} />
                 </button>
               </form>
             </div>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Plus, FolderX, FolderGit2, ChevronRight, GitFork } from "lucide-react";
 
 interface Repo {
   id: string;
@@ -52,12 +53,12 @@ export default function RepositoriesPage() {
             </p>
           </div>
           <a
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-on-primary font-label-ui text-label-ui shadow-sm hover:opacity-90 active:scale-95 transition-all self-start"
+            className="glow-button flex items-center gap-2 px-4 py-2 rounded-xl bg-accent-green-emphasis hover:bg-accent-green-hover text-white font-semibold text-sm transition-all shadow-lg shadow-accent-green-emphasis/20 self-start"
             href="https://github.com/apps/kareixo-reviewer/installations/new"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <span className="material-symbols-outlined text-[18px]">add</span>
+            <Plus size={18} />
             <span>Add Repository</span>
           </a>
         </div>
@@ -68,7 +69,7 @@ export default function RepositoriesPage() {
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="bg-surface rounded-xl border border-border p-space-4 flex flex-col gap-3 animate-pulse"
+                className="glass-card p-4 flex flex-col gap-3 animate-pulse"
               >
                 <div className="h-5 w-40 bg-surface-container rounded"></div>
                 <div className="h-3 w-24 bg-surface-container rounded"></div>
@@ -78,26 +79,24 @@ export default function RepositoriesPage() {
           </div>
         ) : repos.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 gap-6">
-            <div className="w-20 h-20 rounded-2xl bg-surface-subtle border border-border flex items-center justify-center">
-              <span className="material-symbols-outlined text-[40px] text-text-muted">
-                folder_off
-              </span>
+            <div className="w-20 h-20 rounded-2xl bg-surface-container border border-border-default flex items-center justify-center shadow-lg">
+              <FolderX size={40} className="text-fg-muted" />
             </div>
             <div className="text-center max-w-md">
-              <h2 className="font-title-card text-title-card text-text-primary mb-2">
+              <h2 className="font-title-card text-title-card text-fg-default font-semibold mb-2">
                 No repositories connected
               </h2>
-              <p className="font-body-base text-body-base text-text-secondary mb-6">
+              <p className="font-body-base text-body-base text-fg-muted mb-6">
                 Install the Kareixo GitHub App on your repositories to start receiving automated
                 code reviews.
               </p>
               <a
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-on-primary font-label-ui text-label-ui shadow-sm hover:opacity-90 active:scale-95 transition-all"
+                className="glow-button inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-accent-green-emphasis hover:bg-accent-green-hover text-white font-semibold shadow-lg shadow-accent-green-emphasis/20 transition-all"
                 href="https://github.com/apps/kareixo-reviewer/installations/new"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <span className="material-symbols-outlined text-[18px]">add</span>
+                <Plus size={18} />
                 <span>Install on GitHub</span>
               </a>
             </div>
@@ -108,25 +107,21 @@ export default function RepositoriesPage() {
               <Link
                 key={repo.id}
                 href={`/dashboard/${repo.id}`}
-                className="bg-surface rounded-xl border border-border p-space-4 flex flex-col gap-space-3 hover:border-border-strong hover:shadow-md transition-all group"
+                className="glass-card p-4 flex flex-col gap-3 group transition-all duration-300 hover:shadow-lg hover:border-fg-subtle cursor-pointer"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex flex-col gap-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[18px] text-text-secondary">
-                        folder_code
-                      </span>
-                      <span className="font-title-card-sm text-title-card-sm text-text-primary truncate group-hover:text-secondary transition-colors">
+                      <FolderGit2 size={18} className="text-fg-subtle group-hover:text-accent-blue transition-colors" />
+                      <span className="font-title-card-sm text-title-card-sm text-fg-default font-semibold truncate group-hover:text-accent-blue transition-colors">
                         {repo.fullName}
                       </span>
                     </div>
-                    <span className="font-badge-mono text-[11px] text-text-muted ml-[26px]">
+                    <span className="font-badge-mono text-[11px] text-fg-muted ml-[26px]">
                       Added {timeAgo(repo.createdAt)}
                     </span>
                   </div>
-                  <span className="material-symbols-outlined text-[16px] text-text-muted group-hover:text-text-primary transition-colors shrink-0">
-                    chevron_right
-                  </span>
+                  <ChevronRight size={16} className="text-fg-muted group-hover:text-fg-default transition-colors shrink-0" />
                 </div>
 
                 <div className="flex items-center gap-2 flex-wrap">
@@ -143,11 +138,11 @@ export default function RepositoriesPage() {
                   </span>
                 </div>
 
-                <div className="flex items-center gap-1.5 text-[11px] font-badge-mono text-text-muted pt-1 border-t border-border/60">
-                  <span className="material-symbols-outlined text-[12px]">fork_right</span>
+                <div className="flex items-center gap-1.5 text-[11px] font-badge-mono text-fg-muted pt-2 border-t border-border-default">
+                  <GitFork size={12} />
                   <span>main</span>
-                  <span className="text-text-muted ml-auto flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-success"></span>
+                  <span className="text-fg-muted ml-auto flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-accent-green-emphasis animate-pulse"></span>
                     Active
                   </span>
                 </div>

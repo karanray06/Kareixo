@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { computeDiff, type DiffLine } from "@/lib/diff-utils";
+import { FileDiff, GitMerge, AlertCircle } from "lucide-react";
 
 interface DiffViewerProps {
   path: string;
@@ -103,9 +104,7 @@ export default function DiffViewer({
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 bg-surface-container border-b border-border-default">
         <div className="flex items-center gap-3 min-w-0">
-          <span className="material-symbols-outlined text-[18px] text-accent-purple">
-            difference
-          </span>
+          <FileDiff size={18} className="text-accent-purple" />
           <span className="font-code-diff text-code-diff text-fg-default font-medium truncate">
             {path}
           </span>
@@ -134,9 +133,7 @@ export default function DiffViewer({
               </>
             ) : (
               <>
-                <span className="material-symbols-outlined text-[16px]">
-                  merge
-                </span>
+                <GitMerge size={16} />
                 Apply & Create PR
               </>
             )}
@@ -197,7 +194,7 @@ export default function DiffViewer({
       {error && (
         <div className="px-4 py-3 bg-diff-deletion-line border-t border-accent-red/20">
           <p className="font-body-sm text-body-sm text-diff-deletion-text flex items-center gap-2">
-            <span className="material-symbols-outlined text-[16px]">error</span>
+            <AlertCircle size={16} />
             {error}
           </p>
         </div>

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import { Plus } from "lucide-react";
 
 const NAV_LINKS = [
   { label: "Product", href: "#product" },
@@ -93,7 +94,7 @@ export default function Navbar() {
               href="https://github.com/apps/kareixo-reviewer/installations/new"
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-green-emphasis hover:bg-accent-green-hover text-white text-sm font-semibold transition-all duration-200 hover:shadow-[0_0_20px_rgba(35,134,54,0.4)]"
             >
-              <span className="material-symbols-outlined text-[16px]">add</span>
+              <Plus size={16} />
               Get Started
             </a>
           </div>
@@ -180,7 +181,7 @@ export default function Navbar() {
                 href="https://github.com/apps/kareixo-reviewer/installations/new"
                 className="btn btn-primary w-full text-center justify-center py-3 text-base rounded-xl"
               >
-                <span className="material-symbols-outlined text-[18px]">add</span>
+                <Plus size={18} />
                 Install on GitHub
               </a>
               <a
