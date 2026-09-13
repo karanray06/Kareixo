@@ -3,6 +3,7 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import DiffViewer from "@/components/shared/DiffViewer";
 
 type FileEntry = {
   name: string;
@@ -29,6 +30,10 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [input, setInput] = useState("");
+  const [appliedProposals, setAppliedProposals] = useState<
+    Record<string, { prUrl: string; prNumber: number; branchName: string }>
+  >({});
+  const [discardedProposals, setDiscardedProposals] = useState<Set<string>>(new Set());
 
   const transport = useMemo(() => new DefaultChatTransport({
     api: "/api/codechat",
@@ -353,27 +358,102 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
 
                       {toolCalls.length > 0 && (
                         <div className="flex flex-col gap-1 w-full max-w-[85%]">
-                          {toolCalls.map((tc: any, i: number) => (
-                            <div
-                              key={i}
-                              className="flex items-center gap-2 font-code-diff text-code-diff text-fg-muted bg-surface-container rounded-md px-3 py-2"
-                            >
-                              <span className="material-symbols-outlined text-[14px]">search</span>
-                              <span>
-                                {tc.toolName === "readFile"
-                                  ? `Reading ${tc.args?.path}`
-                                  : tc.toolName === "listDirectory"
-                                    ? `Listing ${tc.args?.path || "/"}`
-                                    : `Searching: ${tc.args?.query}`}
-                              </span>
-                              {tc.state === "result" && (
-                                <span className="text-diff-addition-text ml-auto">✓</span>
-                              )}
-                              {tc.state === "call" && (
-                                <span className="animate-pulse ml-auto">...</span>
-                              )}
-                            </div>
-                          ))}
+                          {toolCalls.map((tc: any, i: number) => {
+                            const proposalKey = `${m.id}-${i}`;
+
+                            // Render DiffViewer for proposeChange results
+                            if (
+                              tc.toolName === "proposeChange" &&
+                              tc.state === "result" &&
+                              tc.result?.type === "propose_change"
+                            ) {
+                              // Already applied — show PR link
+                              if (appliedProposals[proposalKey]) {
+                                const pr = appliedProposals[proposalKey];
+                                return (
+                                  <div
+                                    key={i}
+                                    className="flex items-center gap-2 font-code-diff text-code-diff bg-diff-addition-line text-diff-addition-text rounded-md px-3 py-2"
+                                  >
+                                    <span className="material-symbols-outlined text-[16px]">merge</span>
+                                    <span>PR #{pr.prNumber} created</span>
+                                    <a
+                                      href={pr.prUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="ml-auto underline hover:opacity-80 transition-opacity"
+                                    >
+                                      View on GitHub →
+                                    </a>
+                                  </div>
+                                );
+                              }
+
+                              // Discarded
+                              if (discardedProposals.has(proposalKey)) {
+                                return (
+                                  <div
+                                    key={i}
+                                    className="flex items-center gap-2 font-code-diff text-code-diff text-fg-subtle bg-surface-container rounded-md px-3 py-2 opacity-60"
+                                  >
+                                    <span className="material-symbols-outlined text-[14px]">close</span>
+                                    <span>Change to {tc.result.path} discarded</span>
+                                  </div>
+                                );
+                              }
+
+                              // Pending — show DiffViewer
+                              return (
+                                <DiffViewer
+                                  key={i}
+                                  path={tc.result.path}
+                                  oldContent={tc.result.oldContent}
+                                  newContent={tc.result.newContent}
+                                  sha={tc.result.sha}
+                                  explanation={tc.result.explanation}
+                                  repoFullName={tc.result.repoFullName}
+                                  onApply={(result) => {
+                                    setAppliedProposals((prev) => ({
+                                      ...prev,
+                                      [proposalKey]: result,
+                                    }));
+                                  }}
+                                  onDiscard={() => {
+                                    setDiscardedProposals((prev) => {
+                                      const next = new Set(prev);
+                                      next.add(proposalKey);
+                                      return next;
+                                    });
+                                  }}
+                                />
+                              );
+                            }
+
+                            // Other tool calls: same as before
+                            return (
+                              <div
+                                key={i}
+                                className="flex items-center gap-2 font-code-diff text-code-diff text-fg-muted bg-surface-container rounded-md px-3 py-2"
+                              >
+                                <span className="material-symbols-outlined text-[14px]">search</span>
+                                <span>
+                                  {tc.toolName === "readFile"
+                                    ? `Reading ${tc.args?.path}`
+                                    : tc.toolName === "listDirectory"
+                                      ? `Listing ${tc.args?.path || "/"}`
+                                      : tc.toolName === "proposeChange"
+                                        ? `Proposing change to ${tc.args?.path}`
+                                        : `Searching: ${tc.args?.query}`}
+                                </span>
+                                {tc.state === "result" && (
+                                  <span className="text-diff-addition-text ml-auto">✓</span>
+                                )}
+                                {tc.state === "call" && (
+                                  <span className="animate-pulse ml-auto">...</span>
+                                )}
+                              </div>
+                            );
+                          })}
                         </div>
                       )}
 

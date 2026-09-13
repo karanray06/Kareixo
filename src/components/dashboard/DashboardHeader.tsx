@@ -15,11 +15,11 @@ interface DashboardHeaderProps {
 }
 
 const NAV_LINKS = [
-  { label: "Dashboard", path: "/dashboard", dataPath: "dashboard" },
-  { label: "Repositories", path: "/dashboard/repositories", dataPath: "repositories" },
-  { label: "CodeChat", path: "/codechat", dataPath: "codechat" },
-  { label: "Incident Tracer", path: "/incident", dataPath: "incident-tracer" },
-  { label: "Settings", path: "/dashboard/settings", dataPath: "settings" },
+  { label: "Dashboard", path: "/dashboard" },
+  { label: "Repositories", path: "/dashboard/repositories" },
+  { label: "CodeChat", path: "/codechat" },
+  { label: "Incident Tracer", path: "/incident" },
+  { label: "Settings", path: "/dashboard/settings" },
 ];
 
 export default function DashboardHeader({ user, repos = [] }: DashboardHeaderProps) {
@@ -144,10 +144,10 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
         <nav className="hidden lg:flex items-center gap-space-xs">
           {NAV_LINKS.map((link) => (
             <Link
-              key={link.dataPath}
+              key={link.path}
               href={link.path}
               aria-current={isActive(link.path) ? "page" : undefined}
-              data-path={link.dataPath}
+              data-path={link.path}
               className={
                 isActive(link.path)
                   ? "px-3 py-1.5 transition-colors text-fg-default bg-surface-container font-semibold rounded-lg"

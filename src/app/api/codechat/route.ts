@@ -7,6 +7,7 @@ import { getDb } from "@/db";
 import { repositories, github_installations } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { getInstallationOctokit } from "@/lib/github-app";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limiter";
 
 export const maxDuration = 60;
 
@@ -15,6 +16,12 @@ export async function POST(req: Request) {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Per-user rate limiting: 30 requests per minute
+    const rateCheck = checkRateLimit(session.user.id);
+    if (!rateCheck.allowed) {
+      return rateLimitResponse(rateCheck.resetAt);
     }
 
     const { messages: rawMessages, repoFullName, branch } = await req.json();
@@ -145,6 +152,65 @@ export async function POST(req: Request) {
             }
           },
         };
+
+        // Tool: Propose a code change (read-only — does NOT write to GitHub)
+        tools.proposeChange = {
+          description:
+            "Propose a code change to a file in the repository. Read the current file, then return the modified version. " +
+            "The user will see a diff and can approve/discard. Use this when the user asks you to fix, refactor, or modify code.",
+          inputSchema: z.object({
+            path: z.string().describe("The file path relative to the repo root, e.g. 'src/lib/utils.ts'"),
+            newContent: z.string().describe("The complete new file content after your changes"),
+            explanation: z.string().describe("A brief explanation of what the change does and why"),
+          }),
+          execute: async ({
+            path: filePath,
+            newContent,
+            explanation,
+          }: {
+            path: string;
+            newContent: string;
+            explanation: string;
+          }) => {
+            try {
+              // Read the current file to get oldContent and SHA
+              const { data } = await octokit.rest.repos.getContent({
+                owner,
+                repo,
+                path: filePath,
+                ref: targetRef,
+              });
+              if (Array.isArray(data) || data.type !== "file") {
+                return { error: `'${filePath}' is a directory, not a file.` };
+              }
+              const oldContent = Buffer.from(data.content, "base64").toString("utf-8");
+
+              return {
+                type: "propose_change",
+                path: filePath,
+                oldContent,
+                newContent,
+                sha: data.sha,
+                explanation,
+                repoFullName,
+              };
+            } catch (err: any) {
+              if (err?.status === 404) {
+                // New file — no old content
+                return {
+                  type: "propose_change",
+                  path: filePath,
+                  oldContent: "",
+                  newContent,
+                  sha: null,
+                  explanation,
+                  repoFullName,
+                };
+              }
+              return { error: `Failed to read '${filePath}': ${err?.message}` };
+            }
+          },
+        };
       }
     }
 
@@ -154,8 +220,9 @@ export async function POST(req: Request) {
     if (repoFullName) {
       systemPrompt += `\n\nYou are working with the repository: ${repoFullName}`;
       if (branch) systemPrompt += ` (branch: ${branch})`;
-      systemPrompt += `\n\nYou have access to tools to read files and explore the repository structure. Use them when you need to see actual code — don't guess at implementations.`;
+      systemPrompt += `\n\nYou have access to tools to read files, explore the repository structure, and propose code changes. Use them when you need to see actual code — don't guess at implementations.`;
       systemPrompt += `\n\nWhen the user asks about code, always read the relevant file(s) first before answering.`;
+      systemPrompt += `\n\nWhen the user asks you to fix, refactor, or modify code, use the proposeChange tool to propose the change. Always read the file first, then propose the full modified file content. The user will see a diff and can approve or discard.`;
     }
 
     const hasTools = Object.keys(tools).length > 0;

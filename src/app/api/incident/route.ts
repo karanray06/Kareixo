@@ -5,6 +5,7 @@ import { repositories, github_installations, chatConversations } from "@/db/sche
 import { eq, and } from "drizzle-orm";
 import { parseStackTrace } from "@/lib/trace-parser";
 import { resolveIncident } from "@/lib/incident-resolver";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limiter";
 
 export const maxDuration = 60;
 
@@ -17,6 +18,12 @@ export async function POST(req: Request) {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Per-user rate limiting: 30 requests per minute
+    const rateCheck = checkRateLimit(session.user.id);
+    if (!rateCheck.allowed) {
+      return rateLimitResponse(rateCheck.resetAt);
     }
 
     const { stackTrace, repoFullName, branch = "main" } = await req.json();

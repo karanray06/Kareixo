@@ -2,112 +2,200 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
-import { FiGithub } from "react-icons/fi";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+
+const NAV_LINKS = [
+  { label: "Product", href: "#product" },
+  { label: "How it works", href: "#how-it-works" },
+  { label: "Security", href: "#security" },
+  { label: "Pricing", href: "/pricing" },
+];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
-    };
-    window.addEventListener("scroll", handleScroll);
+    const handleScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = mobileMenuOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileMenuOpen]);
+
   return (
     <>
-      <nav
-        className={`fixed top-0 inset-x-0 z-50 transition-all duration-200 ${
-          scrolled ? "glass-nav shadow-sm py-3" : "bg-transparent py-5 border-b border-transparent"
+      <motion.nav
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
+          scrolled
+            ? "glass-nav shadow-lg py-3"
+            : "bg-transparent py-5 border-b border-transparent"
         }`}
       >
         <div className="max-w-[1280px] mx-auto px-6 flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <Link
-              href="/"
-              className="text-fg-default font-semibold text-lg tracking-tight flex items-center gap-2"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <img src="/logo.png" alt="Kareixo Logo" className="w-7 h-7 rounded-md object-contain" />
-              Kareixo
-            </Link>
+          {/* Left: Logo */}
+          <Link
+            href="/"
+            className="text-fg-default font-semibold text-lg tracking-tight flex items-center gap-2.5 group"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <Image
+              src="/logo.png"
+              alt="Kareixo Logo"
+              width={30}
+              height={30}
+              className="rounded-lg object-contain transition-transform duration-300 group-hover:scale-110"
+            />
+            <span className="font-headline-hero">Kareixo</span>
+          </Link>
 
-            {/* Desktop Links */}
-            <div className="hidden md:flex items-center gap-6 text-sm font-medium text-fg-muted">
-              <Link href="#product" className="hover:text-fg-default transition-colors">
-                Product
-              </Link>
-              <Link href="#how-it-works" className="hover:text-fg-default transition-colors">
-                How it works
-              </Link>
-              <Link href="#security" className="hover:text-fg-default transition-colors">
-                Security
-              </Link>
-              <a
-                href="https://github.com/karanray06/Kareixo"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-fg-default transition-colors flex items-center gap-1.5"
+          {/* Center: Nav Links */}
+          <div className="hidden md:flex items-center gap-1">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="relative px-3.5 py-2 text-sm font-medium text-fg-muted hover:text-fg-default transition-colors duration-200 rounded-lg group"
               >
-                GitHub
-              </a>
-            </div>
+                {link.label}
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-accent-green-emphasis rounded-full transition-all duration-300 group-hover:w-[60%]" />
+              </Link>
+            ))}
+            <a
+              href="https://github.com/karanray06/Kareixo"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative px-3.5 py-2 text-sm font-medium text-fg-muted hover:text-fg-default transition-colors duration-200 rounded-lg group flex items-center gap-1.5"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              GitHub
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-accent-green-emphasis rounded-full transition-all duration-300 group-hover:w-[60%]" />
+            </a>
           </div>
 
-          <div className="hidden md:flex items-center gap-4">
-            <Link href="/dashboard" className="text-sm font-medium text-fg-muted hover:text-fg-default transition-colors">
+          {/* Right: CTAs */}
+          <div className="hidden md:flex items-center gap-3">
+            <Link
+              href="/dashboard"
+              className="text-sm font-medium text-fg-muted hover:text-fg-default transition-colors px-3 py-2"
+            >
               Sign in
             </Link>
             <a
               href="https://github.com/apps/kareixo-reviewer/installations/new"
-              className="btn btn-primary text-sm"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-green-emphasis hover:bg-accent-green-hover text-white text-sm font-semibold transition-all duration-200 hover:shadow-[0_0_20px_rgba(35,134,54,0.4)]"
             >
-              Install on GitHub
+              <span className="material-symbols-outlined text-[16px]">add</span>
+              Get Started
             </a>
           </div>
 
-          {/* Mobile menu toggle */}
-          <div className="md:hidden flex items-center">
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-fg-muted hover:text-fg-default transition-colors p-1"
-            >
-              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
-          </div>
+          {/* Mobile hamburger */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden relative w-8 h-8 flex items-center justify-center text-fg-muted hover:text-fg-default transition-colors"
+            aria-label="Toggle menu"
+          >
+            <motion.span
+              animate={mobileMenuOpen ? { rotate: 45, y: 0 } : { rotate: 0, y: -4 }}
+              className="absolute w-5 h-[1.5px] bg-current rounded-full"
+              transition={{ duration: 0.2 }}
+            />
+            <motion.span
+              animate={mobileMenuOpen ? { opacity: 0, scaleX: 0 } : { opacity: 1, scaleX: 1 }}
+              className="absolute w-5 h-[1.5px] bg-current rounded-full"
+              transition={{ duration: 0.15 }}
+            />
+            <motion.span
+              animate={mobileMenuOpen ? { rotate: -45, y: 0 } : { rotate: 0, y: 4 }}
+              className="absolute w-5 h-[1.5px] bg-current rounded-full"
+              transition={{ duration: 0.2 }}
+            />
+          </button>
         </div>
-      </nav>
+      </motion.nav>
 
       {/* Mobile overlay menu */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-canvas-default pt-24 px-6 pb-6 flex flex-col md:hidden">
-          <div className="flex flex-col gap-6 text-lg font-medium text-fg-default">
-            <Link href="#product" onClick={() => setMobileMenuOpen(false)}>Product</Link>
-            <Link href="#how-it-works" onClick={() => setMobileMenuOpen(false)}>How it works</Link>
-            <Link href="#security" onClick={() => setMobileMenuOpen(false)}>Security</Link>
-            <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>Sign in</Link>
-            <div className="pt-4 border-t border-border-default flex flex-col gap-4">
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-40 bg-canvas-default/95 backdrop-blur-xl pt-24 px-6 pb-8 flex flex-col md:hidden"
+          >
+            <motion.div
+              className="flex flex-col gap-2"
+              initial="closed"
+              animate="open"
+              variants={{
+                open: { transition: { staggerChildren: 0.06 } },
+                closed: {},
+              }}
+            >
+              {NAV_LINKS.map((link) => (
+                <motion.div
+                  key={link.href}
+                  variants={{
+                    open: { opacity: 1, y: 0 },
+                    closed: { opacity: 0, y: 16 },
+                  }}
+                >
+                  <Link
+                    href={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block py-3 text-xl font-medium text-fg-default hover:text-accent-green-emphasis transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </motion.div>
+              ))}
+              <motion.div
+                variants={{
+                  open: { opacity: 1, y: 0 },
+                  closed: { opacity: 0, y: 16 },
+                }}
+              >
+                <Link
+                  href="/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block py-3 text-xl font-medium text-fg-default"
+                >
+                  Sign in
+                </Link>
+              </motion.div>
+            </motion.div>
+
+            <div className="mt-auto flex flex-col gap-3">
               <a
                 href="https://github.com/apps/kareixo-reviewer/installations/new"
-                className="btn btn-primary w-full"
+                className="btn btn-primary w-full text-center justify-center py-3 text-base rounded-xl"
               >
+                <span className="material-symbols-outlined text-[18px]">add</span>
                 Install on GitHub
               </a>
               <a
                 href="https://github.com/karanray06/Kareixo"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-secondary w-full"
+                className="btn btn-secondary w-full text-center justify-center py-3 text-base rounded-xl"
               >
-                <FiGithub size={16} /> View on GitHub
+                <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                View on GitHub
               </a>
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

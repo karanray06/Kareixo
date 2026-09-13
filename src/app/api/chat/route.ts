@@ -2,14 +2,21 @@ import { streamText } from "ai";
 import { router } from "@/lib/model-router";
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limiter";
 
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    if (!session) {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Per-user rate limiting: 30 requests per minute
+    const rateCheck = checkRateLimit(session.user.id);
+    if (!rateCheck.allowed) {
+      return rateLimitResponse(rateCheck.resetAt);
     }
 
     const { messages: rawMessages, taskType = "chat" } = await req.json();
