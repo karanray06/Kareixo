@@ -19,6 +19,7 @@ export async function POST(req: Request) {
     }
 
     // Per-user rate limiting: 30 requests per minute
+    const user = session.user;
     const rateCheck = checkRateLimit(session.user.id);
     if (!rateCheck.allowed) {
       return rateLimitResponse(rateCheck.resetAt);
@@ -236,38 +237,6 @@ export async function POST(req: Request) {
         ...(hasTools && p.name !== "POLLINATIONS" ? { tools, maxSteps: 5 } : {}),
       });
 
-      // Probe the stream for immediate failures
-      const reader = res.fullStream.getReader();
-      const buffered: any[] = [];
-      let streamError: any = null;
-
-      for (let i = 0; i < 2; i++) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        if (value.type === "error") {
-          streamError = value.error;
-          break;
-        }
-        buffered.push(value);
-      }
-
-      if (streamError) {
-        throw streamError;
-      }
-
-      const customFullStream = new ReadableStream({
-        start(controller) {
-          for (const chunk of buffered) controller.enqueue(chunk);
-        },
-        async pull(controller) {
-          const { done, value } = await reader.read();
-          if (done) controller.close();
-          else controller.enqueue(value);
-        },
-        cancel() { reader.cancel(); },
-      });
-
-      Object.defineProperty(res, "fullStream", { value: customFullStream, configurable: true });
       return res;
     }, "code", "deep");
 
