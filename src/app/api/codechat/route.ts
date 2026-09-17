@@ -233,7 +233,7 @@ export async function POST(req: Request) {
         model: p.model,
         system: systemPrompt,
         messages,
-        ...(hasTools ? { tools, maxSteps: 5 } : {}),
+        ...(hasTools && p.name !== "POLLINATIONS" ? { tools, maxSteps: 5 } : {}),
       });
 
       // Probe the stream for immediate failures
