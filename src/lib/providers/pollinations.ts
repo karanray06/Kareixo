@@ -23,5 +23,48 @@ export function createPollinationsProvider(apiKey: string) {
   return createOpenAI({
     baseURL: "https://text.pollinations.ai/openai",
     apiKey,
+    fetch: async (url, options) => {
+      const res = await fetch(url, options);
+      if (!res.ok || !res.body) return res;
+
+      let buffer = "";
+      const transformStream = new TransformStream({
+        transform(chunk, controller) {
+          buffer += new TextDecoder().decode(chunk);
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || "";
+
+          for (const line of lines) {
+            if (line.startsWith('data: ') && line.trim() !== 'data: [DONE]') {
+              try {
+                const data = JSON.parse(line.slice(6));
+                if (data.choices && data.choices[0] && data.choices[0].delta) {
+                  const content = data.choices[0].delta.content;
+                  const role = data.choices[0].delta.role;
+                  data.choices[0].delta = {};
+                  if (content !== undefined) data.choices[0].delta.content = content;
+                  if (role !== undefined) data.choices[0].delta.role = role;
+                }
+                controller.enqueue(new TextEncoder().encode('data: ' + JSON.stringify(data) + '\n'));
+                continue;
+              } catch (e) {
+                // Ignore parse errors, just pass through
+              }
+            }
+            controller.enqueue(new TextEncoder().encode(line + '\n'));
+          }
+        },
+        flush(controller) {
+          if (buffer) {
+            controller.enqueue(new TextEncoder().encode(buffer));
+          }
+        }
+      });
+
+      return new Response(res.body.pipeThrough(transformStream), {
+        status: res.status,
+        headers: res.headers,
+      });
+    },
   });
 }
