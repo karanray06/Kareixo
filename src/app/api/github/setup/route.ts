@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { getDb } from "@/db";
 import { github_installations } from "@/db/schema";
 import { NextResponse } from "next/server";
+import { syncUserRepositories } from "@/lib/sync-repositories";
 
 export async function GET(req: Request) {
   const session = await auth();
@@ -37,14 +38,7 @@ export async function GET(req: Request) {
 
       // Automatically trigger a sync to populate the user's repositories immediately
       try {
-        const syncUrl = new URL("/api/repositories/sync", req.url).toString();
-        await fetch(syncUrl, {
-          method: "POST",
-          headers: {
-            // Forward the cookie so the sync route can authenticate the user
-            cookie: req.headers.get("cookie") || "",
-          },
-        });
+        await syncUserRepositories(session.user.id);
       } catch (err) {
         console.error("Auto-sync failed during setup:", err);
       }

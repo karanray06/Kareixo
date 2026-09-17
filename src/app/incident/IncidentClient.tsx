@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Radar, GitBranch, Database, Bug, RefreshCw, Activity, CheckCircle2, FileText, GitMerge, MessageSquare, ArrowRight } from "lucide-react";
+import { Radar, GitBranch, Database, Bug, RefreshCw, Activity, CheckCircle2, FileText, GitMerge, MessageSquare, ArrowRight, ShieldCheck } from "lucide-react";
 
 type RepoInfo = { fullName: string };
 
@@ -57,6 +57,30 @@ export default function IncidentClient({ repos }: { repos: RepoInfo[] }) {
       setIsAnalyzing(false);
     }
   };
+
+  if (repos.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full w-full py-20 px-4">
+        <div className="flex flex-col items-center justify-center p-8 max-w-md text-center">
+          <div className="w-16 h-16 rounded-2xl bg-surface-container border border-border-default flex items-center justify-center mb-6 shadow-sm">
+            <ShieldCheck size={32} className="text-fg-muted" />
+          </div>
+          <h2 className="font-title-card text-title-card text-fg-default font-semibold mb-2">
+            Connect a Repository
+          </h2>
+          <p className="font-body-base text-body-base text-fg-muted mb-6">
+            Incident Tracer requires a connected repository to analyze stack traces. Install the GitHub App or sync your existing repositories.
+          </p>
+          <a
+            href="/dashboard/repositories"
+            className="btn btn-primary"
+          >
+            Go to Repositories
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col w-full">

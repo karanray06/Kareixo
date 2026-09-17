@@ -4,6 +4,7 @@ import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import { getDb } from "@/db";
 import { repositories, github_installations } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import Providers from "@/components/Providers";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -34,10 +35,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="min-h-screen bg-canvas-default text-on-surface font-body-base antialiased selection:bg-accent-blue selection:text-canvas-inset">
-      <DashboardHeader user={session.user} repos={repos} />
-      <main className="w-full pt-16 flex-1 bg-canvas-default">
-        {children}
-      </main>
+      <Providers>
+        <DashboardHeader user={session.user} repos={repos} />
+        <main className="w-full pt-16 flex-1 bg-canvas-default">
+          {children}
+        </main>
+      </Providers>
     </div>
   );
 }

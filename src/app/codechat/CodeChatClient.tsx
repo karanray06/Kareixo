@@ -4,7 +4,7 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import DiffViewer from "@/components/shared/DiffViewer";
-import { FolderOpen, Folder, FileCode2, Database, GitBranch, Search, X, MessageSquare, Bot, GitMerge, ArrowUp, User } from "lucide-react";
+import { FolderOpen, Folder, FileCode2, Database, GitBranch, Search, X, MessageSquare, Bot, GitMerge, ArrowUp, User, ShieldCheck } from "lucide-react";
 
 type FileEntry = {
   name: string;

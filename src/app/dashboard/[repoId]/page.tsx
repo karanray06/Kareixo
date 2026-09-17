@@ -357,7 +357,7 @@ export default function RepositoryDetails({ params }: { params: Promise<{ repoId
                   href={`https://github.com/${repo.fullName}/pulls`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="glow-button w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-accent-green-emphasis hover:bg-accent-green-hover text-white font-title-card-sm text-title-card-sm font-semibold transition-all shadow-lg shadow-accent-green-emphasis/20"
+                  className="btn btn-primary w-full"
                 >
                   <ExternalLink size={18} />
                   View Pull Requests on GitHub

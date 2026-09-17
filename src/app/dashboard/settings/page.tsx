@@ -87,7 +87,7 @@ export default function SettingsPage() {
             </div>
 
             {/* Review Preferences */}
-            <div className="glass-card p-6 flex flex-col gap-4">
+            <div className="glass-card p-6 flex flex-col gap-6">
               <div className="flex items-center gap-2 pb-3 border-b border-border-default">
                 <SlidersHorizontal size={18} className="text-fg-subtle" />
                 <h2 className="font-title-card-sm text-title-card-sm text-fg-default font-semibold">
@@ -95,18 +95,36 @@ export default function SettingsPage() {
                 </h2>
               </div>
 
-              <p className="font-body-base text-body-base text-fg-muted">
-                Per-repository review settings (categories, analysis tier, custom instructions) can
-                be configured from each repository&apos;s detail page.
-              </p>
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="font-label-ui text-label-ui text-fg-default">
+                    Default Review Tier
+                  </label>
+                  <p className="font-body-sm text-body-sm text-fg-muted mb-2">
+                    The analysis depth to apply by default for new repositories.
+                  </p>
+                  <select className="input max-w-xs">
+                    <option value="fast">Fast (Lighter analysis, faster response)</option>
+                    <option value="deep">Deep (Comprehensive security & logic analysis)</option>
+                  </select>
+                </div>
+                
+                <div className="h-px bg-border-default my-2" />
 
-              <a
-                className="inline-flex items-center gap-1.5 text-accent-blue font-label-ui text-label-ui hover:underline underline-offset-4 transition-colors self-start"
-                href="/dashboard/repositories"
-              >
-                <span>Go to Repositories</span>
-                <ArrowRight size={14} />
-              </a>
+                <div className="flex flex-col gap-1.5">
+                  <label className="font-label-ui text-label-ui text-fg-default">
+                    Digest Webhook URL (Optional)
+                  </label>
+                  <p className="font-body-sm text-body-sm text-fg-muted mb-2">
+                    Provide a Slack or Discord webhook URL to receive daily review digests.
+                  </p>
+                  <input type="url" placeholder="https://hooks.slack.com/services/..." className="input" />
+                </div>
+                
+                <div className="flex justify-end mt-2">
+                  <button className="btn btn-primary">Save Preferences</button>
+                </div>
+              </div>
             </div>
           </div>
 

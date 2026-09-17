@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { getDb } from "@/db";
 import { repositories, github_installations } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import Providers from "@/components/Providers";
 
 export const dynamic = "force-dynamic";
 
@@ -33,10 +34,12 @@ export default async function IncidentPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-canvas-default">
-      <DashboardHeader user={session.user} repos={repos} />
-      <div className="flex-1 pt-16">
-        <IncidentClient repos={repos} />
-      </div>
+      <Providers>
+        <DashboardHeader user={session.user} repos={repos} />
+        <div className="flex-1 pt-16">
+          <IncidentClient repos={repos} />
+        </div>
+      </Providers>
     </div>
   );
 }

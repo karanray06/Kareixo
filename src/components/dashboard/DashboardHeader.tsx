@@ -4,7 +4,8 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { FolderOpen, GitBranch, ChevronDown, Check, Search, RefreshCw, CheckCircle, AlertCircle, Bell, X, BellOff, User } from "lucide-react";
+import { FolderOpen, GitBranch, ChevronDown, Check, Search, RefreshCw, CheckCircle, AlertCircle, Bell, X, BellOff, User, LogOut, Settings as SettingsIcon } from "lucide-react";
+import { signOut } from "next-auth/react";
 
 interface DashboardHeaderProps {
   user: {
@@ -27,6 +28,7 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
   const pathname = usePathname();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showRepoSwitcher, setShowRepoSwitcher] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState<"idle" | "success" | "error">("idle");
 
@@ -235,27 +237,70 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
           <div className="h-5 w-px bg-border-default hidden sm:block" />
 
           {/* User avatar */}
-          <div className="flex items-center gap-space-sm pl-space-xs cursor-pointer group">
-            {user.image ? (
-              <img
-                alt="Profile"
-                className="w-8 h-8 rounded-full object-cover border border-border-default"
-                src={user.image}
-              />
-            ) : (
-              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0 shadow-sm">
-                <User size={18} className="text-on-primary" />
+          <div className="relative">
+            <div 
+              className="flex items-center gap-space-sm pl-space-xs cursor-pointer group"
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+            >
+              {user.image ? (
+                <img
+                  alt="Profile"
+                  className="w-8 h-8 rounded-full object-cover border border-border-default"
+                  src={user.image}
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0 shadow-sm">
+                  <User size={18} className="text-on-primary" />
+                </div>
+              )}
+              <div className="hidden 2xl:flex flex-col text-left">
+                <span className="font-label-ui text-label-ui text-fg-default font-medium leading-none">
+                  {user.name || "User"}
+                </span>
+                <span className="font-code-gutter text-code-gutter text-fg-subtle leading-none mt-1">
+                  workspace
+                </span>
+              </div>
+              <ChevronDown size={16} className="text-fg-muted hidden sm:inline" />
+            </div>
+
+            {/* Profile Dropdown */}
+            {showProfileMenu && (
+              <div className="absolute right-0 top-full mt-2 w-64 bg-canvas-subtle rounded-xl border border-border-default shadow-xl py-2 z-50">
+                <div className="px-4 py-3 border-b border-border-default mb-1">
+                  <p className="font-label-ui text-label-ui text-fg-default font-medium truncate">{user.name || "User"}</p>
+                  <p className="font-body-sm text-body-sm text-fg-muted truncate">{user.email || ""}</p>
+                </div>
+                
+                <Link
+                  href="/dashboard/profile"
+                  className="flex items-center gap-3 px-4 py-2 font-label-ui text-label-ui text-fg-default hover:bg-surface-container transition-colors"
+                  onClick={() => setShowProfileMenu(false)}
+                >
+                  <User size={16} className="text-fg-muted" />
+                  Your Profile
+                </Link>
+                
+                <Link
+                  href="/dashboard/settings"
+                  className="flex items-center gap-3 px-4 py-2 font-label-ui text-label-ui text-fg-default hover:bg-surface-container transition-colors"
+                  onClick={() => setShowProfileMenu(false)}
+                >
+                  <SettingsIcon size={16} className="text-fg-muted" />
+                  Settings
+                </Link>
+
+                <div className="h-px bg-border-default my-1" />
+                
+                <button
+                  className="w-full flex items-center gap-3 px-4 py-2 font-label-ui text-label-ui text-error hover:bg-error/10 transition-colors"
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                >
+                  <LogOut size={16} />
+                  Sign out
+                </button>
               </div>
             )}
-            <div className="hidden 2xl:flex flex-col text-left">
-              <span className="font-label-ui text-label-ui text-fg-default font-medium leading-none">
-                {user.name || "User"}
-              </span>
-              <span className="font-code-gutter text-code-gutter text-fg-subtle leading-none mt-1">
-                workspace
-              </span>
-            </div>
-            <ChevronDown size={16} className="text-fg-muted hidden sm:inline" />
           </div>
         </div>
       </div>

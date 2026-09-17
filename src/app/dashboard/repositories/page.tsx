@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus, FolderX, FolderGit2, ChevronRight, GitFork } from "lucide-react";
+import { Plus, FolderX, FolderGit2, ChevronRight, GitFork, RefreshCw } from "lucide-react";
 
 interface Repo {
   id: string;
@@ -52,15 +52,35 @@ export default function RepositoriesPage() {
               {loading ? "Loading..." : `${repos.length} repositories connected to Kareixo`}
             </p>
           </div>
-          <a
-            className="glow-button flex items-center gap-2 px-4 py-2 rounded-xl bg-accent-green-emphasis hover:bg-accent-green-hover text-white font-semibold text-sm transition-all shadow-lg shadow-accent-green-emphasis/20 self-start"
-            href="https://github.com/apps/kareixo-reviewer/installations/new"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Plus size={18} />
-            <span>Add Repository</span>
-          </a>
+          <div className="flex items-center gap-2 self-start">
+            <button
+              onClick={() => {
+                setLoading(true);
+                fetch("/api/repositories/sync", { method: "POST" })
+                  .then(() => fetch("/api/repositories"))
+                  .then((res) => res.json())
+                  .then((json) => {
+                    setRepos(json.repositories || []);
+                    setLoading(false);
+                    window.dispatchEvent(new Event("kareixo:sync-complete"));
+                  })
+                  .catch(() => setLoading(false));
+              }}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high text-fg-default font-semibold text-sm transition-all"
+            >
+              <RefreshCw size={18} />
+              <span>Sync Now</span>
+            </button>
+            <a
+              className="btn btn-primary"
+              href="https://github.com/apps/kareixo-reviewer/installations/new"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Plus size={18} />
+              <span>Add Repository</span>
+            </a>
+          </div>
         </div>
 
         {/* Repo Grid */}
@@ -90,15 +110,35 @@ export default function RepositoriesPage() {
                 Install the Kareixo GitHub App on your repositories to start receiving automated
                 code reviews.
               </p>
-              <a
-                className="glow-button inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-accent-green-emphasis hover:bg-accent-green-hover text-white font-semibold shadow-lg shadow-accent-green-emphasis/20 transition-all"
-                href="https://github.com/apps/kareixo-reviewer/installations/new"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Plus size={18} />
-                <span>Install on GitHub</span>
-              </a>
+              <div className="flex flex-wrap justify-center gap-3">
+                <a
+                  className="btn btn-primary"
+                  href="https://github.com/apps/kareixo-reviewer/installations/new"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Plus size={18} />
+                  <span>Install on GitHub</span>
+                </a>
+                <button
+                  onClick={() => {
+                    setLoading(true);
+                    fetch("/api/repositories/sync", { method: "POST" })
+                      .then(() => fetch("/api/repositories"))
+                      .then((res) => res.json())
+                      .then((json) => {
+                        setRepos(json.repositories || []);
+                        setLoading(false);
+                        window.dispatchEvent(new Event("kareixo:sync-complete"));
+                      })
+                      .catch(() => setLoading(false));
+                  }}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-fg-default font-semibold shadow-sm transition-all"
+                >
+                  <RefreshCw size={18} />
+                  <span>Sync Existing</span>
+                </button>
+              </div>
             </div>
           </div>
         ) : (

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { getDb } from "@/db";
 import { repositories, github_installations } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import Providers from "@/components/Providers";
 
 export const dynamic = "force-dynamic";
 
@@ -38,10 +39,12 @@ export default async function CodeChatPage() {
 
   return (
     <div className="flex flex-col h-screen bg-canvas-default">
-      <DashboardHeader user={session.user} repos={headerRepos} />
-      <div className="flex-1 pt-16 overflow-hidden">
-        <CodeChatClient repos={repos} />
-      </div>
+      <Providers>
+        <DashboardHeader user={session.user} repos={headerRepos} />
+        <div className="flex-1 pt-16 overflow-hidden">
+          <CodeChatClient repos={repos} />
+        </div>
+      </Providers>
     </div>
   );
 }
