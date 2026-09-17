@@ -168,7 +168,7 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row w-full min-h-[calc(100vh-4rem)] bg-canvas-default text-on-surface">
+    <div className="flex flex-col lg:flex-row w-full h-[calc(100vh-4rem)] bg-canvas-default text-on-surface">
       {/* LEFT SIDEBAR: Scoped Context & Symbol Tree */}
       <aside className="w-full lg:w-[320px] xl:w-[380px] flex-shrink-0 bg-canvas-subtle flex flex-col justify-between">
         <div className="flex flex-col p-space-md gap-space-md">
