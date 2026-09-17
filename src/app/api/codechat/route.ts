@@ -1,4 +1,4 @@
-import { streamText, isStepCount } from "ai";
+import { streamText } from "ai";
 import { z } from "zod";
 import { router } from "@/lib/model-router";
 import { auth } from "@/auth";
@@ -233,7 +233,7 @@ export async function POST(req: Request) {
         model: p.model,
         system: systemPrompt,
         messages,
-        ...(hasTools ? { tools, stopWhen: isStepCount(5) } : {}),
+        ...(hasTools ? { tools, maxSteps: 5 } : {}),
       });
 
       // Probe the stream for immediate failures
