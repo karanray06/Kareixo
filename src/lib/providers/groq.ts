@@ -10,11 +10,11 @@ export const createGroqProvider = () => {
 
 export const GROQ_MODEL_CATALOG = [
   {
-    modelId: "llama-3.1-8b-instant",
-    modelName: "Groq: LLaMA 3.1 8B Instant",
+    modelId: "openai/gpt-oss-20b",
+    modelName: "Groq: GPT-OSS 20B",
   },
   {
-    modelId: "llama-3.3-70b-versatile",
-    modelName: "Groq: LLaMA 3.3 70B Versatile",
+    modelId: "openai/gpt-oss-120b",
+    modelName: "Groq: GPT-OSS 120B",
   }
 ];
