@@ -111,7 +111,7 @@ export async function POST(req: Request) {
               return { error: `Failed to read '${filePath}': ${err?.message}` };
             }
           },
-        }) as any;
+        } as any);
 
         // Tool: List directory contents
         tools.listDirectory = tool({
@@ -143,7 +143,7 @@ export async function POST(req: Request) {
               return { error: `Failed to list '${dirPath}': ${err?.message}` };
             }
           },
-        }) as any;
+        } as any);
 
         // Tool: Search for code in the repo
         tools.searchCode = tool({
@@ -169,7 +169,7 @@ export async function POST(req: Request) {
               return { error: `Search failed: ${err?.message}` };
             }
           },
-        }) as any;
+        } as any);
 
         // Tool: Propose a code change (read-only — does NOT write to GitHub)
         tools.proposeChange = tool({
@@ -228,7 +228,7 @@ export async function POST(req: Request) {
               return { error: `Failed to read '${filePath}': ${err?.message}` };
             }
           },
-        }) as any;
+        } as any);
       }
     }
 
