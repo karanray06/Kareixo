@@ -2,9 +2,10 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import DiffViewer from "@/components/shared/DiffViewer";
-import { FolderOpen, Folder, FileCode2, Database, GitBranch, Search, X, MessageSquare, Bot, GitMerge, ArrowUp, User, ShieldCheck } from "lucide-react";
+import { FolderOpen, Folder, FileCode2, Database, GitBranch, Search, X, MessageSquare, Bot, GitMerge, ArrowUp, User, ShieldCheck, Plus, MessageCircle, Terminal } from "lucide-react";
 
 type FileEntry = {
   name: string;
@@ -20,7 +21,7 @@ type RepoInfo = {
   installationId: number;
 };
 
-export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
+function CodeChatClientContent({ repos }: { repos: RepoInfo[] }) {
   const [selectedRepo, setSelectedRepo] = useState<RepoInfo | null>(repos[0] || null);
   const [branch, setBranch] = useState<string>("main");
   const [fileTree, setFileTree] = useState<FileEntry[]>([]);
@@ -29,6 +30,8 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
   const [showCodeViewer, setShowCodeViewer] = useState(false);
   const [fileFilter, setFileFilter] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const isNearBottomRef = useRef(true);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [input, setInput] = useState("");
   const [appliedProposals, setAppliedProposals] = useState<
@@ -36,22 +39,83 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
   >({});
   const [discardedProposals, setDiscardedProposals] = useState<Set<string>>(new Set());
 
+  const [isTerminalOpen, setIsTerminalOpen] = useState(false);
+  const [terminalHistory, setTerminalHistory] = useState<string[]>([]);
+  const [terminalInput, setTerminalInput] = useState("");
+  const terminalEndRef = useRef<HTMLDivElement>(null);
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const initialConversationId = searchParams.get("conversation");
+  const [conversationId, setConversationId] = useState<string | null>(initialConversationId);
+  const [conversations, setConversations] = useState<any[]>([]);
+
+  const fetchConversations = useCallback(async (repoFullName: string) => {
+    try {
+      const res = await fetch(`/api/codechat/conversations?repoFullName=${encodeURIComponent(repoFullName)}`);
+      if (res.ok) {
+        const data = await res.json();
+        setConversations(data.conversations || []);
+      }
+    } catch (e) {}
+  }, []);
+
+  useEffect(() => {
+    if (selectedRepo) fetchConversations(selectedRepo.fullName);
+    else setConversations([]);
+  }, [selectedRepo, fetchConversations]);
+
+  useEffect(() => {
+    if (initialConversationId && initialConversationId !== conversationId) {
+      fetch(`/api/codechat/conversations/${initialConversationId}`)
+        .then(r => r.json())
+        .then(d => {
+          if (d.messages) setMessages(d.messages);
+          setConversationId(initialConversationId);
+        });
+    }
+  }, [initialConversationId]);
+
   const transport = useMemo(() => new DefaultChatTransport({
     api: "/api/codechat",
     body: {
       repoFullName: selectedRepo?.fullName,
       branch,
+      conversationId,
     },
-  }), [selectedRepo?.fullName, branch]);
+    fetch: async (url, options) => {
+      const response = await fetch(url, options);
+      const newId = response.headers.get("X-Conversation-Id");
+      if (newId && newId !== conversationId) {
+        setConversationId(newId);
+        window.history.pushState({}, '', `/dashboard/codechat?conversation=${newId}`);
+        if (selectedRepo) fetchConversations(selectedRepo.fullName);
+      }
+      return response;
+    }
+  }), [selectedRepo?.fullName, branch, conversationId]);
 
-  const { messages, sendMessage, status, error } = useChat({
+  const { messages, setMessages, sendMessage, status, error } = useChat({
     transport,
   });
 
   const isLoading = status === "streaming" || status === "submitted";
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const container = messagesContainerRef.current;
+    if (!container) return;
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      isNearBottomRef.current = scrollHeight - scrollTop - clientHeight < 150;
+    };
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (isNearBottomRef.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages]);
 
   const loadFileTree = useCallback(async (repoFullName: string, dirPath = "") => {
@@ -120,6 +184,48 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
       console.error(err);
     }
   };
+
+  const handleTerminalSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!terminalInput.trim()) return;
+    const cmd = terminalInput.trim();
+    setTerminalInput("");
+    setTerminalHistory(prev => [...prev, `$ ${cmd}`]);
+    
+    if (!selectedRepo) {
+      setTerminalHistory(prev => [...prev, "Error: No repository selected."]);
+      return;
+    }
+
+    const parts = cmd.split(" ");
+    if (parts[0] !== "git") {
+      setTerminalHistory(prev => [...prev, "Command not found. Only 'git' is supported."]);
+      return;
+    }
+
+    const command = parts[1];
+    const args = parts.slice(2);
+
+    try {
+      const res = await fetch("/api/codechat/git", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ repoFullName: selectedRepo.fullName, command, args })
+      });
+      const data = await res.json();
+      if (data.error) {
+        setTerminalHistory(prev => [...prev, `Error: ${data.error}`]);
+      } else {
+        setTerminalHistory(prev => [...prev, data.output]);
+      }
+    } catch (err) {
+      setTerminalHistory(prev => [...prev, "Error executing command."]);
+    }
+  };
+
+  useEffect(() => {
+    terminalEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [terminalHistory, isTerminalOpen]);
 
   const renderTree = (entries: FileEntry[], depth = 0) => {
     const sorted = [...entries].sort((a, b) => {
@@ -244,6 +350,52 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
           </div>
         </div>
 
+        {/* Recent Conversations */}
+        <div className="flex flex-col gap-space-xs p-space-md border-t border-border-default flex-1 overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="font-label-ui text-label-ui text-fg-muted tracking-wide uppercase">
+              Recent Chats
+            </span>
+            <button 
+              onClick={() => {
+                setConversationId(null);
+                setMessages([]);
+                window.history.pushState({}, '', '/dashboard/codechat');
+              }}
+              className="p-1 rounded text-fg-subtle hover:text-fg-default hover:bg-surface-container"
+              title="New Chat"
+            >
+              <Plus size={16} />
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto space-y-1">
+            {conversations.length === 0 ? (
+              <div className="text-fg-subtle font-body-sm text-body-sm px-2">No recent chats</div>
+            ) : (
+              conversations.map(c => (
+                <button
+                  key={c.id}
+                  onClick={() => {
+                    setConversationId(c.id);
+                    window.history.pushState({}, '', `/dashboard/codechat?conversation=${c.id}`);
+                    fetch(`/api/codechat/conversations/${c.id}`)
+                      .then(r => r.json())
+                      .then(d => {
+                        if (d.messages) setMessages(d.messages);
+                      });
+                  }}
+                  className={`w-full text-left px-2 py-1.5 rounded flex items-center gap-2 font-body-sm text-body-sm truncate transition-colors ${
+                    conversationId === c.id ? "bg-surface-container text-fg-default" : "text-fg-subtle hover:text-fg-default hover:bg-surface-container-low"
+                  }`}
+                >
+                  <MessageCircle size={14} className="shrink-0" />
+                  <span className="truncate">{c.title}</span>
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+
         {/* Bottom: Context status */}
         <div className="p-space-md border-t border-border-default">
           <div className="flex items-center justify-between text-fg-muted font-badge-mono text-badge-mono">
@@ -268,6 +420,15 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
               <span className="w-1.5 h-1.5 rounded-full bg-accent-green-emphasis" />
               <span className="text-fg-default font-medium">Gemini</span>
             </span>
+            <button
+              onClick={() => setIsTerminalOpen(!isTerminalOpen)}
+              className={`ml-2 p-1.5 rounded-lg transition-colors flex items-center gap-2 font-badge-mono text-badge-mono ${
+                isTerminalOpen ? 'bg-accent-blue text-white' : 'hover:bg-surface-container-high text-fg-muted hover:text-fg-default'
+              }`}
+            >
+              <Terminal size={16} />
+              <span>Git Terminal</span>
+            </button>
           </div>
 
           {showCodeViewer && selectedFile && (
@@ -308,7 +469,7 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
             </div>
           </div>
         ) : (
-          <div className="flex-1 overflow-y-auto px-space-md py-space-md space-y-6 bg-canvas-default min-h-0 flex flex-col">
+          <div ref={messagesContainerRef} className="flex-1 overflow-y-auto px-space-md py-space-md space-y-6 bg-canvas-default min-h-0 flex flex-col">
             {messages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center space-y-4 my-auto">
                 <div className="w-16 h-16 rounded-2xl bg-surface-container border border-border-default flex items-center justify-center text-fg-muted shadow-sm">
@@ -484,6 +645,29 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
           </div>
         )}
 
+        {isTerminalOpen && (
+          <div className="h-64 border-t border-border-default bg-canvas-inset flex flex-col font-code-diff text-code-diff shrink-0">
+            <div className="flex-1 overflow-y-auto p-4 space-y-2 text-fg-muted whitespace-pre-wrap">
+              {terminalHistory.map((line, i) => (
+                <div key={i} className={line.startsWith("$") ? "text-fg-default" : "opacity-80"}>
+                  {line}
+                </div>
+              ))}
+              <div ref={terminalEndRef} />
+            </div>
+            <form onSubmit={handleTerminalSubmit} className="flex items-center p-2 border-t border-border-default bg-canvas-default">
+              <span className="text-accent-blue font-bold px-2">$</span>
+              <input
+                value={terminalInput}
+                onChange={e => setTerminalInput(e.target.value)}
+                className="flex-1 bg-transparent outline-none text-fg-default"
+                placeholder="git status"
+                autoFocus
+              />
+            </form>
+          </div>
+        )}
+
         {/* Input area */}
         <div className="p-space-md bg-canvas-subtle/90 backdrop-blur border-t border-border-default mt-auto">
           <form
@@ -523,5 +707,13 @@ export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function CodeChatClient({ repos }: { repos: RepoInfo[] }) {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-fg-subtle">Loading...</div>}>
+      <CodeChatClientContent repos={repos} />
+    </Suspense>
   );
 }

@@ -1,10 +1,10 @@
-import { streamText } from "ai";
+import { streamText, stepCountIs } from "ai";
 import { z } from "zod";
 import { router } from "@/lib/model-router";
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 import { getDb } from "@/db";
-import { repositories, github_installations } from "@/db/schema";
+import { repositories, github_installations, chatConversations, chatMessages } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { getInstallationOctokit } from "@/lib/github-app";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limiter";
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
       return rateLimitResponse(rateCheck.resetAt);
     }
 
-    const { messages: rawMessages, repoFullName, branch } = await req.json();
+    const { messages: rawMessages, repoFullName, branch, conversationId } = await req.json();
 
     // Convert UIMessage format to simple format
     const messages = (rawMessages || []).map((msg: any) => {
@@ -44,9 +44,26 @@ export async function POST(req: Request) {
 
     // Build tools if we have repo context
     const tools: Record<string, any> = {};
+    const db = getDb();
+    
+    let finalConversationId = conversationId;
+    if (!finalConversationId && messages.length > 0) {
+      const firstUserMsg = messages.find((m: any) => m.role === 'user');
+      const title = (firstUserMsg?.content || "New Conversation").slice(0, 40);
+      try {
+        const [newConv] = await db.insert(chatConversations).values({
+          userId: session.user.id,
+          repoFullName: repoFullName || null,
+          branch: branch || null,
+          title,
+        }).returning();
+        finalConversationId = newConv.id;
+      } catch (err) {
+        console.error("Failed to create conversation:", err);
+      }
+    }
     
     if (repoFullName) {
-      const db = getDb();
       const [owner, repo] = repoFullName.split("/");
       
       // Find the installation for this repo to get an authenticated Octokit
@@ -228,13 +245,50 @@ export async function POST(req: Request) {
 
     const hasTools = Object.keys(tools).length > 0;
 
-    // Execute with multi-key failover
     const { result, provider } = await router.executeWithFailover(async (p) => {
       const res = streamText({
         model: p.model,
         system: systemPrompt,
         messages,
-        ...(hasTools && p.name !== "POLLINATIONS" ? { tools, maxSteps: 5 } : {}),
+        ...(hasTools && p.name !== "POLLINATIONS" ? { tools, stopWhen: stepCountIs(5) } : {}),
+        onFinish: async (event) => {
+          if (finalConversationId) {
+            try {
+              const lastUserMsg = rawMessages[rawMessages.length - 1];
+              
+              if (lastUserMsg) {
+                // Determine content based on format
+                let userContent = "";
+                if (typeof lastUserMsg.content === "string") userContent = lastUserMsg.content;
+                else if (Array.isArray(lastUserMsg.parts)) {
+                  userContent = lastUserMsg.parts.filter((p: any) => p.type === "text").map((p: any) => p.text).join("");
+                }
+
+                await db.insert(chatMessages).values({
+                  conversationId: finalConversationId,
+                  role: "user",
+                  content: userContent,
+                });
+              }
+
+              await db.insert(chatMessages).values({
+                conversationId: finalConversationId,
+                role: "assistant",
+                content: event.text || "",
+                model: provider.modelName,
+              });
+
+              await db.update(chatConversations)
+                .set({ updatedAt: new Date() })
+                .where(eq(chatConversations.id, finalConversationId));
+            } catch (err) {
+              console.error("[CodeChat persistence error]:", err);
+            }
+          }
+        },
+        onError: ({ error }) => {
+          console.error("[CodeChat streamText error]:", error);
+        }
       });
 
       return res;
@@ -244,6 +298,7 @@ export async function POST(req: Request) {
       headers: {
         "X-Kareixo-Provider": provider.name,
         "X-Kareixo-Model": provider.modelName,
+        ...(finalConversationId ? { "X-Conversation-Id": finalConversationId } : {}),
       },
     });
 

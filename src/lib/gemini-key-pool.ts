@@ -47,7 +47,7 @@ class GeminiKeyPool {
     const defaultKeys = (process.env.GEMINI_API_KEY || "").split(",").map(k => k.trim()).filter(Boolean);
     const chatKeysInput = chatKeyValue ? chatKeyValue.split(",").map(k => k.trim()).filter(Boolean) : defaultKeys;
     const codeKeysInput = codeKeyValue ? codeKeyValue.split(",").map(k => k.trim()).filter(Boolean) : defaultKeys;
-    const pollinationsKeysInput = pollinationsKeyValue ? pollinationsKeyValue.split(",").map(k => k.trim()).filter(Boolean) : [];
+    const pollinationsKeysInput = pollinationsKeyValue ? pollinationsKeyValue.split(",").map(k => k.trim()).filter(Boolean) : ["anonymous"];
 
     if (chatKeysInput.length === 0 || codeKeysInput.length === 0) {
       console.warn("[KeyPool] Warning: No Gemini API keys configured.");

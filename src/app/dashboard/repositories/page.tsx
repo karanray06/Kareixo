@@ -89,7 +89,7 @@ export default function RepositoriesPage() {
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="glass-card p-4 flex flex-col gap-3 animate-pulse"
+                className="bg-surface-container border border-border-default rounded-xl p-4 flex flex-col gap-3 animate-pulse"
               >
                 <div className="h-5 w-40 bg-surface-container rounded"></div>
                 <div className="h-3 w-24 bg-surface-container rounded"></div>
@@ -147,7 +147,7 @@ export default function RepositoriesPage() {
               <Link
                 key={repo.id}
                 href={`/dashboard/${repo.id}`}
-                className="glass-card p-4 flex flex-col gap-3 group transition-all duration-300 hover:shadow-lg hover:border-fg-subtle cursor-pointer"
+                className="bg-surface border border-border-default rounded-xl p-4 flex flex-col gap-3 group transition-all duration-200 hover:bg-surface-container hover:border-fg-subtle cursor-pointer"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex flex-col gap-1 min-w-0">

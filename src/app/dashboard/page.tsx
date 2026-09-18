@@ -108,7 +108,7 @@ export default function DashboardOverview() {
                 pull request reviews with AI-powered code analysis.
               </p>
               <a
-                className="glow-button inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-accent-green-emphasis hover:bg-accent-green-hover text-white font-semibold shadow-lg shadow-accent-green-emphasis/20 transition-all"
+                className="btn btn-primary inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold"
                 href="https://github.com/apps/kareixo-reviewer/installations/new"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -273,22 +273,20 @@ export default function DashboardOverview() {
               </p>
             </div>
           </div>
-          {/* Verification Status Legend */}
           <div className="flex flex-wrap items-center gap-space-sm z-10">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-diff-addition-line text-diff-addition-text font-badge-mono text-badge-mono shadow-sm">
-              <CheckCircle2 size={15} />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface-container text-fg-default font-badge-mono text-badge-mono">
+              <CheckCircle2 size={15} className="text-diff-addition-text" />
               <span>Confirmed</span>
             </div>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface-container text-accent-amber font-badge-mono text-badge-mono shadow-sm">
-              <Activity size={15} />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface-container text-fg-default font-badge-mono text-badge-mono">
+              <Activity size={15} className="text-accent-amber" />
               <span>Unverified</span>
             </div>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-diff-deletion-line text-diff-deletion-text font-badge-mono text-badge-mono shadow-sm">
-              <AlertCircle size={15} />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface-container text-fg-default font-badge-mono text-badge-mono">
+              <AlertCircle size={15} className="text-diff-deletion-text" />
               <span>Rejected</span>
             </div>
           </div>
-          <div className="absolute right-0 top-0 bottom-0 w-96 bg-gradient-to-l from-surface-container-high/40 to-transparent pointer-events-none" />
         </section>
 
         {/* Developer Tools / Quick Actions Section */}
@@ -300,7 +298,7 @@ export default function DashboardOverview() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Link
                 href="/codechat"
-                className="flex items-start gap-3 p-4 rounded-xl border border-border-default bg-surface-container/50 hover:bg-surface-container-high hover:border-fg-subtle transition-all group"
+                className="flex items-start gap-3 p-4 rounded-xl bg-surface-container hover:bg-surface-container-high transition-all group"
               >
                 <div className="w-10 h-10 rounded-lg bg-accent-purple/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                   <TerminalSquare size={20} className="text-accent-purple" />
@@ -317,7 +315,7 @@ export default function DashboardOverview() {
 
               <Link
                 href="/incident"
-                className="flex items-start gap-3 p-4 rounded-xl border border-border-default bg-surface-container/50 hover:bg-surface-container-high hover:border-fg-subtle transition-all group"
+                className="flex items-start gap-3 p-4 rounded-xl bg-surface-container hover:bg-surface-container-high transition-all group"
               >
                 <div className="w-10 h-10 rounded-lg bg-accent-red/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                   <Activity size={20} className="text-accent-red" />

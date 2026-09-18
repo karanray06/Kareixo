@@ -155,7 +155,7 @@ export default function IncidentClient({ repos }: { repos: RepoInfo[] }) {
               <button
                 onClick={handleAnalyze}
                 disabled={isAnalyzing || !stackTrace.trim() || !selectedRepo}
-                className="glow-button w-full py-3 rounded-xl bg-accent-green-emphasis hover:bg-accent-green-hover text-white font-title-card-sm text-title-card-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-lg shadow-accent-green-emphasis/20 disabled:opacity-50 disabled:shadow-none"
+                className="btn btn-primary w-full py-3 rounded-xl font-title-card-sm text-title-card-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {isAnalyzing ? (
                   <>
@@ -315,13 +315,11 @@ export default function IncidentClient({ repos }: { repos: RepoInfo[] }) {
                 {/* Handoff to CodeChat */}
                 <a
                   href={result.codeChatUrl}
-                  className="glow-button block w-full py-4 rounded-xl bg-accent-green-emphasis hover:bg-accent-green-hover text-white font-title-card-sm text-title-card-sm font-semibold text-center transition-all shadow-lg shadow-accent-green-emphasis/20"
+                  className="btn btn-primary w-full py-4 rounded-xl font-title-card-sm text-title-card-sm font-semibold flex items-center justify-center gap-2"
                 >
-                  <span className="flex items-center justify-center gap-2">
-                    <MessageSquare size={18} />
-                    Open in CodeChat with full context
-                    <ArrowRight size={18} />
-                  </span>
+                  <MessageSquare size={18} />
+                  <span>Open in CodeChat with full context</span>
+                  <ArrowRight size={18} />
                 </a>
               </>
             )}
