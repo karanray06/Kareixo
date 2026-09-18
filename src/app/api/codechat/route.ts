@@ -1,4 +1,4 @@
-import { streamText, stepCountIs } from "ai";
+import { streamText, stepCountIs, tool } from "ai";
 import { z } from "zod";
 import { router } from "@/lib/model-router";
 import { auth } from "@/auth";
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
       return rateLimitResponse(rateCheck.resetAt);
     }
 
-    const { messages: rawMessages, repoFullName, branch, conversationId } = await req.json();
+    const { messages: rawMessages, repoFullName, branch, conversationId, provider: selectedProvider } = await req.json();
 
     // Convert UIMessage format to simple format
     const messages = (rawMessages || []).map((msg: any) => {
@@ -82,9 +82,9 @@ export async function POST(req: Request) {
         const targetRef = branch || "HEAD";
 
         // Tool: Read a specific file from the repo
-        tools.readFile = {
+        tools.readFile = tool({
           description: "Read a file from the repository. Use this to examine source code when you need to see the actual implementation.",
-          inputSchema: z.object({
+          parameters: z.object({
             path: z.string().describe("The file path relative to the repo root, e.g. 'src/lib/utils.ts'"),
           }),
           execute: async ({ path: filePath }: { path: string }) => {
@@ -111,12 +111,12 @@ export async function POST(req: Request) {
               return { error: `Failed to read '${filePath}': ${err?.message}` };
             }
           },
-        };
+        }) as any;
 
         // Tool: List directory contents
-        tools.listDirectory = {
+        tools.listDirectory = tool({
           description: "List the contents of a directory in the repository. Use this to explore the file structure.",
-          inputSchema: z.object({
+          parameters: z.object({
             path: z.string().describe("The directory path relative to repo root, e.g. 'src/lib' or '' for root").default(""),
           }),
           execute: async ({ path: dirPath }: { path: string }) => {
@@ -143,12 +143,12 @@ export async function POST(req: Request) {
               return { error: `Failed to list '${dirPath}': ${err?.message}` };
             }
           },
-        };
+        }) as any;
 
         // Tool: Search for code in the repo
-        tools.searchCode = {
+        tools.searchCode = tool({
           description: "Search for code in the repository using GitHub's code search.",
-          inputSchema: z.object({
+          parameters: z.object({
             query: z.string().describe("The search query, e.g. 'function handleSubmit' or 'import router'"),
           }),
           execute: async ({ query }: { query: string }) => {
@@ -169,14 +169,14 @@ export async function POST(req: Request) {
               return { error: `Search failed: ${err?.message}` };
             }
           },
-        };
+        }) as any;
 
         // Tool: Propose a code change (read-only — does NOT write to GitHub)
-        tools.proposeChange = {
+        tools.proposeChange = tool({
           description:
             "Propose a code change to a file in the repository. Read the current file, then return the modified version. " +
             "The user will see a diff and can approve/discard. Use this when the user asks you to fix, refactor, or modify code.",
-          inputSchema: z.object({
+          parameters: z.object({
             path: z.string().describe("The file path relative to the repo root, e.g. 'src/lib/utils.ts'"),
             newContent: z.string().describe("The complete new file content after your changes"),
             explanation: z.string().describe("A brief explanation of what the change does and why"),
@@ -228,7 +228,7 @@ export async function POST(req: Request) {
               return { error: `Failed to read '${filePath}': ${err?.message}` };
             }
           },
-        };
+        }) as any;
       }
     }
 
@@ -292,7 +292,7 @@ export async function POST(req: Request) {
       });
 
       return res;
-    }, "code", "deep");
+    }, "code", "deep", selectedProvider);
 
     return result.toUIMessageStreamResponse({
       headers: {

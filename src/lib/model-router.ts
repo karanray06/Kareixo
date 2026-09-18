@@ -2,9 +2,10 @@ import { LanguageModel } from "ai";
 import { keyPool, KeyState, PER_ATTEMPT_TIMEOUT_MS } from "./gemini-key-pool";
 import { createGeminiProvider, GEMINI_MODEL_CATALOG, GeminiModelId } from "./providers/gemini";
 import { createPollinationsProvider, POLLINATIONS_MODEL_CATALOG } from "./providers/pollinations";
+import { createGroqProvider, GROQ_MODEL_CATALOG } from "./providers/groq";
 
 export type ProviderEntry = {
-  name: "GEMINI" | "POLLINATIONS";
+  name: "GEMINI" | "POLLINATIONS" | "GROQ";
   modelName: string;
   modelId: string;
   model: LanguageModel;
@@ -41,15 +42,30 @@ function isRetryableError(error: any): boolean {
 export class ModelRouter {
   private geminiModelCatalog = GEMINI_MODEL_CATALOG;
   private pollinationsModelCatalog = POLLINATIONS_MODEL_CATALOG;
+  private groqModelCatalog = GROQ_MODEL_CATALOG;
 
   /**
    * Get the provider configured for the specific task and tier.
    */
   private getProviderForTask(
     taskType: "chat" | "code",
-    tier: "fast" | "deep" | "fallback" = "fast"
+    tier: "fast" | "deep" | "fallback" = "fast",
+    selectedProvider?: string
   ): ProviderEntry {
-    if (tier === "fallback") {
+    if (selectedProvider === "GROQ") {
+      const provider = createGroqProvider();
+      // Use LLaMA 3.3 70B Versatile for deep tasks, 8B Instant for fast tasks
+      const modelEntry = tier === "deep" ? this.groqModelCatalog[1] : this.groqModelCatalog[0];
+      return {
+        name: "GROQ",
+        modelName: modelEntry.modelName,
+        modelId: modelEntry.modelId,
+        model: provider(modelEntry.modelId) as unknown as LanguageModel,
+        keyState: { provider: "gemini", task: "fallback", key: "groq-key", consecutiveFailures: 0, cooldownUntil: 0, circuitOpen: false, circuitOpenUntil: 0, totalRequests: 0, totalFailures: 0 },
+      };
+    }
+
+    if (selectedProvider === "POLLINATIONS" || tier === "fallback") {
       const keyState = keyPool.getKeyForTask("fallback", "pollinations");
       const provider = createPollinationsProvider(keyState.key);
       const modelEntry = this.pollinationsModelCatalog[0]; // openai
@@ -58,7 +74,7 @@ export class ModelRouter {
         name: "POLLINATIONS",
         modelName: modelEntry.modelName,
         modelId: modelEntry.modelId,
-        model: provider(modelEntry.modelId),
+        model: provider(modelEntry.modelId) as unknown as LanguageModel,
         keyState,
       };
     }
@@ -88,15 +104,16 @@ export class ModelRouter {
   public async executeWithFailover<T>(
     operation: (provider: ProviderEntry) => Promise<T>,
     taskType: "code" | "chat" = "chat",
-    tier: "fast" | "deep" = "fast"
+    tier: "fast" | "deep" = "fast",
+    selectedProvider?: string
   ): Promise<{ result: T; provider: ProviderEntry }> {
-    const maxAttempts = 3;
+    const maxAttempts = selectedProvider ? 1 : 3;
     let attempts = 0;
     let lastError: Error | null = null;
     let currentTier: "fast" | "deep" | "fallback" = tier;
 
     while (attempts < maxAttempts) {
-      const provider = this.getProviderForTask(taskType, currentTier);
+      const provider = this.getProviderForTask(taskType, currentTier, selectedProvider);
       attempts++;
 
       try {
