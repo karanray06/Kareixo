@@ -1,7 +1,6 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
 import { useState, useRef, useEffect, useCallback, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import DiffViewer from "@/components/shared/DiffViewer";
@@ -77,7 +76,7 @@ function CodeChatClientContent({ repos }: { repos: RepoInfo[] }) {
     }
   }, [initialConversationId]);
 
-  const transport = useMemo(() => new DefaultChatTransport({
+  const { messages, setMessages, append, status, error } = useChat({
     api: "/api/codechat",
     body: {
       repoFullName: selectedRepo?.fullName,
@@ -85,20 +84,14 @@ function CodeChatClientContent({ repos }: { repos: RepoInfo[] }) {
       conversationId,
       provider: selectedProvider,
     },
-    fetch: async (url, options) => {
-      const response = await fetch(url, options);
+    onResponse: (response) => {
       const newId = response.headers.get("X-Conversation-Id");
       if (newId && newId !== conversationId) {
         setConversationId(newId);
         window.history.pushState({}, '', `/dashboard/codechat?conversation=${newId}`);
         if (selectedRepo) fetchConversations(selectedRepo.fullName);
       }
-      return response;
     }
-  }), [selectedRepo?.fullName, branch, conversationId, selectedProvider]);
-
-  const { messages, setMessages, sendMessage, status, error } = useChat({
-    transport,
   });
 
   const isLoading = status === "streaming" || status === "submitted";
@@ -181,7 +174,7 @@ function CodeChatClientContent({ repos }: { repos: RepoInfo[] }) {
     const currentInput = input;
     setInput("");
     try {
-      await sendMessage({ role: "user", parts: [{ type: "text", text: currentInput }] });
+      await append({ role: "user", content: currentInput });
     } catch (err) {
       console.error(err);
     }
