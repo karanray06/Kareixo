@@ -4,14 +4,14 @@ import { getDb } from "@/db";
 import { chatConversations, chatMessages } from "@/db/schema";
 import { eq, and, asc } from "drizzle-orm";
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
     const db = getDb();
 
     // Verify ownership
