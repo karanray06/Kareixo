@@ -251,6 +251,11 @@ export async function POST(req: Request) {
         system: systemPrompt,
         messages,
         ...(hasTools && p.name !== "POLLINATIONS" ? { tools, stopWhen: stepCountIs(5) } : {}),
+        ...(p.name === "GROQ" ? {
+          providerOptions: {
+            groq: { reasoningFormat: "hidden" },
+          },
+        } : {}),
         onFinish: async (event) => {
           if (finalConversationId) {
             try {

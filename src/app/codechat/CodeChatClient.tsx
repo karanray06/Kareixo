@@ -270,9 +270,23 @@ function CodeChatClientContent({ repos }: { repos: RepoInfo[] }) {
 
   const getMessageText = (msg: any): string => {
     if (msg.parts) {
-      return msg.parts.filter((p: any) => p.type === "text").map((p: any) => p.text).join("");
+      const textParts = msg.parts.filter((p: any) => p.type === "text").map((p: any) => p.text).join("");
+      if (textParts.trim()) return textParts;
+      // Fall back to reasoning content if no text part exists, so nothing is silently lost
+      const reasoningParts = msg.parts.filter((p: any) => p.type === "reasoning").map((p: any) => p.text || p.reasoning).join("");
+      return reasoningParts;
     }
     return msg.content || "";
+  };
+
+  const isReasoningOnly = (msg: any): boolean => {
+    if (msg.parts) {
+      const textParts = msg.parts.filter((p: any) => p.type === "text").map((p: any) => p.text).join("");
+      if (textParts.trim()) return false;
+      const reasoningParts = msg.parts.filter((p: any) => p.type === "reasoning").map((p: any) => p.text || p.reasoning).join("");
+      return reasoningParts.trim().length > 0;
+    }
+    return false;
   };
 
   return (
@@ -621,7 +635,7 @@ function CodeChatClientContent({ repos }: { repos: RepoInfo[] }) {
                         </div>
                       )}
 
-                      {text && (
+                      {text ? (
                         <div
                           className={`rounded-xl p-4 space-y-3 ${
                             m.role === "user"
@@ -629,6 +643,11 @@ function CodeChatClientContent({ repos }: { repos: RepoInfo[] }) {
                               : "bg-transparent p-0 shadow-none"
                           }`}
                         >
+                          {isReasoningOnly(m) && (
+                            <div className="font-badge-mono text-badge-mono text-accent-purple mb-1">
+                              Reasoning (no final answer returned)
+                            </div>
+                          )}
                           <div
                             className={`whitespace-pre-wrap font-body-base text-body-base ${
                               m.role === "user" ? "text-fg-default" : "leading-relaxed text-fg-muted"
@@ -637,6 +656,12 @@ function CodeChatClientContent({ repos }: { repos: RepoInfo[] }) {
                             {text}
                           </div>
                         </div>
+                      ) : (
+                        (!isLoading || idx !== messages.length - 1) && toolCalls.length === 0 && m.role !== "user" && (
+                          <div className="bg-surface-container-high text-fg-muted p-3 rounded-lg font-body-sm italic border border-border-default">
+                            No response content — this may indicate a provider issue.
+                          </div>
+                        )
                       )}
                     </div>
                   </article>
