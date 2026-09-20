@@ -39,9 +39,20 @@ export function createPollinationsProvider(apiKey: string) {
                 if (data.choices && data.choices[0] && data.choices[0].delta) {
                   const content = data.choices[0].delta.content;
                   const role = data.choices[0].delta.role;
+                  // Preserve finish_reason — the AI SDK's OpenAI-compatible
+                  // parser needs it to detect stream completion.
+                  const finishReason = data.choices[0].finish_reason;
+                  // Preserve usage data if present (some providers include it
+                  // in the final chunk).
+                  const usage = data.usage;
+
                   data.choices[0].delta = {};
                   if (content !== undefined) data.choices[0].delta.content = content;
                   if (role !== undefined) data.choices[0].delta.role = role;
+                  // Re-attach finish_reason at the choice level (not inside delta)
+                  if (finishReason !== undefined) data.choices[0].finish_reason = finishReason;
+                  // Re-attach usage at the top level
+                  if (usage !== undefined) data.usage = usage;
                 }
                 controller.enqueue(new TextEncoder().encode('data: ' + JSON.stringify(data) + '\n'));
                 continue;

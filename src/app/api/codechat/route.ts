@@ -81,13 +81,14 @@ export async function POST(req: Request) {
         const octokit = await getInstallationOctokit(repoRecord.inst.installationId);
         const targetRef = branch || "HEAD";
 
+        // NOTE: must be "inputSchema", not "parameters" — ai@7 requirement, has regressed before
         // Tool: Read a specific file from the repo
         tools.readFile = tool({
           description: "Read a file from the repository. Use this to examine source code when you need to see the actual implementation.",
-          parameters: z.object({
+          inputSchema: z.object({
             path: z.string().describe("The file path relative to the repo root, e.g. 'src/lib/utils.ts'"),
           }),
-          execute: async ({ path: filePath }: { path: string }) => {
+          execute: async ({ path: filePath }) => {
             try {
               const { data } = await octokit.rest.repos.getContent({
                 owner,
@@ -111,15 +112,16 @@ export async function POST(req: Request) {
               return { error: `Failed to read '${filePath}': ${err?.message}` };
             }
           },
-        } as any);
+        });
 
+        // NOTE: must be "inputSchema", not "parameters" — ai@7 requirement, has regressed before
         // Tool: List directory contents
         tools.listDirectory = tool({
           description: "List the contents of a directory in the repository. Use this to explore the file structure.",
-          parameters: z.object({
+          inputSchema: z.object({
             path: z.string().describe("The directory path relative to repo root, e.g. 'src/lib' or '' for root").default(""),
           }),
-          execute: async ({ path: dirPath }: { path: string }) => {
+          execute: async ({ path: dirPath }) => {
             try {
               const { data } = await octokit.rest.repos.getContent({
                 owner,
@@ -143,15 +145,16 @@ export async function POST(req: Request) {
               return { error: `Failed to list '${dirPath}': ${err?.message}` };
             }
           },
-        } as any);
+        });
 
+        // NOTE: must be "inputSchema", not "parameters" — ai@7 requirement, has regressed before
         // Tool: Search for code in the repo
         tools.searchCode = tool({
           description: "Search for code in the repository using GitHub's code search.",
-          parameters: z.object({
+          inputSchema: z.object({
             query: z.string().describe("The search query, e.g. 'function handleSubmit' or 'import router'"),
           }),
-          execute: async ({ query }: { query: string }) => {
+          execute: async ({ query }) => {
             try {
               const { data } = await octokit.rest.search.code({
                 q: `${query} repo:${repoFullName}`,
@@ -169,27 +172,20 @@ export async function POST(req: Request) {
               return { error: `Search failed: ${err?.message}` };
             }
           },
-        } as any);
+        });
 
+        // NOTE: must be "inputSchema", not "parameters" — ai@7 requirement, has regressed before
         // Tool: Propose a code change (read-only — does NOT write to GitHub)
         tools.proposeChange = tool({
           description:
             "Propose a code change to a file in the repository. Read the current file, then return the modified version. " +
             "The user will see a diff and can approve/discard. Use this when the user asks you to fix, refactor, or modify code.",
-          parameters: z.object({
+          inputSchema: z.object({
             path: z.string().describe("The file path relative to the repo root, e.g. 'src/lib/utils.ts'"),
             newContent: z.string().describe("The complete new file content after your changes"),
             explanation: z.string().describe("A brief explanation of what the change does and why"),
           }),
-          execute: async ({
-            path: filePath,
-            newContent,
-            explanation,
-          }: {
-            path: string;
-            newContent: string;
-            explanation: string;
-          }) => {
+          execute: async ({ path: filePath, newContent, explanation }) => {
             try {
               // Read the current file to get oldContent and SHA
               const { data } = await octokit.rest.repos.getContent({
@@ -228,7 +224,7 @@ export async function POST(req: Request) {
               return { error: `Failed to read '${filePath}': ${err?.message}` };
             }
           },
-        } as any);
+        });
       }
     }
 

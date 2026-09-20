@@ -84,9 +84,9 @@ export class ModelRouter {
 
     let modelEntry;
     if (tier === "deep") {
-      modelEntry = this.geminiModelCatalog.find(m => m.modelId === "gemini-3.6-pro") || this.geminiModelCatalog[1];
+      modelEntry = this.geminiModelCatalog.find(m => m.modelId === "gemini-2.5-pro") || this.geminiModelCatalog[1];
     } else {
-      modelEntry = this.geminiModelCatalog.find(m => m.modelId === "gemini-3.6-flash") || this.geminiModelCatalog[0];
+      modelEntry = this.geminiModelCatalog.find(m => m.modelId === "gemini-3.8-flash") || this.geminiModelCatalog[0];
     }
 
     return {
