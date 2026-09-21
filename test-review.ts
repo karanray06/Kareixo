@@ -39,7 +39,7 @@ async function testReview() {
   try {
     const { result, provider } = await router.executeWithFailover(async (provider) => {
       const response = await generateObject({
-        model: provider.model,
+        model: provider.provider.model,
         system: "You are an expert code reviewer. Analyze the diff and flag any security flaws. Return structured JSON.",
         prompt: `Diff:\n${diffContext}`,
         schema: ReviewOutputSchema,
@@ -48,7 +48,7 @@ async function testReview() {
     }, "chat", "fast");
 
     console.log("\n✅ SUCCESS!");
-    console.log("Model used:", provider.modelName);
+    console.log("Model used:", provider.modelId);
     console.log("Summary:", result.summary);
     console.log("Findings:");
     result.findings.forEach(f => {
