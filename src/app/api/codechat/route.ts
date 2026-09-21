@@ -238,6 +238,8 @@ export async function POST(req: Request) {
 
     const hasTools = Object.keys(tools).length > 0;
 
+    const initialTier = selectedProvider === "NVIDIA_NIM_KIMI" ? "deep" : selectedProvider === "GROQ" ? "fallback" : "fast";
+
     const { result, provider } = await router.executeWithFailover(async (p) => {
       // All current providers (NVIDIA NIM + Groq) support tool calling
       const supportsTools = hasTools;
@@ -250,16 +252,16 @@ export async function POST(req: Request) {
       }
 
       const res = streamText({
-        model: p.model,
+        model: p.provider.model,
         system: systemPrompt,
         messages,
         ...(supportsTools ? { tools, stopWhen: stepCountIs(5) } : {}),
-        ...(p.name === "GROQ" ? {
+        ...(p.provider.name === "GROQ" ? {
           providerOptions: {
             groq: { reasoningFormat: "hidden" },
           },
         } : {}),
-        ...(p.name === "NVIDIA_NIM" ? {
+        ...(p.provider.name === "NVIDIA_KIMI" || p.provider.name === "NVIDIA_MISTRAL" ? {
           maxTokens: 4096,
           temperature: 0.6,
           topP: 0.7,
@@ -288,7 +290,7 @@ export async function POST(req: Request) {
                 conversationId: finalConversationId,
                 role: "assistant",
                 content: event.text || "",
-                model: provider.modelName,
+                model: provider.modelId,
               });
 
               await db.update(chatConversations)
@@ -298,20 +300,19 @@ export async function POST(req: Request) {
               console.error("[CodeChat persistence error]:", err);
             }
           }
+
+          if (event.finishReason !== "stop" && event.finishReason !== "tool-calls") {
+            console.log(`[CodeChat] Stream finished with reason: ${event.finishReason}`);
+          }
         },
-        onError: ({ error }) => {
-          console.error("[CodeChat streamText error]:", error);
-        }
       });
 
       return res;
-    }, "code", "deep", selectedProvider);
+    }, "chat", initialTier);
 
     return result.toUIMessageStreamResponse({
       headers: {
-        "X-Kareixo-Provider": provider.name,
-        "X-Kareixo-Model": provider.modelName,
-        ...(finalConversationId ? { "X-Conversation-Id": finalConversationId } : {}),
+        "x-ai-provider": provider.name,
       },
     });
 

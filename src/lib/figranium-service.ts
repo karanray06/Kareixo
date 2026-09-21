@@ -301,7 +301,7 @@ ANALYSIS RULES:
 
   const { result, provider } = await router.executeWithFailover(async (prov) => {
     const response = await generateObject({
-      model: prov.model,
+      model: prov.provider.model,
       system: systemPrompt,
       prompt: userPrompt,
       schema: VisualRegressionSchema,

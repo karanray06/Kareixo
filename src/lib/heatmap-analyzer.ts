@@ -72,7 +72,7 @@ SCORING GUIDE:
 
   const { result, provider } = await router.executeWithFailover(async (provider) => {
     const response = await generateObject({
-      model: provider.model,
+      model: provider.provider.model,
       system: systemPrompt,
       prompt: userPrompt,
       schema: HeatmapResultSchema,

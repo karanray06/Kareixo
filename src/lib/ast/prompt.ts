@@ -122,7 +122,7 @@ export async function generateASTMutations(options: {
 
   const { result, provider } = await router.executeWithFailover(async (provider) => {
     const response = await generateObject({
-      model: provider.model,
+      model: provider.provider.model,
       system: systemPrompt,
       prompt: userPrompt,
       schema: NodeMutationSchema,
@@ -166,7 +166,7 @@ export async function generateTestFixMutations(options: {
 
   const { result, provider } = await router.executeWithFailover(async (provider) => {
     const response = await generateObject({
-      model: provider.model,
+      model: provider.provider.model,
       system: systemPrompt,
       prompt: userPrompt,
       schema: NodeMutationSchema,

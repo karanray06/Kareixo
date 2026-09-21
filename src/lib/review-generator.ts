@@ -220,8 +220,8 @@ export async function queueReview(installationId: number, repoFullName: string, 
         pendingReviewId!,
         "llm_routing",
         "active",
-        `Analyzing with ${provider.modelName}...`,
-        { provider: provider.name }
+        `Analyzing with ${provider.provider.modelId}...`,
+        { provider: provider.provider.name }
       );
 
       const prompt = sandboxContext
@@ -229,7 +229,7 @@ export async function queueReview(installationId: number, repoFullName: string, 
         : `Diff:\n${diffContext}`;
 
       const response = await generateObject({
-        model: provider.model,
+        model: provider.provider.model,
         system: systemPrompt,
         prompt,
         schema: ReviewOutputSchema,
@@ -238,7 +238,7 @@ export async function queueReview(installationId: number, repoFullName: string, 
     }, "chat", tier);
     
     console.log(
-      `${logPrefix} Step 6: ✅ Review generated via ${provider.name} (${provider.modelName}, key for ${provider.keyState.task}). ` +
+      `${logPrefix} Step 6: ✅ Review generated via ${provider.name} (${provider.modelId}). ` +
       `Findings: ${result.findings.length}`
     );
 
@@ -246,7 +246,7 @@ export async function queueReview(installationId: number, repoFullName: string, 
       pendingReviewId,
       "llm_complete",
       "complete",
-      `${result.findings.length} findings via ${provider.modelName}`,
+      `${result.findings.length} findings via ${provider.modelId}`,
       { provider: provider.name }
     );
     setAISummary(pendingReviewId, result.summary, provider.name);

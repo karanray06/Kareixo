@@ -42,7 +42,7 @@ export async function POST(req: Request) {
     // Execute the request with automatic multi-key failover
     const { result, provider } = await router.executeWithFailover(async (p) => {
       const res = streamText({
-        model: p.model,
+        model: p.provider.model,
         messages,
       });
 
@@ -90,7 +90,7 @@ export async function POST(req: Request) {
     return result.toUIMessageStreamResponse({
       headers: {
         "X-Kareixo-Provider": provider.name,
-        "X-Kareixo-Model": provider.modelName,
+        "X-Kareixo-Model": provider.modelId,
       },
     });
 

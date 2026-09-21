@@ -1,7 +1,5 @@
 /**
  * API Key Pool — Health tracking and circuit breakers for provider keys.
- *
- * Manages NVIDIA NIM and Groq keys with cooldown/circuit-breaker logic.
  */
 
 const COOLDOWN_BASE_MS = 60_000;
@@ -11,7 +9,7 @@ const CIRCUIT_BREAKER_COOLDOWN_MS = 3 * 60_000;
 export const PER_ATTEMPT_TIMEOUT_MS = 55_000;
 
 export type KeyState = {
-  provider: "nvidia" | "groq";
+  provider: "nvidia-kimi" | "nvidia-mistral" | "groq";
   task: "chat" | "code" | "fallback";
   key: string;
   consecutiveFailures: number;
@@ -23,7 +21,8 @@ export type KeyState = {
 };
 
 class KeyPool {
-  private nvidiaKeys: KeyState[] = [];
+  private kimiKeys: KeyState[] = [];
+  private mistralKeys: KeyState[] = [];
   private groqKeys: KeyState[] = [];
   private initialized = false;
 
@@ -34,27 +33,27 @@ class KeyPool {
   }
 
   private loadKeys(): void {
-    const nvidiaKey = process.env.NVIDIA_NIM_API_KEY;
+    const kimiKey = process.env.NVIDIA_NIM_KIMI_API_KEY;
+    const mistralKey = process.env.NVIDIA_NIM_MISTRAL_API_KEY;
     const groqKey = process.env.GROQ_API_KEY;
 
-    if (!nvidiaKey && !groqKey) {
-      console.warn("[KeyPool] Warning: No NVIDIA NIM or Groq API keys configured.");
+    if (kimiKey) {
+      const keys = kimiKey.split(",").map(k => k.trim()).filter(Boolean);
+      this.kimiKeys = keys.map(k => this.createKeyState("nvidia-kimi", "code", k));
     }
-
-    if (nvidiaKey) {
-      const keys = nvidiaKey.split(",").map(k => k.trim()).filter(Boolean);
-      this.nvidiaKeys = keys.map(k => this.createKeyState("nvidia", "code", k));
+    if (mistralKey) {
+      const keys = mistralKey.split(",").map(k => k.trim()).filter(Boolean);
+      this.mistralKeys = keys.map(k => this.createKeyState("nvidia-mistral", "chat", k));
     }
-
     if (groqKey) {
       const keys = groqKey.split(",").map(k => k.trim()).filter(Boolean);
       this.groqKeys = keys.map(k => this.createKeyState("groq", "fallback", k));
     }
 
-    console.log(`[KeyPool] Loaded ${this.nvidiaKeys.length} NVIDIA keys, ${this.groqKeys.length} Groq keys.`);
+    console.log(`[KeyPool] Loaded ${this.kimiKeys.length} Kimi keys, ${this.mistralKeys.length} Mistral keys, ${this.groqKeys.length} Groq keys.`);
   }
 
-  private createKeyState(provider: "nvidia" | "groq", task: "chat" | "code" | "fallback", key: string): KeyState {
+  private createKeyState(provider: "nvidia-kimi" | "nvidia-mistral" | "groq", task: "chat" | "code" | "fallback", key: string): KeyState {
     return {
       provider,
       task,
@@ -68,17 +67,15 @@ class KeyPool {
     };
   }
 
-  getKeyForTask(task: "chat" | "code" | "fallback", provider: "nvidia" | "groq" = "nvidia"): KeyState {
+  getKeyForTask(provider: "nvidia-kimi" | "nvidia-mistral" | "groq"): KeyState {
     this.ensureInitialized();
-    let candidates = provider === "groq" ? this.groqKeys : this.nvidiaKeys;
+    let candidates = provider === "groq" ? this.groqKeys : provider === "nvidia-kimi" ? this.kimiKeys : this.mistralKeys;
 
     if (candidates.length === 0) {
-      // Return a dummy key state to avoid crashes — the API call will fail with auth error
-      return this.createKeyState(provider, task, "");
+      return this.createKeyState(provider, "fallback", "");
     }
 
     const now = Date.now();
-
     for (const candidate of candidates) {
       if (candidate.circuitOpen && now >= candidate.circuitOpenUntil) {
         candidate.circuitOpen = false;
@@ -90,7 +87,6 @@ class KeyPool {
       }
     }
 
-    // All keys are in cooldown — return the one that will be ready soonest
     return candidates.reduce((best, c) => c.cooldownUntil < best.cooldownUntil ? c : best);
   }
 
@@ -130,7 +126,7 @@ class KeyPool {
   getHealthSummary() {
     if (!this.initialized) return [];
     const now = Date.now();
-    return [...this.nvidiaKeys, ...this.groqKeys].map((k) => ({
+    return [...this.kimiKeys, ...this.mistralKeys, ...this.groqKeys].map((k) => ({
       provider: k.provider,
       task: k.task,
       available: !k.circuitOpen && now >= k.cooldownUntil,

@@ -1,23 +1,24 @@
-/**
- * NVIDIA NIM Provider — OpenAI-compatible endpoint for tool-calling models.
- *
- * Uses @ai-sdk/openai-compatible to connect to NVIDIA's integrate API.
- * Base URL: https://integrate.api.nvidia.com/v1
- *
- * Models:
- *  - mistralai/mistral-nemotron  (fast, tool-calling capable)
- *  - moonshotai/kimi-k3          (deep reasoning, tool-calling capable)
- */
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
-const NVIDIA_NIM_API_KEY = process.env.NVIDIA_NIM_API_KEY || "";
+const KIMI_API_KEY = process.env.NVIDIA_NIM_KIMI_API_KEY || "";
+const MISTRAL_API_KEY = process.env.NVIDIA_NIM_MISTRAL_API_KEY || "";
 
-export const createNvidiaNimProvider = () => {
+export const createKimiProvider = () => {
   return createOpenAICompatible({
-    name: "nvidia-nim",
+    name: "nvidia-nim-kimi",
     baseURL: "https://integrate.api.nvidia.com/v1",
     headers: {
-      Authorization: `Bearer ${NVIDIA_NIM_API_KEY}`,
+      Authorization: `Bearer ${KIMI_API_KEY}`,
+    },
+  });
+};
+
+export const createMistralProvider = () => {
+  return createOpenAICompatible({
+    name: "nvidia-nim-mistral",
+    baseURL: "https://integrate.api.nvidia.com/v1",
+    headers: {
+      Authorization: `Bearer ${MISTRAL_API_KEY}`,
     },
   });
 };
