@@ -11,13 +11,13 @@ async function testAI() {
 
   try {
     const { result, provider } = await router.executeWithFailover(async (provider) => {
-      console.log(`Attempting to use provider: ${provider.name}`);
+      console.log(`Attempting to use provider: ${provider.provider.name}`);
       const response = await generateText({
-        model: provider.model,
+        model: provider.provider.model,
         prompt: "Say 'Hello, your API keys are working perfectly!' if you can read this.",
       });
-      return { text: response.text, provider };
-    });
+      return { text: response.text, provider: provider.provider };
+    }, "chat", "fast");
 
     console.log("\n✅ SUCCESS!");
     console.log(`Model used: ${provider.name}`);
