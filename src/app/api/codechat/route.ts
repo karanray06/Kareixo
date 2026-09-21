@@ -228,25 +228,31 @@ export async function POST(req: Request) {
       }
     }
 
-    // Build system prompt
-    let systemPrompt = `You are Kareixo CodeChat — an expert AI coding assistant. You help developers understand, debug, and improve their code.`;
+    // Build base system prompt
+    let baseSystemPrompt = `You are Kareixo CodeChat — an expert AI coding assistant. You help developers understand, debug, and improve their code.`;
     
     if (repoFullName) {
-      systemPrompt += `\n\nYou are working with the repository: ${repoFullName}`;
-      if (branch) systemPrompt += ` (branch: ${branch})`;
-      systemPrompt += `\n\nYou have access to tools to read files, explore the repository structure, and propose code changes. Use them when you need to see actual code — don't guess at implementations.`;
-      systemPrompt += `\n\nWhen the user asks about code, always read the relevant file(s) first before answering.`;
-      systemPrompt += `\n\nWhen the user asks you to fix, refactor, or modify code, use the proposeChange tool to propose the change. Always read the file first, then propose the full modified file content. The user will see a diff and can approve or discard.`;
+      baseSystemPrompt += `\n\nYou are working with the repository: ${repoFullName}`;
+      if (branch) baseSystemPrompt += ` (branch: ${branch})`;
     }
 
     const hasTools = Object.keys(tools).length > 0;
 
     const { result, provider } = await router.executeWithFailover(async (p) => {
+      const supportsTools = hasTools && p.name !== "POLLINATIONS" && p.name !== "NVIDIA_NIM";
+      
+      let systemPrompt = baseSystemPrompt;
+      if (repoFullName && supportsTools) {
+        systemPrompt += `\n\nYou have access to tools to read files, explore the repository structure, and propose code changes. Use them when you need to see actual code — don't guess at implementations.`;
+        systemPrompt += `\n\nWhen the user asks about code, always read the relevant file(s) first before answering.`;
+        systemPrompt += `\n\nWhen the user asks you to fix, refactor, or modify code, use the proposeChange tool to propose the change. Always read the file first, then propose the full modified file content. The user will see a diff and can approve or discard.`;
+      }
+
       const res = streamText({
         model: p.model,
         system: systemPrompt,
         messages,
-        ...(hasTools && p.name !== "POLLINATIONS" && p.name !== "NVIDIA_NIM" ? { tools, stopWhen: stepCountIs(5) } : {}),
+        ...(supportsTools ? { tools, stopWhen: stepCountIs(5) } : {}),
         ...(p.name === "GROQ" ? {
           providerOptions: {
             groq: { reasoningFormat: "hidden" },
