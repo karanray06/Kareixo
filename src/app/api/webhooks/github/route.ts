@@ -146,6 +146,46 @@ export async function POST(req: Request) {
       }
     }
 
+    if (event === "check_run") {
+      const action = payload.action;
+      if (action === "completed" && payload.check_run.conclusion === "failure") {
+        // Skip Kareixo's own check runs to avoid infinite loops
+        if (payload.check_run.name?.includes("Kareixo")) {
+          return NextResponse.json({ ignored: true, reason: "Own check run" });
+        }
+
+        const repoFullName = payload.repository.full_name;
+        const installationId = payload.installation.id;
+        const headSha = payload.check_run.head_sha;
+        const prNumber = payload.check_run.pull_requests?.[0]?.number;
+        const branch = payload.check_run.pull_requests?.[0]?.head?.ref
+          || payload.check_run.check_suite?.head_branch;
+
+        if (branch) {
+          const [owner, repo] = repoFullName.split("/");
+          const { executeHealingLoop } = await import("@/lib/healing-loop");
+
+          waitUntil(
+            executeHealingLoop({
+              installationId,
+              owner,
+              repo,
+              branch,
+              headSha,
+              prNumber,
+              failedJobName: payload.check_run.name,
+            }).catch((err) => {
+              console.error(`Unhandled error in healing loop for ${repoFullName}:`, err);
+            })
+          );
+
+          return NextResponse.json({ healing: true, branch, prNumber });
+        }
+      }
+
+      return NextResponse.json({ ignored: true });
+    }
+
     return NextResponse.json({ ignored: true });
   } catch (error) {
     console.error("Webhook error:", error);

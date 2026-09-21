@@ -3,9 +3,10 @@ import { keyPool, KeyState, PER_ATTEMPT_TIMEOUT_MS } from "./gemini-key-pool";
 import { createGeminiProvider, GEMINI_MODEL_CATALOG, GeminiModelId } from "./providers/gemini";
 import { createPollinationsProvider, POLLINATIONS_MODEL_CATALOG } from "./providers/pollinations";
 import { createGroqProvider, GROQ_MODEL_CATALOG } from "./providers/groq";
+import { createNvidiaNimProvider, NVIDIA_NIM_MODEL_CATALOG } from "./providers/nvidia-nim";
 
 export type ProviderEntry = {
-  name: "GEMINI" | "POLLINATIONS" | "GROQ";
+  name: "GEMINI" | "POLLINATIONS" | "GROQ" | "NVIDIA_NIM";
   modelName: string;
   modelId: string;
   model: LanguageModel;
@@ -62,6 +63,18 @@ export class ModelRouter {
         modelId: modelEntry.modelId,
         model: provider(modelEntry.modelId) as unknown as LanguageModel,
         keyState: { provider: "gemini", task: "fallback", key: "groq-key", consecutiveFailures: 0, cooldownUntil: 0, circuitOpen: false, circuitOpenUntil: 0, totalRequests: 0, totalFailures: 0 },
+      };
+    }
+
+    if (selectedProvider === "NVIDIA_NIM") {
+      const provider = createNvidiaNimProvider();
+      const modelEntry = tier === "deep" ? NVIDIA_NIM_MODEL_CATALOG[1] : NVIDIA_NIM_MODEL_CATALOG[0];
+      return {
+        name: "NVIDIA_NIM",
+        modelName: modelEntry.modelName,
+        modelId: modelEntry.modelId,
+        model: provider(modelEntry.modelId) as unknown as LanguageModel,
+        keyState: { provider: "gemini", task: "fallback", key: "nvidia-nim-key", consecutiveFailures: 0, cooldownUntil: 0, circuitOpen: false, circuitOpenUntil: 0, totalRequests: 0, totalFailures: 0 },
       };
     }
 

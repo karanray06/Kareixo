@@ -246,11 +246,16 @@ export async function POST(req: Request) {
         model: p.model,
         system: systemPrompt,
         messages,
-        ...(hasTools && p.name !== "POLLINATIONS" ? { tools, stopWhen: stepCountIs(5) } : {}),
+        ...(hasTools && p.name !== "POLLINATIONS" && p.name !== "NVIDIA_NIM" ? { tools, stopWhen: stepCountIs(5) } : {}),
         ...(p.name === "GROQ" ? {
           providerOptions: {
             groq: { reasoningFormat: "hidden" },
           },
+        } : {}),
+        ...(p.name === "NVIDIA_NIM" ? {
+          maxTokens: 2048,
+          temperature: 0.5,
+          topP: 1,
         } : {}),
         onFinish: async (event) => {
           if (finalConversationId) {

@@ -5,6 +5,12 @@ import { getInstallationOctokit } from "./github-app";
 import { repositories, reviews, github_installations, users } from "@/db/schema";
 import { eq, and, sql, gte } from "drizzle-orm";
 import { z } from "zod";
+import { executeSandbox, formatSandboxContext } from "./sandbox-executor";
+import {
+  createPipelineRun,
+  emitPipelineStep,
+  setAISummary,
+} from "./pipeline-events";
 
 const ReviewOutputSchema = z.object({
   findings: z.array(
@@ -72,8 +78,14 @@ export async function queueReview(installationId: number, repoFullName: string, 
     pendingReviewId = pendingReview.id;
     console.log(`${logPrefix} Step 3: ✅ Review record created (id=${pendingReviewId})`);
 
+    // ── Initialize pipeline tracking ──
+    createPipelineRun(pendingReviewId, repoFullName, prNumber);
+    emitPipelineStep(pendingReviewId, "authenticating", "complete", `Installation ${installationId}`);
+
     // ── Step 4: Enforce monetization cap ──
     console.log(`${logPrefix} Step 4: Checking monetization cap`);
+    emitPipelineStep(pendingReviewId, "checking_cap", "active", "Checking usage limits...");
+
     const [installRecord] = await db.select({
       user: users
     })
@@ -100,6 +112,7 @@ export async function queueReview(installationId: number, repoFullName: string, 
       const count = Number(usageResult[0]?.count || 0);
       if (count >= 50) {
         console.warn(`${logPrefix} Step 4: ❌ Free tier limit reached (${count}/50)`);
+        emitPipelineStep(pendingReviewId, "failed", "failed", `Free tier limit reached (${count}/50)`);
         await octokit.rest.issues.createComment({
           owner,
           repo,
@@ -117,15 +130,20 @@ export async function queueReview(installationId: number, repoFullName: string, 
       console.log(`${logPrefix} Step 4: ✅ Plan: ${installRecord?.user.plan ?? "unknown"} — no cap`);
     }
 
+    emitPipelineStep(pendingReviewId, "checking_cap", "complete", "Usage OK");
+
     // ── Step 5: Fetch PR diff ──
     console.log(`${logPrefix} Step 5: Fetching PR data and diff`);
+    emitPipelineStep(pendingReviewId, "fetching_pr", "active", "Fetching PR diff...");
+
     const { data: prData } = await octokit.rest.pulls.get({
       owner,
       repo,
       pull_number: prNumber,
     });
     const headSha = prData.head.sha;
-    console.log(`${logPrefix} Step 5: PR head SHA: ${headSha}`);
+    const prBranch = prData.head.ref;
+    console.log(`${logPrefix} Step 5: PR head SHA: ${headSha}, branch: ${prBranch}`);
 
     const { data: diff } = await octokit.rest.pulls.get({
       owner,
@@ -142,6 +160,38 @@ export async function queueReview(installationId: number, repoFullName: string, 
     const diffContext = isTruncated ? diffString.slice(0, MAX_DIFF_LENGTH) + "\n... (diff truncated)" : diffString;
     console.log(`${logPrefix} Step 5: ✅ Diff fetched (${diffString.length} chars${isTruncated ? ", truncated" : ""})`);
 
+    emitPipelineStep(pendingReviewId, "fetching_pr", "complete", `Diff: ${diffString.length} chars`);
+
+    // ── Step 5.5: E2B Sandbox Execution (deep tier only) ──
+    const tier = (repository.preferredTier === "deep") ? "deep" : "fast";
+    let sandboxContext = "";
+
+    if (tier === "deep" && process.env.E2B_API_KEY) {
+      console.log(`${logPrefix} Step 5.5: Running E2B sandbox (deep tier)`);
+
+      const sandboxResult = await executeSandbox({
+        owner,
+        repo,
+        branch: prBranch,
+        installationId,
+        reviewId: pendingReviewId,
+      });
+
+      if (sandboxResult) {
+        sandboxContext = formatSandboxContext(sandboxResult);
+        console.log(
+          `${logPrefix} Step 5.5: ✅ Sandbox complete ` +
+          `(success=${sandboxResult.success}, exit=${sandboxResult.exitCode}, ${sandboxResult.durationMs}ms)`
+        );
+      } else {
+        console.log(`${logPrefix} Step 5.5: Sandbox skipped or unavailable`);
+      }
+    } else {
+      const skipReason = !process.env.E2B_API_KEY ? "No E2B_API_KEY" : "Fast tier";
+      console.log(`${logPrefix} Step 5.5: Skipping sandbox (${skipReason})`);
+      emitPipelineStep(pendingReviewId, "sandbox_skipped", "skipped", skipReason);
+    }
+
     // ── Step 6: Generate AI review ──
     let categories: string[];
     try {
@@ -155,15 +205,33 @@ export async function queueReview(installationId: number, repoFullName: string, 
     if (repository.customInstructions) {
       systemPrompt += `\n\nAdditional Team Rules:\n${repository.customInstructions}`;
     }
+
+    // Append sandbox results to the prompt if available
+    if (sandboxContext) {
+      systemPrompt += `\n\nIMPORTANT: The PR code was executed in a sandboxed environment. Review the test execution results below and incorporate them into your analysis. If tests failed, identify the root cause from the error output and suggest specific fixes.`;
+    }
     
-    const tier = (repository.preferredTier === "deep") ? "deep" : "fast";
     console.log(`${logPrefix} Step 6: Generating AI review (tier=${tier}, categories=${categories.join(",")})`);
+    emitPipelineStep(pendingReviewId, "llm_routing", "active", `Routing to ${tier} tier model...`);
 
     const { result, provider } = await router.executeWithFailover(async (provider) => {
+      // Emit which provider we're trying
+      emitPipelineStep(
+        pendingReviewId!,
+        "llm_routing",
+        "active",
+        `Analyzing with ${provider.modelName}...`,
+        { provider: provider.name }
+      );
+
+      const prompt = sandboxContext
+        ? `Diff:\n${diffContext}\n${sandboxContext}`
+        : `Diff:\n${diffContext}`;
+
       const response = await generateObject({
         model: provider.model,
         system: systemPrompt,
-        prompt: `Diff:\n${diffContext}`,
+        prompt,
         schema: ReviewOutputSchema,
       });
       return response.object;
@@ -174,8 +242,19 @@ export async function queueReview(installationId: number, repoFullName: string, 
       `Findings: ${result.findings.length}`
     );
 
+    emitPipelineStep(
+      pendingReviewId,
+      "llm_complete",
+      "complete",
+      `${result.findings.length} findings via ${provider.modelName}`,
+      { provider: provider.name }
+    );
+    setAISummary(pendingReviewId, result.summary, provider.name);
+
     // ── Step 7: Post review to GitHub ──
     console.log(`${logPrefix} Step 7: Posting review to GitHub`);
+    emitPipelineStep(pendingReviewId, "posting_review", "active", "Posting to GitHub...");
+
     const comments = result.findings.map(f => ({
       path: f.path,
       line: f.line,
@@ -185,6 +264,12 @@ export async function queueReview(installationId: number, repoFullName: string, 
     let finalSummary = result.summary;
     if (isTruncated) {
       finalSummary += "\n\n_Note: This PR was very large. Some files may have been skipped to stay within review limits._";
+    }
+
+    // Add sandbox badge to the summary if sandbox was used
+    if (sandboxContext) {
+      const sandboxBadge = "🧪 **Sandbox Verified** — This PR was tested in an E2B microVM before review.";
+      finalSummary = `${sandboxBadge}\n\n${finalSummary}`;
     }
 
     try {
@@ -219,8 +304,12 @@ export async function queueReview(installationId: number, repoFullName: string, 
       console.log(`${logPrefix} Step 7: ✅ Fallback comment posted (status=${fallbackResponse.status})`);
     }
 
+    emitPipelineStep(pendingReviewId, "posting_review", "complete", "Review posted");
+
     // ── Step 8: Create check run ──
     console.log(`${logPrefix} Step 8: Creating check run`);
+    emitPipelineStep(pendingReviewId, "creating_check", "active", "Creating GitHub check run...");
+
     const hasHighSeverity = result.findings.some(f => f.severity.toLowerCase() === 'high');
 
     const checkResponse = await octokit.rest.checks.create({
@@ -237,6 +326,8 @@ export async function queueReview(installationId: number, repoFullName: string, 
     });
     console.log(`${logPrefix} Step 8: ✅ Check run created (status=${checkResponse.status})`);
 
+    emitPipelineStep(pendingReviewId, "creating_check", "complete", "Check run created");
+
     // ── Step 9: Update DB record ──
     await db.update(reviews)
       .set({
@@ -246,10 +337,16 @@ export async function queueReview(installationId: number, repoFullName: string, 
       })
       .where(eq(reviews.id, pendingReviewId));
 
+    emitPipelineStep(pendingReviewId, "complete", "complete", `${result.findings.length} findings`);
     console.log(`${logPrefix} ── PIPELINE COMPLETE ── (${result.findings.length} findings)`);
     
   } catch (error: any) {
     console.error(`${logPrefix} ── PIPELINE FAILED ──`, error);
+
+    // Emit failure to pipeline
+    if (pendingReviewId) {
+      emitPipelineStep(pendingReviewId, "failed", "failed", error?.message?.slice(0, 200));
+    }
 
     // Update DB record to failed
     if (pendingReviewId) {

@@ -55,7 +55,7 @@ vi.mock("../lib/providers/gemini", () => ({
   ],
 }));
 
-describe("Retry Logic", () => {
+describe("Retry Logic", { timeout: 15000 }, () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

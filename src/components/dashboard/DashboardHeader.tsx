@@ -19,6 +19,8 @@ interface DashboardHeaderProps {
 const NAV_LINKS = [
   { label: "Dashboard", path: "/dashboard" },
   { label: "Repositories", path: "/dashboard/repositories" },
+  { label: "Live Review", path: "/dashboard/live-review" },
+  { label: "Heatmap", path: "/dashboard/heatmap" },
   { label: "CodeChat", path: "/codechat" },
   { label: "Incident Tracer", path: "/incident" },
   { label: "Settings", path: "/dashboard/settings" },
