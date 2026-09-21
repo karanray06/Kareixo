@@ -1,17 +1,18 @@
 /**
- * Integration test: Gemini single-key retry logic
+ * Integration test: NVIDIA NIM + Groq failover logic
  *
- * Tests that the model router correctly retries the task-specific key when it
- * returns 429 or times out.
+ * Tests that the model router correctly routes to NVIDIA NIM as primary
+ * and falls back to Groq on failure.
  *
  * Run with: npx vitest run src/__tests__/failover.test.ts
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// Mock the key pool before importing the router
+// Mock the key pool
 vi.mock("../lib/gemini-key-pool", () => {
-  const mockChatKey = {
-    task: "chat", key: "fake-chat-key", consecutiveFailures: 0,
+  const mockNvidiaKey = {
+    provider: "nvidia",
+    task: "code", key: "fake-nvidia-key", consecutiveFailures: 0,
     cooldownUntil: 0, circuitOpen: false, circuitOpenUntil: 0,
     totalRequests: 0, totalFailures: 0,
   };
@@ -19,10 +20,11 @@ vi.mock("../lib/gemini-key-pool", () => {
   return {
     PER_ATTEMPT_TIMEOUT_MS: 5000,
     keyPool: {
-      getKeyForTask: (task: "chat" | "code") => mockChatKey,
+      getKeyForTask: () => mockNvidiaKey,
       reportSuccess: vi.fn(),
       reportFailure: vi.fn(),
-      getHealthSummary: () => [mockChatKey].map(k => ({
+      getHealthSummary: () => [mockNvidiaKey].map(k => ({
+        provider: k.provider,
         task: k.task, available: true,
         consecutiveFailures: k.consecutiveFailures,
         circuitOpen: false, totalRequests: k.totalRequests,
@@ -32,16 +34,13 @@ vi.mock("../lib/gemini-key-pool", () => {
   };
 });
 
-// Mock the Gemini provider
-vi.mock("../lib/providers/gemini", () => ({
-  createGeminiProvider: (apiKey: string) => (modelId: string) => ({
+// Mock the NVIDIA NIM provider
+vi.mock("../lib/providers/nvidia-nim", () => ({
+  createNvidiaNimProvider: () => (modelId: string) => ({
     specificationVersion: "v1",
-    provider: "mock-gemini",
+    provider: "mock-nvidia-nim",
     modelId,
-    apiKey, // expose for testing which key was used
     doGenerate: async () => {
-      // Simulate failure on first attempt by using a global counter or we can just mock it to succeed
-      // For this test, let's just ensure it calls the provider.
       return {
         text: "reviewed",
         finishReason: "stop",
@@ -50,8 +49,28 @@ vi.mock("../lib/providers/gemini", () => ({
       };
     },
   }),
-  GEMINI_MODEL_CATALOG: [
-    { modelName: "Test Model Flash", modelId: "gemini-2.5-flash" },
+  NVIDIA_NIM_MODEL_CATALOG: [
+    { modelId: "mistralai/mistral-nemotron", modelName: "NVIDIA NIM: Mistral-Nemotron", supportsTools: true },
+    { modelId: "moonshotai/kimi-k3", modelName: "NVIDIA NIM: Kimi K3", supportsTools: true },
+  ],
+}));
+
+// Mock the Groq provider (fallback)
+vi.mock("../lib/providers/groq", () => ({
+  createGroqProvider: () => (modelId: string) => ({
+    specificationVersion: "v1",
+    provider: "mock-groq",
+    modelId,
+    doGenerate: async () => ({
+      text: "fallback",
+      finishReason: "stop",
+      usage: { promptTokens: 1, completionTokens: 1 },
+      rawCall: { rawPrompt: "", rawSettings: {} },
+    }),
+  }),
+  GROQ_MODEL_CATALOG: [
+    { modelId: "openai/gpt-oss-20b", modelName: "Groq: GPT-OSS 20B" },
+    { modelId: "openai/gpt-oss-120b", modelName: "Groq: GPT-OSS 120B" },
   ],
 }));
 
@@ -60,7 +79,7 @@ describe("Retry Logic", { timeout: 15000 }, () => {
     vi.clearAllMocks();
   });
 
-  it("should successfully route to the chat key", async () => {
+  it("should route to NVIDIA NIM as primary provider", async () => {
     const { ModelRouter } = await import("../lib/model-router");
     const testRouter = new ModelRouter();
 
@@ -71,8 +90,26 @@ describe("Retry Logic", { timeout: 15000 }, () => {
         mode: { type: "regular" },
       });
       return "success";
-    }, "chat");
+    }, "code", "deep");
 
-    expect(provider.keyState.task).toBe("chat");
+    expect(provider.name).toBe("NVIDIA_NIM");
+    expect(provider.modelId).toBe("moonshotai/kimi-k3"); // deep tier = kimi-k3
+  });
+
+  it("should route to Mistral-Nemotron for fast tier", async () => {
+    const { ModelRouter } = await import("../lib/model-router");
+    const testRouter = new ModelRouter();
+
+    const { provider } = await testRouter.executeWithFailover(async (p) => {
+      await (p.model as any).doGenerate({
+        inputFormat: "messages",
+        prompt: [{ role: "user", content: [{ type: "text", text: "ping" }] }],
+        mode: { type: "regular" },
+      });
+      return "success";
+    }, "chat", "fast");
+
+    expect(provider.name).toBe("NVIDIA_NIM");
+    expect(provider.modelId).toBe("mistralai/mistral-nemotron"); // fast tier = nemotron
   });
 });

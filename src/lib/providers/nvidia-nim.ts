@@ -1,8 +1,12 @@
 /**
- * NVIDIA NIM Provider — OpenAI-compatible endpoint for Zhipu GLM-5.3 and other NIM models.
+ * NVIDIA NIM Provider — OpenAI-compatible endpoint for tool-calling models.
  *
  * Uses @ai-sdk/openai-compatible to connect to NVIDIA's integrate API.
  * Base URL: https://integrate.api.nvidia.com/v1
+ *
+ * Models:
+ *  - mistralai/mistral-nemotron  (fast, tool-calling capable)
+ *  - moonshotai/kimi-k3          (deep reasoning, tool-calling capable)
  */
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
@@ -20,11 +24,13 @@ export const createNvidiaNimProvider = () => {
 
 export const NVIDIA_NIM_MODEL_CATALOG = [
   {
-    modelId: "z-ai/glm-5.3-flash",
-    modelName: "NVIDIA NIM: GLM-5.3 Flash",
+    modelId: "mistralai/mistral-nemotron",
+    modelName: "NVIDIA NIM: Mistral-Nemotron",
+    supportsTools: true,
   },
   {
-    modelId: "z-ai/glm-5.3",
-    modelName: "NVIDIA NIM: GLM-5.3",
+    modelId: "moonshotai/kimi-k3",
+    modelName: "NVIDIA NIM: Kimi K3",
+    supportsTools: true,
   },
 ];

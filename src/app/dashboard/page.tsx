@@ -264,7 +264,7 @@ export default function DashboardOverview() {
                   AI Code Review Engine
                 </span>
                 <span className="font-badge-mono text-badge-mono px-2 py-0.5 rounded bg-surface-container-highest text-fg-muted">
-                  GEMINI · AST ANALYSIS
+                  NVIDIA NIM · AST ANALYSIS
                 </span>
               </div>
               <p className="font-body-base text-body-base text-fg-muted mt-1 max-w-2xl">

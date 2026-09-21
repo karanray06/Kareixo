@@ -228,7 +228,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // Build base system prompt
+    // Build system prompt
     let baseSystemPrompt = `You are Kareixo CodeChat — an expert AI coding assistant. You help developers understand, debug, and improve their code.`;
     
     if (repoFullName) {
@@ -239,15 +239,14 @@ export async function POST(req: Request) {
     const hasTools = Object.keys(tools).length > 0;
 
     const { result, provider } = await router.executeWithFailover(async (p) => {
-      const supportsTools = hasTools && p.name !== "POLLINATIONS" && p.name !== "NVIDIA_NIM";
+      // All current providers (NVIDIA NIM + Groq) support tool calling
+      const supportsTools = hasTools;
       
       let systemPrompt = baseSystemPrompt;
       if (repoFullName && supportsTools) {
         systemPrompt += `\n\nYou have access to tools to read files, explore the repository structure, and propose code changes. Use them when you need to see actual code — don't guess at implementations.`;
         systemPrompt += `\n\nWhen the user asks about code, always read the relevant file(s) first before answering.`;
         systemPrompt += `\n\nWhen the user asks you to fix, refactor, or modify code, use the proposeChange tool to propose the change. Always read the file first, then propose the full modified file content. The user will see a diff and can approve or discard.`;
-      } else if (!supportsTools) {
-        systemPrompt += `\n\nCRITICAL: You DO NOT have access to any external tools, files, or repository data. DO NOT attempt to use tools. DO NOT output <tool_call> tags. Answer the user directly based on your existing knowledge.`;
       }
 
       const res = streamText({
@@ -261,9 +260,9 @@ export async function POST(req: Request) {
           },
         } : {}),
         ...(p.name === "NVIDIA_NIM" ? {
-          maxTokens: 2048,
-          temperature: 0.5,
-          topP: 1,
+          maxTokens: 4096,
+          temperature: 0.6,
+          topP: 0.7,
         } : {}),
         onFinish: async (event) => {
           if (finalConversationId) {

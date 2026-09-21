@@ -24,7 +24,7 @@ type RepoInfo = {
 function CodeChatClientContent({ repos }: { repos: RepoInfo[] }) {
   const [selectedRepo, setSelectedRepo] = useState<RepoInfo | null>(repos[0] || null);
   const [branch, setBranch] = useState<string>("main");
-  const [selectedProvider, setSelectedProvider] = useState<"GEMINI" | "POLLINATIONS" | "GROQ" | "NVIDIA_NIM">("GEMINI");
+  const [selectedProvider, setSelectedProvider] = useState<"GROQ" | "NVIDIA_NIM_NEMOTRON" | "NVIDIA_NIM_KIMI">("NVIDIA_NIM_NEMOTRON");
   const [fileTree, setFileTree] = useState<FileEntry[]>([]);
   const [selectedFile, setSelectedFile] = useState<{ path: string; content: string } | null>(null);
   const [loadingFile, setLoadingFile] = useState(false);
@@ -434,14 +434,17 @@ function CodeChatClientContent({ repos }: { repos: RepoInfo[] }) {
             </h1>
             <select
               value={selectedProvider}
-              onChange={(e) => setSelectedProvider(e.target.value as "GEMINI" | "POLLINATIONS" | "GROQ" | "NVIDIA_NIM")}
+              onChange={(e) => setSelectedProvider(e.target.value as "GROQ" | "NVIDIA_NIM_NEMOTRON" | "NVIDIA_NIM_KIMI")}
               className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container font-badge-mono text-badge-mono text-fg-default font-medium border-none outline-none cursor-pointer appearance-none pl-2 pr-6 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23a1a1aa%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-[length:12px_12px] bg-[position:right_4px_center] bg-no-repeat"
             >
-              <option value="GEMINI">Gemini</option>
+              <option value="NVIDIA_NIM_NEMOTRON">Mistral-Nemotron (NVIDIA)</option>
+              <option value="NVIDIA_NIM_KIMI">Kimi K3 (NVIDIA)</option>
               <option value="GROQ">Groq</option>
-              <option value="NVIDIA_NIM">GLM-5.3 (NVIDIA)</option>
-              <option value="POLLINATIONS">Pollinations</option>
             </select>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-badge-mono text-[10px] tracking-wider uppercase">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Repo-Aware · Tools Active
+            </span>
             <button
               onClick={() => setIsTerminalOpen(!isTerminalOpen)}
               className={`ml-2 p-1.5 rounded-lg transition-colors flex items-center gap-2 font-badge-mono text-badge-mono ${

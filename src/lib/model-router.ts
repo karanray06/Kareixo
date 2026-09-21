@@ -1,12 +1,10 @@
 import { LanguageModel } from "ai";
 import { keyPool, KeyState, PER_ATTEMPT_TIMEOUT_MS } from "./gemini-key-pool";
-import { createGeminiProvider, GEMINI_MODEL_CATALOG, GeminiModelId } from "./providers/gemini";
-import { createPollinationsProvider, POLLINATIONS_MODEL_CATALOG } from "./providers/pollinations";
 import { createGroqProvider, GROQ_MODEL_CATALOG } from "./providers/groq";
 import { createNvidiaNimProvider, NVIDIA_NIM_MODEL_CATALOG } from "./providers/nvidia-nim";
 
 export type ProviderEntry = {
-  name: "GEMINI" | "POLLINATIONS" | "GROQ" | "NVIDIA_NIM";
+  name: "GROQ" | "NVIDIA_NIM";
   modelName: string;
   modelId: string;
   model: LanguageModel;
@@ -41,50 +39,24 @@ function isRetryableError(error: any): boolean {
 }
 
 export class ModelRouter {
-  private geminiModelCatalog = GEMINI_MODEL_CATALOG;
-  private pollinationsModelCatalog = POLLINATIONS_MODEL_CATALOG;
-  private groqModelCatalog = GROQ_MODEL_CATALOG;
-
   /**
    * Get the provider configured for the specific task and tier.
+   *
+   * Default: NVIDIA NIM (mistral-nemotron for fast, kimi-k3 for deep)
+   * Fallback: Groq
    */
   private getProviderForTask(
     taskType: "chat" | "code",
     tier: "fast" | "deep" | "fallback" = "fast",
     selectedProvider?: string
   ): ProviderEntry {
-    if (selectedProvider === "GROQ") {
+    // Explicit Groq selection or fallback tier
+    if (selectedProvider === "GROQ" || tier === "fallback") {
       const provider = createGroqProvider();
-      // Use LLaMA 3.3 70B Versatile for deep tasks, 8B Instant for fast tasks
-      const modelEntry = tier === "deep" ? this.groqModelCatalog[1] : this.groqModelCatalog[0];
+      const modelEntry = tier === "deep" ? GROQ_MODEL_CATALOG[1] : GROQ_MODEL_CATALOG[0];
+      const keyState = keyPool.getKeyForTask("fallback", "groq");
       return {
         name: "GROQ",
-        modelName: modelEntry.modelName,
-        modelId: modelEntry.modelId,
-        model: provider(modelEntry.modelId) as unknown as LanguageModel,
-        keyState: { provider: "gemini", task: "fallback", key: "groq-key", consecutiveFailures: 0, cooldownUntil: 0, circuitOpen: false, circuitOpenUntil: 0, totalRequests: 0, totalFailures: 0 },
-      };
-    }
-
-    if (selectedProvider === "NVIDIA_NIM") {
-      const provider = createNvidiaNimProvider();
-      const modelEntry = tier === "deep" ? NVIDIA_NIM_MODEL_CATALOG[1] : NVIDIA_NIM_MODEL_CATALOG[0];
-      return {
-        name: "NVIDIA_NIM",
-        modelName: modelEntry.modelName,
-        modelId: modelEntry.modelId,
-        model: provider(modelEntry.modelId) as unknown as LanguageModel,
-        keyState: { provider: "gemini", task: "fallback", key: "nvidia-nim-key", consecutiveFailures: 0, cooldownUntil: 0, circuitOpen: false, circuitOpenUntil: 0, totalRequests: 0, totalFailures: 0 },
-      };
-    }
-
-    if (selectedProvider === "POLLINATIONS" || tier === "fallback") {
-      const keyState = keyPool.getKeyForTask("fallback", "pollinations");
-      const provider = createPollinationsProvider(keyState.key);
-      const modelEntry = this.pollinationsModelCatalog[0]; // openai
-
-      return {
-        name: "POLLINATIONS",
         modelName: modelEntry.modelName,
         modelId: modelEntry.modelId,
         model: provider(modelEntry.modelId) as unknown as LanguageModel,
@@ -92,27 +64,53 @@ export class ModelRouter {
       };
     }
 
-    const keyState = keyPool.getKeyForTask(taskType, "gemini");
-    const provider = createGeminiProvider(keyState.key);
-
-    let modelEntry;
-    if (tier === "deep") {
-      modelEntry = this.geminiModelCatalog.find(m => m.modelId === "gemini-2.5-pro") || this.geminiModelCatalog[1];
-    } else {
-      modelEntry = this.geminiModelCatalog.find(m => m.modelId === "gemini-3.8-flash") || this.geminiModelCatalog[0];
+    // Explicit model selection: NVIDIA_NIM_NEMOTRON or NVIDIA_NIM_KIMI
+    if (selectedProvider === "NVIDIA_NIM_NEMOTRON") {
+      const provider = createNvidiaNimProvider();
+      const modelEntry = NVIDIA_NIM_MODEL_CATALOG[0]; // mistral-nemotron
+      const keyState = keyPool.getKeyForTask(taskType, "nvidia");
+      return {
+        name: "NVIDIA_NIM",
+        modelName: modelEntry.modelName,
+        modelId: modelEntry.modelId,
+        model: provider(modelEntry.modelId) as unknown as LanguageModel,
+        keyState,
+      };
     }
 
+    if (selectedProvider === "NVIDIA_NIM_KIMI") {
+      const provider = createNvidiaNimProvider();
+      const modelEntry = NVIDIA_NIM_MODEL_CATALOG[1]; // kimi-k3
+      const keyState = keyPool.getKeyForTask(taskType, "nvidia");
+      return {
+        name: "NVIDIA_NIM",
+        modelName: modelEntry.modelName,
+        modelId: modelEntry.modelId,
+        model: provider(modelEntry.modelId) as unknown as LanguageModel,
+        keyState,
+      };
+    }
+
+    // Default: NVIDIA NIM — kimi-k3 for deep, mistral-nemotron for fast
+    const provider = createNvidiaNimProvider();
+    const modelEntry = tier === "deep"
+      ? NVIDIA_NIM_MODEL_CATALOG[1]  // kimi-k3
+      : NVIDIA_NIM_MODEL_CATALOG[0]; // mistral-nemotron
+    const keyState = keyPool.getKeyForTask(taskType, "nvidia");
+
     return {
-      name: "GEMINI",
+      name: "NVIDIA_NIM",
       modelName: modelEntry.modelName,
       modelId: modelEntry.modelId,
-      model: provider(modelEntry.modelId),
+      model: provider(modelEntry.modelId) as unknown as LanguageModel,
       keyState,
     };
   }
 
   /**
    * Execute an operation with automatic retries on rate limits.
+   *
+   * Failover chain: NVIDIA NIM (deep) → NVIDIA NIM (fast) → Groq
    */
   public async executeWithFailover<T>(
     operation: (provider: ProviderEntry) => Promise<T>,
@@ -148,7 +146,7 @@ export class ModelRouter {
         const statusCode = getStatusCode(error);
 
         console.warn(
-          `[ModelRouter] Key for ${provider.keyState.task} (${provider.modelName}) ` +
+          `[ModelRouter] ${provider.modelName} ` +
           `failed on attempt ${attempts}/${maxAttempts}: ` +
           `status=${statusCode || "N/A"}, message=${error?.message?.slice(0, 200)}`
         );
@@ -157,13 +155,13 @@ export class ModelRouter {
           keyPool.reportFailure(provider.keyState, statusCode);
           
           if (attempts === maxAttempts && currentTier === "deep") {
-            console.log(`[ModelRouter] Falling back from deep tier to fast tier for final attempt.`);
+            console.log(`[ModelRouter] Falling back from deep tier to fast tier.`);
             currentTier = "fast";
-            attempts--; // Allow one more attempt with fast tier
+            attempts--; // Allow one more attempt
           } else if (attempts === maxAttempts && currentTier === "fast") {
-            console.log(`[ModelRouter] Falling back from Gemini to Pollinations for final attempt.`);
+            console.log(`[ModelRouter] Falling back from NVIDIA NIM to Groq.`);
             currentTier = "fallback";
-            attempts--; // Allow one more attempt with Pollinations
+            attempts--; // Allow one more attempt with Groq
           }
           
           continue;
