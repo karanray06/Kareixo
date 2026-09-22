@@ -22,40 +22,39 @@
   /* ═══ COLORS: Forest Code & Mint Fog (Light Default) ═══ */
   --color-structural: #075E46;
   --color-surface: #E8FFF2;
-  --color-ambient: #C8F3FF;
   
   --color-text-primary: #0A1F1A;
   --color-text-secondary: #4A6B5F;
-  --color-border: #C9E8DA;
+  --color-border: rgba(7, 94, 70, 0.15);
   --color-destructive: #D14343;
 
   /* Aliasing old tokens to new tokens to prevent breaking changes in UI */
   --color-canvas-default: var(--color-surface);
-  --color-canvas-dark: var(--color-surface);
-  --color-surface-dark: #D4F2E3; /* Slightly darker mint for panels */
-  --color-border-dark: var(--color-border);
+  --color-canvas-dark: #0E1614; /* Always dark */
+  --color-surface-dark: #D4F2E3; 
+  --color-border-dark: rgba(255, 255, 255, 0.1);
   
-  --color-text-primary-dark: var(--color-text-primary);
-  --color-text-secondary-dark: var(--color-text-secondary);
+  --color-text-primary-dark: #E8FFF2;
+  --color-text-secondary-dark: #90B6A7;
 
   --color-signal: var(--color-structural);
   
-  /* Fallbacks */
+  /* Fallbacks & Structural Surfaces */
   --color-canvas-subtle: var(--color-surface-dark);
-  --color-canvas-inset: #C4ECD7;
+  --color-canvas-inset: rgba(0, 0, 0, 0.04); /* Neutral treatment for inputs/dropdowns */
   
   --color-surface-container: var(--color-surface-dark);
-  --color-surface-container-high: #BDE4D0;
-  --color-surface-container-highest: #A8CFBA;
+  --color-surface-container-high: rgba(0, 0, 0, 0.06);
+  --color-surface-container-highest: rgba(0, 0, 0, 0.08);
   --color-surface-container-lowest: var(--color-surface);
-  --color-surface-container-low: var(--color-surface-dark);
+  --color-surface-container-low: var(--color-surface);
 
   --color-fg-default: var(--color-text-primary);
   --color-fg-muted: var(--color-text-secondary);
   --color-fg-subtle: #6D8E81;
   
   --color-border-default: var(--color-border);
-  --color-border-muted: #B4DFCB;
+  --color-border-muted: rgba(7, 94, 70, 0.08);
 
   --color-error: var(--color-destructive);
   --color-diff-addition-text: #075E46;
@@ -153,8 +152,20 @@
     
     --color-text-primary: #E8FFF2;
     --color-text-secondary: #90B6A7;
-    --color-border: #1C332A;
+    --color-border: rgba(255, 255, 255, 0.1);
     --color-structural: #1AC294; /* Brighter forest code for contrast */
+
+    --color-canvas-default: var(--color-surface);
+    --color-canvas-subtle: var(--color-surface-dark);
+    --color-canvas-inset: rgba(255, 255, 255, 0.05);
+    
+    --color-surface-container: var(--color-surface-dark);
+    --color-surface-container-high: rgba(255, 255, 255, 0.08);
+    --color-surface-container-highest: rgba(255, 255, 255, 0.12);
+    --color-surface-container-low: var(--color-surface);
+    
+    --color-border-default: var(--color-border);
+    --color-border-muted: rgba(255, 255, 255, 0.05);
   }
 }
 
@@ -164,8 +175,20 @@
   
   --color-text-primary: #E8FFF2;
   --color-text-secondary: #90B6A7;
-  --color-border: #1C332A;
+  --color-border: rgba(255, 255, 255, 0.1);
   --color-structural: #1AC294;
+  
+  --color-canvas-default: var(--color-surface);
+  --color-canvas-subtle: var(--color-surface-dark);
+  --color-canvas-inset: rgba(255, 255, 255, 0.05);
+  
+  --color-surface-container: var(--color-surface-dark);
+  --color-surface-container-high: rgba(255, 255, 255, 0.08);
+  --color-surface-container-highest: rgba(255, 255, 255, 0.12);
+  --color-surface-container-low: var(--color-surface);
+  
+  --color-border-default: var(--color-border);
+  --color-border-muted: rgba(255, 255, 255, 0.05);
 }
 
 /* ═══════════════════════════════════════════

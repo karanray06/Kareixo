@@ -76,7 +76,7 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
             <Image
               alt="Kareixo Logo"
               className="h-8 w-auto object-contain"
-              src="/logo.png"
+              src="/logo-dark.svg"
               width={32}
               height={32}
             />

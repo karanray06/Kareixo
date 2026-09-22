@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus } from "lucide-react";
+import { Plus, Star } from "lucide-react";
+import { getGitHubStars } from "@/app/actions/github";
 
 const NAV_LINKS = [
   { label: "Product", href: "#product" },
@@ -16,6 +17,11 @@ const NAV_LINKS = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [stars, setStars] = useState<number | null>(null);
+
+  useEffect(() => {
+    getGitHubStars().then(setStars).catch(() => {});
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -43,20 +49,32 @@ export default function Navbar() {
       >
         <div className="max-w-[1280px] mx-auto px-6 flex items-center justify-between">
           {/* Left: Logo */}
-          <Link
-            href="/"
-            className="text-fg-default font-semibold text-lg tracking-tight flex items-center gap-2.5 group"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            <Image
-              src="/logo.png"
-              alt="Kareixo Logo"
-              width={30}
-              height={30}
-              className="rounded-lg object-contain transition-transform duration-300 group-hover:scale-110"
-            />
-            <span className="font-headline-hero">Kareixo</span>
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/"
+              className="text-fg-default font-semibold text-lg tracking-tight flex items-center gap-2.5 group"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <Image
+                src="/logo-dark.svg"
+                alt="Kareixo Logo"
+                width={30}
+                height={30}
+                className="rounded-lg object-contain transition-transform duration-300 group-hover:scale-110"
+              />
+              <span className="font-headline-hero">Kareixo</span>
+            </Link>
+            
+            <a 
+              href="https://github.com/elixpo"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden md:flex items-center gap-1.5 px-2 py-1 bg-surface-container/50 hover:bg-surface-container border border-border-default/50 rounded-md transition-colors"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-signal shadow-[0_0_8px_rgba(26,194,148,0.8)]" />
+              <span className="font-label-ui text-[10px] text-fg-muted uppercase tracking-wider">Elixpo Ecosystem</span>
+            </a>
+          </div>
 
           {/* Center: Nav Links */}
           <div className="hidden md:flex items-center gap-1">
@@ -78,6 +96,12 @@ export default function Navbar() {
             >
               <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
               GitHub
+              {stars !== null && (
+                <span className="flex items-center gap-1 ml-1 text-[11px] bg-surface-container/50 px-1.5 py-0.5 rounded font-badge-mono text-fg-muted border border-border-default/50">
+                  <Star size={10} className="fill-fg-muted" />
+                  {stars}
+                </span>
+              )}
               <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-signal rounded-full transition-all duration-300 group-hover:w-[60%]" />
             </a>
           </div>
