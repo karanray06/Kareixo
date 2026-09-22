@@ -1,4 +1,4 @@
-import { streamText, stepCountIs, tool, generateText } from "ai";
+import { streamText, stepCountIs, tool } from "ai";
 import { z } from "zod";
 import { router } from "@/lib/model-router";
 import { auth } from "@/auth";
@@ -14,12 +14,17 @@ export const maxDuration = 60;
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    let userId = session?.user?.id;
+    if (!userId) {
+      if (process.env.NODE_ENV === "development") {
+        userId = "mock-user-id";
+      } else {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
     }
 
     // Per-user rate limiting: 30 requests per minute
-    const rateCheck = checkRateLimit(session.user.id);
+    const rateCheck = checkRateLimit(userId);
     if (!rateCheck.allowed) {
       return rateLimitResponse(rateCheck.resetAt);
     }
@@ -51,7 +56,7 @@ export async function POST(req: Request) {
       const title = (firstUserMsg?.content || "New Conversation").slice(0, 40);
       try {
         const [newConv] = await db.insert(chatConversations).values({
-          userId: session.user.id,
+          userId: userId,
           repoFullName: repoFullName || null,
           branch: branch || null,
           title,
@@ -72,7 +77,7 @@ export async function POST(req: Request) {
         .where(
           and(
             eq(repositories.fullName, repoFullName),
-            eq(github_installations.userId, session.user.id)
+            eq(github_installations.userId, userId)
           )
         );
 
@@ -237,7 +242,10 @@ export async function POST(req: Request) {
 
     const hasTools = Object.keys(tools).length > 0;
 
-    const initialTier = selectedProvider === "NVIDIA_NIM_KIMI" ? "deep" : selectedProvider === "GROQ" ? "fallback" : "fast";
+    // NVIDIA NIM takes >40s to process tools, hitting Vercel's 10s serverless limit.
+    // We force fallback to Groq if tools are present to ensure a fast, successful response.
+    const requestedTier = selectedProvider === "NVIDIA_NIM_KIMI" ? "deep" : selectedProvider === "GROQ" ? "fallback" : "fast";
+    const initialTier = hasTools ? "fallback" : requestedTier;
 
     const { result, provider } = await router.executeWithFailover(async (p) => {
       // All current providers (NVIDIA NIM + Groq) support tool calling (conditionally based on router)
@@ -248,73 +256,6 @@ export async function POST(req: Request) {
         systemPrompt += `\n\nYou have access to tools to read files, explore the repository structure, and propose code changes. Use them when you need to see actual code — don't guess at implementations.`;
         systemPrompt += `\n\nWhen the user asks about code, always read the relevant file(s) first before answering.`;
         systemPrompt += `\n\nWhen the user asks you to fix, refactor, or modify code, use the proposeChange tool to propose the change. Always read the file first, then propose the full modified file content. The user will see a diff and can approve or discard.`;
-      }
-
-      const saveToDb = async (text: string, finishReason: string) => {
-        if (finalConversationId) {
-          try {
-            const lastUserMsg = rawMessages[rawMessages.length - 1];
-            
-            if (lastUserMsg) {
-              let userContent = "";
-              if (typeof lastUserMsg.content === "string") userContent = lastUserMsg.content;
-              else if (Array.isArray(lastUserMsg.parts)) {
-                userContent = lastUserMsg.parts.filter((p: any) => p.type === "text").map((p: any) => p.text).join("");
-              }
-
-              await db.insert(chatMessages).values({
-                conversationId: finalConversationId,
-                role: "user",
-                content: userContent,
-              });
-            }
-
-            await db.insert(chatMessages).values({
-              conversationId: finalConversationId,
-              role: "assistant",
-              content: text || "",
-              model: p.provider.modelId,
-            });
-
-            await db.update(chatConversations)
-              .set({ updatedAt: new Date() })
-              .where(eq(chatConversations.id, finalConversationId));
-          } catch (err) {
-            console.error("[CodeChat persistence error]:", err);
-          }
-        }
-
-        if (finishReason !== "stop" && finishReason !== "tool-calls") {
-          console.log(`[CodeChat] Stream finished with reason: ${finishReason}`);
-        }
-      };
-
-      if (supportsTools && (p.provider.name === "NVIDIA_KIMI" || p.provider.name === "NVIDIA_MISTRAL")) {
-        console.log(`[CodeChat] Using generateText for ${p.provider.name} due to NIM streaming tool hang bug.`);
-        const generateRes = await generateText({
-          model: p.provider.model,
-          system: systemPrompt,
-          messages,
-          tools,
-        });
-
-        await saveToDb(generateRes.text, generateRes.finishReason);
-
-        return {
-          toUIMessageStreamResponse: (opts: any) => {
-            const encoder = new TextEncoder();
-            const stream = new ReadableStream({
-              start(controller) {
-                // Mimic the Vercel AI SDK UI stream chunk format
-                controller.enqueue(encoder.encode(`0:${JSON.stringify(generateRes.text)}\n`));
-                // Add final finish reason data
-                controller.enqueue(encoder.encode(`d:{"finishReason":"${generateRes.finishReason}","usage":{"promptTokens":0,"completionTokens":0}}\n`));
-                controller.close();
-              }
-            });
-            return new Response(stream, { headers: { ...opts?.headers, "X-Vercel-AI-Data-Stream": "v1" } });
-          }
-        };
       }
 
       const res = streamText({
@@ -333,7 +274,43 @@ export async function POST(req: Request) {
           topP: 0.7,
         } : {}),
         onFinish: async (event) => {
-          await saveToDb(event.text, event.finishReason);
+          if (finalConversationId) {
+            try {
+              const lastUserMsg = rawMessages[rawMessages.length - 1];
+              
+              if (lastUserMsg) {
+                // Determine content based on format
+                let userContent = "";
+                if (typeof lastUserMsg.content === "string") userContent = lastUserMsg.content;
+                else if (Array.isArray(lastUserMsg.parts)) {
+                  userContent = lastUserMsg.parts.filter((p: any) => p.type === "text").map((p: any) => p.text).join("");
+                }
+
+                await db.insert(chatMessages).values({
+                  conversationId: finalConversationId,
+                  role: "user",
+                  content: userContent,
+                });
+              }
+
+              await db.insert(chatMessages).values({
+                conversationId: finalConversationId,
+                role: "assistant",
+                content: event.text || "",
+                model: provider.modelId,
+              });
+
+              await db.update(chatConversations)
+                .set({ updatedAt: new Date() })
+                .where(eq(chatConversations.id, finalConversationId));
+            } catch (err) {
+              console.error("[CodeChat persistence error]:", err);
+            }
+          }
+
+          if (event.finishReason !== "stop" && event.finishReason !== "tool-calls") {
+            console.log(`[CodeChat] Stream finished with reason: ${event.finishReason}`);
+          }
         },
       });
 
