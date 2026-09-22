@@ -73,17 +73,26 @@ void main() {
     float f = fbm(st + r);
 
     // Map f to a smooth mix value and alpha
-    // f tends to be between 0.0 and 1.0
     float mixValue = smoothstep(0.2, 0.8, f);
     
     // Blend the two colors
     vec3 col = mix(color1, color2, mixValue);
     
-    // Create soft, smokey alpha transitions
-    float alpha = smoothstep(0.3, 0.9, f);
+    // Create soft, smokey alpha transitions (boosted slightly)
+    float alpha = smoothstep(0.2, 0.8, f) * 0.7;
+
+    // --- Vignette Mask ---
+    // Make center transparent, edges smoky
+    vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+    float dist = distance(uv, vec2(0.5));
+    float vignette = smoothstep(0.2, 0.6, dist);
     
-    // Soften the smoke intensity a bit (max 60% opacity)
-    outColor = vec4(col, alpha * 0.6);
+    // Apply vignette to alpha
+    alpha *= vignette;
+    
+    // WebGL defaults to premultipliedAlpha: true
+    // We must multiply the color by alpha to render correctly in the browser DOM!
+    outColor = vec4(col * alpha, alpha);
 };
 `;
 
@@ -194,11 +203,6 @@ export function CloudBackground() {
     <canvas
       ref={canvasRef}
       className="absolute inset-0 z-0 w-full h-full pointer-events-none"
-      style={{ 
-        imageRendering: "pixelated",
-        maskImage: "radial-gradient(ellipse at center, transparent 40%, black 100%)",
-        WebkitMaskImage: "radial-gradient(ellipse at center, transparent 40%, black 100%)"
-      }}
     />
   );
 }
