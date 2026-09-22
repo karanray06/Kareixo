@@ -1,4 +1,4 @@
-import { streamText, stepCountIs, tool } from "ai";
+import { streamText, tool } from "ai";
 import { z } from "zod";
 import { router } from "@/lib/model-router";
 import { auth } from "@/auth";
@@ -91,7 +91,7 @@ export async function POST(req: Request) {
           description: "Read a file from the repository. Use this to examine source code when you need to see the actual implementation.",
           inputSchema: z.object({
             path: z.string().describe("The file path relative to the repo root, e.g. 'src/lib/utils.ts'"),
-          }),
+          }).describe("The schema for reading a file"),
           execute: async ({ path: filePath }) => {
             try {
               const { data } = await octokit.rest.repos.getContent({
@@ -104,14 +104,11 @@ export async function POST(req: Request) {
                 return { error: `'${filePath}' is a directory, not a file.` };
               }
               const content = Buffer.from(data.content, "base64").toString("utf-8");
-              if (content.length > 50000) {
-                return { 
-                  content: content.slice(0, 50000) + "\n\n... [truncated — file too large]",
-                  truncated: true,
-                  totalSize: content.length,
-                };
-              }
-              return { content, path: filePath, sha: data.sha };
+              return { 
+                content: content.length > 15000 ? content.slice(0, 15000) + "\n...[TRUNCATED]" : content, 
+                path: filePath, 
+                sha: data.sha 
+              };
             } catch (err: any) {
               return { error: `Failed to read '${filePath}': ${err?.message}` };
             }
@@ -124,7 +121,7 @@ export async function POST(req: Request) {
           description: "List the contents of a directory in the repository. Use this to explore the file structure.",
           inputSchema: z.object({
             path: z.string().describe("The directory path relative to repo root, e.g. 'src/lib' or '' for root"),
-          }),
+          }).describe("The schema for listing a directory"),
           execute: async ({ path: dirPath }) => {
             try {
               const { data } = await octokit.rest.repos.getContent({
@@ -136,14 +133,16 @@ export async function POST(req: Request) {
               if (!Array.isArray(data)) {
                 return { error: `'${dirPath}' is a file, not a directory.` };
               }
+              const entries = data.map((item: any) => ({
+                name: item.name,
+                type: item.type,
+                size: item.size,
+                path: item.path,
+              }));
+              const jsonStr = JSON.stringify(entries, null, 2);
               return {
                 path: dirPath || "/",
-                entries: data.map((item: any) => ({
-                  name: item.name,
-                  type: item.type,
-                  size: item.size,
-                  path: item.path,
-                })),
+                entries: jsonStr.length > 15000 ? jsonStr.slice(0, 15000) + "\n...[TRUNCATED]" : entries,
               };
             } catch (err: any) {
               return { error: `Failed to list '${dirPath}': ${err?.message}` };
@@ -157,7 +156,7 @@ export async function POST(req: Request) {
           description: "Search for code in the repository using GitHub's code search.",
           inputSchema: z.object({
             query: z.string().describe("The search query, e.g. 'function handleSubmit' or 'import router'"),
-          }),
+          }).describe("The schema for searching code"),
           execute: async ({ query }) => {
             try {
               const { data } = await octokit.rest.search.code({
@@ -188,7 +187,7 @@ export async function POST(req: Request) {
             path: z.string().describe("The file path relative to the repo root, e.g. 'src/lib/utils.ts'"),
             newContent: z.string().describe("The complete new file content after your changes"),
             explanation: z.string().describe("A brief explanation of what the change does and why"),
-          }),
+          }).describe("The schema for proposing a code change"),
           execute: async ({ path: filePath, newContent, explanation }) => {
             try {
               // Read the current file to get oldContent and SHA
@@ -242,10 +241,7 @@ export async function POST(req: Request) {
 
     const hasTools = Object.keys(tools).length > 0;
 
-    // NVIDIA NIM takes >40s to process tools, hitting Vercel's 10s serverless limit.
-    // We force fallback to Groq if tools are present to ensure a fast, successful response.
-    const requestedTier = selectedProvider === "NVIDIA_NIM_KIMI" ? "deep" : selectedProvider === "GROQ" ? "fallback" : "fast";
-    const initialTier = hasTools ? "fallback" : requestedTier;
+    const initialTier = selectedProvider === "NVIDIA_NIM_KIMI" ? "deep" : selectedProvider === "GROQ" ? "fallback" : "fast";
 
     const { result, provider } = await router.executeWithFailover(async (p) => {
       // All current providers (NVIDIA NIM + Groq) support tool calling (conditionally based on router)
@@ -258,63 +254,63 @@ export async function POST(req: Request) {
         systemPrompt += `\n\nWhen the user asks you to fix, refactor, or modify code, use the proposeChange tool to propose the change. Always read the file first, then propose the full modified file content. The user will see a diff and can approve or discard.`;
       }
 
-      const res = streamText({
-        model: p.provider.model,
-        system: systemPrompt,
-        messages,
-        ...(supportsTools ? { tools, stopWhen: stepCountIs(5) } : {}),
-        ...(p.provider.name === "GROQ" ? {
-          providerOptions: {
-            groq: { reasoningFormat: "hidden" },
-          },
-        } : {}),
-        ...(p.provider.name === "NVIDIA_KIMI" || p.provider.name === "NVIDIA_MISTRAL" ? {
-          maxTokens: 4096,
-          temperature: 0.6,
-          topP: 0.7,
-        } : {}),
-        onFinish: async (event) => {
-          if (finalConversationId) {
-            try {
-              const lastUserMsg = rawMessages[rawMessages.length - 1];
-              
-              if (lastUserMsg) {
-                // Determine content based on format
-                let userContent = "";
-                if (typeof lastUserMsg.content === "string") userContent = lastUserMsg.content;
-                else if (Array.isArray(lastUserMsg.parts)) {
-                  userContent = lastUserMsg.parts.filter((p: any) => p.type === "text").map((p: any) => p.text).join("");
+      try {
+        const res = streamText({
+          model: p.provider.model,
+          system: systemPrompt,
+          messages,
+          ...(supportsTools ? { tools, maxSteps: 5, toolChoice: "auto" } : {}),
+          ...(p.provider.name === "GROQ" ? {
+            providerOptions: {
+              groq: { reasoningFormat: "hidden" },
+            },
+          } : {}),
+          onFinish: async (event) => {
+            if (finalConversationId) {
+              try {
+                const lastUserMsg = rawMessages[rawMessages.length - 1];
+                
+                if (lastUserMsg) {
+                  // Determine content based on format
+                  let userContent = "";
+                  if (typeof lastUserMsg.content === "string") userContent = lastUserMsg.content;
+                  else if (Array.isArray(lastUserMsg.parts)) {
+                    userContent = lastUserMsg.parts.filter((p: any) => p.type === "text").map((p: any) => p.text).join("");
+                  }
+
+                  await db.insert(chatMessages).values({
+                    conversationId: finalConversationId,
+                    role: "user",
+                    content: userContent,
+                  });
                 }
 
                 await db.insert(chatMessages).values({
                   conversationId: finalConversationId,
-                  role: "user",
-                  content: userContent,
+                  role: "assistant",
+                  content: event.text || "",
+                  model: provider.modelId,
                 });
+
+                await db.update(chatConversations)
+                  .set({ updatedAt: new Date() })
+                  .where(eq(chatConversations.id, finalConversationId));
+              } catch (err) {
+                console.error("[CodeChat persistence error]:", err);
               }
-
-              await db.insert(chatMessages).values({
-                conversationId: finalConversationId,
-                role: "assistant",
-                content: event.text || "",
-                model: provider.modelId,
-              });
-
-              await db.update(chatConversations)
-                .set({ updatedAt: new Date() })
-                .where(eq(chatConversations.id, finalConversationId));
-            } catch (err) {
-              console.error("[CodeChat persistence error]:", err);
             }
-          }
 
-          if (event.finishReason !== "stop" && event.finishReason !== "tool-calls") {
-            console.log(`[CodeChat] Stream finished with reason: ${event.finishReason}`);
-          }
-        },
-      });
+            if (event.finishReason !== "stop" && event.finishReason !== "tool-calls") {
+              console.log(`[CodeChat] Stream finished with reason: ${event.finishReason}`);
+            }
+          },
+        });
 
-      return res;
+        return res;
+      } catch (error) {
+        console.error("NVIDIA NIM Error:", error);
+        throw error;
+      }
     }, "chat", initialTier);
 
     return result.toUIMessageStreamResponse({
