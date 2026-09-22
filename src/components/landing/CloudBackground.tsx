@@ -105,11 +105,19 @@ const fragmentShader = /* glsl */ `
     // ── Alpha: Thick opaque clouds, transparent gaps ──
     float alpha = smoothstep(0.0, 0.7, smoke) * 0.85; // Slightly reduced max opacity
 
-    // ── Radial vignette ──
-    vec2 vigUV = (vUv - 0.5) * 2.0;
-    float vignette = 1.0 - dot(vigUV, vigUV) * 0.35;
-    vignette = clamp(vignette, 0.0, 1.0);
-    alpha *= vignette;
+    // ── Inverted Vignette (Clouds on edges, transparent center) ──
+    // Distance from center horizontally (0 at center, 0.5 at edges)
+    float distFromCenter = abs(vUv.x - 0.5) * 2.0; 
+    
+    // Smoothstep creates a soft fade: 
+    // center (dist < 0.2) is fully transparent (0.0)
+    // edges (dist > 0.8) are fully opaque (1.0)
+    float edgeMask = smoothstep(0.1, 0.9, distFromCenter);
+    
+    // You can also add vertical fade if you want top/bottom to be clear
+    // float vertFade = smoothstep(0.0, 0.2, vUv.y) * smoothstep(1.0, 0.8, vUv.y);
+    
+    alpha *= edgeMask;
 
     // ThreeJS WebGLRenderer with alpha: true requires premultiplied alpha output
     // to render perfectly without weird edge artifacts
