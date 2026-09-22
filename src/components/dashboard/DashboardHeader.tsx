@@ -137,7 +137,7 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
           )}
 
           {/* GitHub App Status */}
-          <div className="hidden xl:flex items-center gap-space-sm pl-space-xs">
+          <div className="hidden 2xl:flex items-center gap-space-sm pl-space-xs">
             <div className="flex items-center gap-1.5 px-2.5 py-1 text-fg-muted font-badge-mono text-badge-mono">
               <span className="w-2 h-2 rounded-full bg-signal" />
               GitHub App: Active
@@ -163,8 +163,8 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
             </Link>
           ))}
 
-          {/* Secondary links (inline on xl+) */}
-          <div className="hidden xl:flex items-center gap-space-xs">
+          {/* Secondary links (inline on 2xl+) */}
+          <div className="hidden 2xl:flex items-center gap-space-xs">
             {SECONDARY_LINKS.map((link) => (
               <Link
                 key={link.path}
@@ -182,8 +182,8 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
             ))}
           </div>
 
-          {/* More dropdown (visible on lg, hidden on xl+) */}
-          <div className="relative flex xl:hidden">
+          {/* More dropdown (visible on lg, hidden on 2xl+) */}
+          <div className="relative flex 2xl:hidden">
             <button
               onClick={() => setShowMoreMenu(!showMoreMenu)}
               className={`px-3 py-1.5 transition-colors font-label-ui text-label-ui flex items-center gap-1 ${
@@ -222,7 +222,7 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
             type="button"
           >
             <Search size={18} />
-            <span className="hidden md:inline font-body-sm text-body-sm text-fg-muted">
+            <span className="hidden lg:inline font-body-sm text-body-sm text-fg-muted">
               Type{" "}
               <kbd className="px-1.5 py-0.5 font-badge-mono text-badge-mono text-fg-muted border border-border-dark">
                 Cmd+K
