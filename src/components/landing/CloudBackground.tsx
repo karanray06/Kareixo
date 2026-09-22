@@ -1,208 +1,250 @@
-"use client";
+'use client';
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
+import * as THREE from 'three';
 
-const vertexShaderSource = `#version 300 es
-in vec4 a_position;
-void main() {
-    gl_Position = a_position;
-}
+/* ───────────────────────────────────────────────────────
+ *  GLSL — Volumetric FBM Cloud Shader
+ *  Procedural noise → domain warp → density → clouds
+ * ─────────────────────────────────────────────────────── */
+
+const vertexShader = /* glsl */ `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = vec4(position, 1.0);
+  }
 `;
 
-const fragmentShaderSource = `#version 300 es
-precision highp float;
+const fragmentShader = /* glsl */ `
+  precision highp float;
 
-uniform vec2 u_resolution;
-uniform float u_time;
+  uniform float uTime;
+  uniform vec2 uResolution;
+  varying vec2 vUv;
 
-out vec4 outColor;
+  /* ── Hash: high-quality pseudo-random vec2 → float ── */
+  float hash(vec2 p) {
+    vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+    p3 += dot(p3, p3.yzx + 33.33);
+    return fract((p3.x + p3.y) * p3.z);
+  }
 
-const vec3 color1 = vec3(0.784, 0.953, 1.0); // #C8F3FF Ice Cream Blue
-const vec3 color2 = vec3(1.0, 0.973, 0.875); // #FFF8DF Vanilla Cloud
-
-float random(vec2 st) {
-    return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
-}
-
-float noise(vec2 st) {
-    vec2 i = floor(st);
-    vec2 f = fract(st);
-
-    float a = random(i);
-    float b = random(i + vec2(1.0, 0.0));
-    float c = random(i + vec2(0.0, 1.0));
-    float d = random(i + vec2(1.0, 1.0));
-
+  /* ── 2D Value Noise with bilinear interpolation ── */
+  float noise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
     vec2 u = f * f * (3.0 - 2.0 * f);
+    float a = hash(i);
+    float b = hash(i + vec2(1.0, 0.0));
+    float c = hash(i + vec2(0.0, 1.0));
+    float d = hash(i + vec2(1.0, 1.0));
+    return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
+  }
 
-    return mix(a, b, u.x) +
-            (c - a) * u.y * (1.0 - u.x) +
-            (d - b) * u.x * u.y;
-}
-
-#define OCTAVES 6
-float fbm(vec2 st) {
+  /* ── FBM: 6 octaves ── */
+  float fbm(vec2 p) {
     float value = 0.0;
     float amplitude = 0.5;
-    vec2 shift = vec2(100.0);
-    // Rotate to reduce axial bias
-    mat2 rot = mat2(cos(0.5), sin(0.5), -sin(0.5), cos(0.5));
-    for (int i = 0; i < OCTAVES; ++i) {
-        value += amplitude * noise(st);
-        st = rot * st * 2.0 + shift;
-        amplitude *= 0.5;
+    float frequency = 1.0;
+    for (int i = 0; i < 6; i++) {
+      value += amplitude * noise(p * frequency);
+      frequency *= 2.0;
+      amplitude *= 0.5;
     }
     return value;
-}
+  }
 
-void main() {
-    vec2 st = gl_FragCoord.xy / u_resolution.xy;
-    st.x *= u_resolution.x / u_resolution.y;
-    
-    // Scale for wispy look
-    st *= 2.0;
+  void main() {
+    vec2 uv = vUv;
+    float aspect = uResolution.x / uResolution.y;
+    uv.x *= aspect;
 
-    vec2 q = vec2(0.0);
-    q.x = fbm(st + 0.02 * u_time);
-    q.y = fbm(st + vec2(1.0));
+    // Time factor for fluid motion
+    float t = uTime * 0.12;
 
-    vec2 r = vec2(0.0);
-    r.x = fbm(st + 1.0 * q + vec2(1.7, 9.2) + 0.05 * u_time);
-    r.y = fbm(st + 1.0 * q + vec2(8.3, 2.8) + 0.05 * u_time);
+    // ── Drift: panning motion ──
+    vec2 drift = vec2(t * 0.1, t * 0.15);
 
-    float f = fbm(st + r);
+    // ── Slow rotation ──
+    float angle = sin(t * 0.2) * 0.05;
+    float cosA = cos(angle);
+    float sinA = sin(angle);
+    vec2 center = vec2(aspect * 0.5, 0.5);
+    vec2 rotUV = uv - center;
+    rotUV = vec2(rotUV.x * cosA - rotUV.y * sinA,
+                 rotUV.x * sinA + rotUV.y * cosA);
+    rotUV += center;
 
-    // Map f to a smooth mix value and alpha
-    float mixValue = smoothstep(0.2, 0.8, f);
-    
-    // Blend the two colors
-    vec3 col = mix(color1, color2, mixValue);
-    
-    // Create soft, smokey alpha transitions (boosted slightly)
-    float alpha = smoothstep(0.2, 0.8, f) * 0.7;
+    // Scale UV for massive clouds
+    vec2 baseUV = rotUV * 1.2 + drift;
 
-    // --- Vignette Mask ---
-    // Make center transparent, edges smoky
-    vec2 uv = gl_FragCoord.xy / u_resolution.xy;
-    float dist = distance(uv, vec2(0.5));
-    float vignette = smoothstep(0.2, 0.6, dist);
-    
-    // Apply vignette to alpha
+    // ── Domain warp pass 1 (fluid rolling motion) ──
+    float warp1 = fbm(baseUV + vec2(t * 0.25, t * 0.15));
+    vec2 warpedUV = baseUV + vec2(warp1) * 0.8;
+
+    // ── Domain warp pass 2 (internal churning) ──
+    float warp2 = fbm(warpedUV + vec2(-t * 0.2, t * 0.3));
+    warpedUV += vec2(warp2) * 0.5;
+
+    // ── Final density field ──
+    float density = fbm(warpedUV + vec2(t * 0.15, -t * 0.1));
+
+    // Increase contrast heavily to create distinct volumetric smoke clouds
+    float smoke = smoothstep(0.2, 0.65, density);
+
+    // ── Color palette: Ice Cream Blue & Vanilla Cloud ──
+    vec3 baseBackground = vec3(0.055, 0.086, 0.078); // Kareixo canvas dark for blending
+    vec3 cloudMidTone   = vec3(0.784, 0.953, 1.0);   // #C8F3FF Ice Cream Blue
+    vec3 cloudGlow      = vec3(1.0, 0.973, 0.875);   // #FFF8DF Vanilla Cloud
+
+    // Volumetric layering
+    vec3 color = mix(baseBackground, cloudMidTone, smoke);
+    color = mix(color, cloudGlow, smoothstep(0.5, 1.0, smoke));
+
+    // ── Alpha: Thick opaque clouds, transparent gaps ──
+    float alpha = smoothstep(0.0, 0.7, smoke) * 0.85; // Slightly reduced max opacity
+
+    // ── Radial vignette ──
+    vec2 vigUV = (vUv - 0.5) * 2.0;
+    float vignette = 1.0 - dot(vigUV, vigUV) * 0.35;
+    vignette = clamp(vignette, 0.0, 1.0);
     alpha *= vignette;
-    
-    // WebGL defaults to premultipliedAlpha: true
-    // We must multiply the color by alpha to render correctly in the browser DOM!
-    outColor = vec4(col * alpha, alpha);
-};
+
+    // ThreeJS WebGLRenderer with alpha: true requires premultiplied alpha output
+    // to render perfectly without weird edge artifacts
+    gl_FragColor = vec4(color * alpha, alpha);
+  }
 `;
 
-function createShader(gl: WebGL2RenderingContext, type: number, source: string) {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.error(gl.getShaderInfoLog(shader));
-    gl.deleteShader(shader);
-    return null;
-  }
-  return shader;
-}
+/* ───────────────────────────────────────────────────────
+ *  React component: renders a Three.js canvas into the
+ *  hero section, absolutely positioned behind content.
+ * ─────────────────────────────────────────────────────── */
 
 export function CloudBackground() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const cleanupRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    const gl = canvas.getContext("webgl2");
-    if (!gl) return;
+    /* ── Pixel ratio: cap at 1.5, drop to 1.0 on mobile ── */
+    const isMobile = window.innerWidth < 768;
+    const pixelRatio = Math.min(window.devicePixelRatio, isMobile ? 1.0 : 1.5);
 
-    const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+    /* ── Renderer: transparent background ── */
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false });
+    renderer.setClearColor(0x000000, 0);
+    renderer.setPixelRatio(pixelRatio);
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.domElement.id = 'hero-cloud-canvas';
 
-    if (!vertexShader || !fragmentShader) return;
+    container.appendChild(renderer.domElement);
 
-    const program = gl.createProgram();
-    if (!program) return;
-    
-    gl.attachShader(program, vertexShader);
-    gl.attachShader(program, fragmentShader);
-    gl.linkProgram(program);
+    /* ── Scene: fullscreen quad with shader material ── */
+    const scene = new THREE.Scene();
+    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      console.error(gl.getProgramInfoLog(program));
-      return;
+    const uniforms = {
+      uTime: { value: 0 },
+      uResolution: {
+        value: new THREE.Vector2(container.clientWidth, container.clientHeight),
+      },
+    };
+
+    const material = new THREE.ShaderMaterial({
+      vertexShader,
+      fragmentShader,
+      uniforms,
+      transparent: true,
+      depthWrite: false,
+      depthTest: false,
+    });
+
+    // Fullscreen triangle (more efficient than a quad — single draw call, no vertex shared)
+    const geometry = new THREE.PlaneGeometry(2, 2);
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+
+    /* ── Animation loop ── */
+    let startTime = performance.now();
+    let animFrameId: number;
+    let paused = false;
+    let pausedTime = 0;
+
+    function animate() {
+      animFrameId = requestAnimationFrame(animate);
+      const elapsed = (performance.now() - startTime) / 1000; // seconds
+      uniforms.uTime.value = elapsed;
+      renderer.render(scene, camera);
     }
+    animate();
 
-    const positionAttributeLocation = gl.getAttribLocation(program, "a_position");
-    const positionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    gl.bufferData(
-      gl.ARRAY_BUFFER,
-      new Float32Array([
-        -1, -1,
-         1, -1,
-        -1,  1,
-        -1,  1,
-         1, -1,
-         1,  1,
-      ]),
-      gl.STATIC_DRAW
-    );
+    /* ── Resize handler ── */
+    function onResize() {
+      if (!container) return;
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      renderer.setSize(w, h);
+      uniforms.uResolution.value.set(w, h);
 
-    const vao = gl.createVertexArray();
-    gl.bindVertexArray(vao);
-    gl.enableVertexAttribArray(positionAttributeLocation);
-    gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+      // Re-evaluate mobile pixel ratio
+      const mobile = window.innerWidth < 768;
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, mobile ? 1.0 : 1.5));
+    }
+    window.addEventListener('resize', onResize);
 
-    const resolutionUniformLocation = gl.getUniformLocation(program, "u_resolution");
-    const timeUniformLocation = gl.getUniformLocation(program, "u_time");
+    /* ── Pause when tab hidden ── */
+    function onVisibility() {
+      if (document.hidden) {
+        paused = true;
+        pausedTime = performance.now();
+        cancelAnimationFrame(animFrameId);
+      } else {
+        if (paused) {
+          // Adjust startTime to account for paused duration
+          startTime += performance.now() - pausedTime;
+          paused = false;
+        }
+        animate();
+      }
+    }
+    document.addEventListener('visibilitychange', onVisibility);
 
-    let animationFrameId: number;
-    const startTime = Date.now();
-
-    const resize = () => {
-      // Use devicePixelRatio for crisp rendering
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
-      canvas.style.width = `${window.innerWidth}px`;
-      canvas.style.height = `${window.innerHeight}px`;
-      gl.viewport(0, 0, canvas.width, canvas.height);
+    /* ── Cleanup ── */
+    cleanupRef.current = () => {
+      cancelAnimationFrame(animFrameId);
+      window.removeEventListener('resize', onResize);
+      document.removeEventListener('visibilitychange', onVisibility);
+      renderer.dispose();
+      material.dispose();
+      geometry.dispose();
+      if (container.contains(renderer.domElement)) {
+        container.removeChild(renderer.domElement);
+      }
     };
-    
-    window.addEventListener("resize", resize);
-    resize();
-
-    const render = () => {
-      gl.useProgram(program);
-      gl.bindVertexArray(vao);
-
-      gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
-      gl.uniform1f(timeUniformLocation, (Date.now() - startTime) / 1000);
-
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
-
-      animationFrameId = requestAnimationFrame(render);
-    };
-
-    render();
 
     return () => {
-      window.removeEventListener("resize", resize);
-      cancelAnimationFrame(animationFrameId);
-      gl.deleteProgram(program);
-      if (vertexShader) gl.deleteShader(vertexShader);
-      if (fragmentShader) gl.deleteShader(fragmentShader);
+      cleanupRef.current?.();
     };
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 z-0 w-full h-full pointer-events-none"
+    <div
+      ref={containerRef}
+      aria-hidden="true"
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        zIndex: 1, // Keep it above the dark base but below the text
+        pointerEvents: 'none',
+        overflow: 'hidden',
+      }}
     />
   );
 }
