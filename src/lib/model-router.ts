@@ -80,7 +80,7 @@ export class ModelRouter {
             name: "GROQ",
             modelId: groqModel.modelId,
             model: groqProvider(groqModel.modelId),
-            supportsTools: false, // assuming Groq models might not support complex tools
+            supportsTools: true, // Enable tools for Groq since it handles streaming tool calls perfectly
           },
           keyState,
           disableTools,

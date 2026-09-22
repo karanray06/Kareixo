@@ -1,4 +1,4 @@
-import { streamText, stepCountIs, tool } from "ai";
+import { streamText, stepCountIs, tool, generateText } from "ai";
 import { z } from "zod";
 import { router } from "@/lib/model-router";
 import { auth } from "@/auth";
@@ -250,6 +250,73 @@ export async function POST(req: Request) {
         systemPrompt += `\n\nWhen the user asks you to fix, refactor, or modify code, use the proposeChange tool to propose the change. Always read the file first, then propose the full modified file content. The user will see a diff and can approve or discard.`;
       }
 
+      const saveToDb = async (text: string, finishReason: string) => {
+        if (finalConversationId) {
+          try {
+            const lastUserMsg = rawMessages[rawMessages.length - 1];
+            
+            if (lastUserMsg) {
+              let userContent = "";
+              if (typeof lastUserMsg.content === "string") userContent = lastUserMsg.content;
+              else if (Array.isArray(lastUserMsg.parts)) {
+                userContent = lastUserMsg.parts.filter((p: any) => p.type === "text").map((p: any) => p.text).join("");
+              }
+
+              await db.insert(chatMessages).values({
+                conversationId: finalConversationId,
+                role: "user",
+                content: userContent,
+              });
+            }
+
+            await db.insert(chatMessages).values({
+              conversationId: finalConversationId,
+              role: "assistant",
+              content: text || "",
+              model: p.provider.modelId,
+            });
+
+            await db.update(chatConversations)
+              .set({ updatedAt: new Date() })
+              .where(eq(chatConversations.id, finalConversationId));
+          } catch (err) {
+            console.error("[CodeChat persistence error]:", err);
+          }
+        }
+
+        if (finishReason !== "stop" && finishReason !== "tool-calls") {
+          console.log(`[CodeChat] Stream finished with reason: ${finishReason}`);
+        }
+      };
+
+      if (supportsTools && (p.provider.name === "NVIDIA_KIMI" || p.provider.name === "NVIDIA_MISTRAL")) {
+        console.log(`[CodeChat] Using generateText for ${p.provider.name} due to NIM streaming tool hang bug.`);
+        const generateRes = await generateText({
+          model: p.provider.model,
+          system: systemPrompt,
+          messages,
+          tools,
+        });
+
+        await saveToDb(generateRes.text, generateRes.finishReason);
+
+        return {
+          toUIMessageStreamResponse: (opts: any) => {
+            const encoder = new TextEncoder();
+            const stream = new ReadableStream({
+              start(controller) {
+                // Mimic the Vercel AI SDK UI stream chunk format
+                controller.enqueue(encoder.encode(`0:${JSON.stringify(generateRes.text)}\n`));
+                // Add final finish reason data
+                controller.enqueue(encoder.encode(`d:{"finishReason":"${generateRes.finishReason}","usage":{"promptTokens":0,"completionTokens":0}}\n`));
+                controller.close();
+              }
+            });
+            return new Response(stream, { headers: { ...opts?.headers, "X-Vercel-AI-Data-Stream": "v1" } });
+          }
+        };
+      }
+
       const res = streamText({
         model: p.provider.model,
         system: systemPrompt,
@@ -266,43 +333,7 @@ export async function POST(req: Request) {
           topP: 0.7,
         } : {}),
         onFinish: async (event) => {
-          if (finalConversationId) {
-            try {
-              const lastUserMsg = rawMessages[rawMessages.length - 1];
-              
-              if (lastUserMsg) {
-                // Determine content based on format
-                let userContent = "";
-                if (typeof lastUserMsg.content === "string") userContent = lastUserMsg.content;
-                else if (Array.isArray(lastUserMsg.parts)) {
-                  userContent = lastUserMsg.parts.filter((p: any) => p.type === "text").map((p: any) => p.text).join("");
-                }
-
-                await db.insert(chatMessages).values({
-                  conversationId: finalConversationId,
-                  role: "user",
-                  content: userContent,
-                });
-              }
-
-              await db.insert(chatMessages).values({
-                conversationId: finalConversationId,
-                role: "assistant",
-                content: event.text || "",
-                model: provider.modelId,
-              });
-
-              await db.update(chatConversations)
-                .set({ updatedAt: new Date() })
-                .where(eq(chatConversations.id, finalConversationId));
-            } catch (err) {
-              console.error("[CodeChat persistence error]:", err);
-            }
-          }
-
-          if (event.finishReason !== "stop" && event.finishReason !== "tool-calls") {
-            console.log(`[CodeChat] Stream finished with reason: ${event.finishReason}`);
-          }
+          await saveToDb(event.text, event.finishReason);
         },
       });
 
