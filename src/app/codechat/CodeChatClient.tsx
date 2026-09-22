@@ -87,10 +87,18 @@ function CodeChatClientContent({ repos }: { repos: RepoInfo[] }) {
     },
     fetch: async (url: string | URL | globalThis.Request, options?: RequestInit) => {
       const response = await fetch(url, options);
+      if (!response.ok) {
+        let errorMessage = "An error occurred";
+        try {
+          const data = await response.clone().json();
+          if (data.error) errorMessage = data.error;
+        } catch (e) {}
+        throw new Error(errorMessage);
+      }
       const newId = response.headers.get("X-Conversation-Id");
       if (newId && newId !== conversationId) {
         setConversationId(newId);
-        window.history.pushState({}, '', `/dashboard/codechat?conversation=${newId}`);
+        window.history.pushState({}, '', `/codechat?conversation=${newId}`);
         if (selectedRepo) fetchConversations(selectedRepo.fullName);
       }
       return response;
@@ -376,7 +384,7 @@ function CodeChatClientContent({ repos }: { repos: RepoInfo[] }) {
               onClick={() => {
                 setConversationId(null);
                 setMessages([]);
-                window.history.pushState({}, '', '/dashboard/codechat');
+                window.history.pushState({}, '', '/codechat');
               }}
               className="p-1 rounded text-fg-subtle hover:text-fg-default hover:bg-surface-container"
               title="New Chat"
@@ -393,7 +401,7 @@ function CodeChatClientContent({ repos }: { repos: RepoInfo[] }) {
                   key={c.id}
                   onClick={() => {
                     setConversationId(c.id);
-                    window.history.pushState({}, '', `/dashboard/codechat?conversation=${c.id}`);
+                    window.history.pushState({}, '', `/codechat?conversation=${c.id}`);
                     fetch(`/api/codechat/conversations/${c.id}`)
                       .then(r => r.json())
                       .then(d => {

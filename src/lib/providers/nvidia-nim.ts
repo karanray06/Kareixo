@@ -1,24 +1,23 @@
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
-const KIMI_API_KEY = process.env.NVIDIA_NIM_KIMI_API_KEY || "";
-const MISTRAL_API_KEY = process.env.NVIDIA_NIM_MISTRAL_API_KEY || "";
-
-export const createKimiProvider = () => {
+export const createKimiProvider = (apiKey: string) => {
+  if (!apiKey) throw new Error("NVIDIA NIM API key is missing for Kimi.");
   return createOpenAICompatible({
     name: "nvidia-nim-kimi",
     baseURL: "https://integrate.api.nvidia.com/v1",
     headers: {
-      Authorization: `Bearer ${KIMI_API_KEY}`,
+      Authorization: `Bearer ${apiKey}`,
     },
   });
 };
 
-export const createMistralProvider = () => {
+export const createMistralProvider = (apiKey: string) => {
+  if (!apiKey) throw new Error("NVIDIA NIM API key is missing for Mistral.");
   return createOpenAICompatible({
     name: "nvidia-nim-mistral",
     baseURL: "https://integrate.api.nvidia.com/v1",
     headers: {
-      Authorization: `Bearer ${MISTRAL_API_KEY}`,
+      Authorization: `Bearer ${apiKey}`,
     },
   });
 };

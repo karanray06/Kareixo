@@ -240,8 +240,8 @@ export async function POST(req: Request) {
     const initialTier = selectedProvider === "NVIDIA_NIM_KIMI" ? "deep" : selectedProvider === "GROQ" ? "fallback" : "fast";
 
     const { result, provider } = await router.executeWithFailover(async (p) => {
-      // All current providers (NVIDIA NIM + Groq) support tool calling
-      const supportsTools = hasTools;
+      // All current providers (NVIDIA NIM + Groq) support tool calling (conditionally based on router)
+      const supportsTools = hasTools && p.provider.supportsTools && !p.disableTools;
       
       let systemPrompt = baseSystemPrompt;
       if (repoFullName && supportsTools) {
@@ -312,6 +312,7 @@ export async function POST(req: Request) {
     return result.toUIMessageStreamResponse({
       headers: {
         "x-ai-provider": provider.name,
+        ...(finalConversationId ? { "X-Conversation-Id": finalConversationId } : {}),
       },
     });
 

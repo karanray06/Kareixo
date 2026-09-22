@@ -18,6 +18,7 @@ export interface RoutedProvider {
     supportsTools: boolean;
   };
   keyState: KeyState;
+  disableTools?: boolean;
 }
 
 export class ModelRouter {
@@ -33,6 +34,7 @@ export class ModelRouter {
     let attempt = 0;
     let currentTier = initialTier;
     let lastError: any = null;
+    let disableTools = false;
 
     while (attempt < MAX_RETRIES) {
       attempt++;
@@ -46,7 +48,7 @@ export class ModelRouter {
       let providerInstance: RoutedProvider;
       if (providerKey === "nvidia-kimi") {
         const kimiModel = NVIDIA_NIM_MODEL_CATALOG.find((m) => m.modelId === "moonshotai/kimi-k3")!;
-        const nimProvider = createKimiProvider();
+        const nimProvider = createKimiProvider(keyState.key);
         providerInstance = {
           provider: {
             name: "NVIDIA_KIMI",
@@ -55,10 +57,11 @@ export class ModelRouter {
             supportsTools: true,
           },
           keyState,
+          disableTools,
         };
       } else if (providerKey === "nvidia-mistral") {
         const mistralModel = NVIDIA_NIM_MODEL_CATALOG.find((m) => m.modelId === "mistralai/mistral-nemotron")!;
-        const nimProvider = createMistralProvider();
+        const nimProvider = createMistralProvider(keyState.key);
         providerInstance = {
           provider: {
             name: "NVIDIA_MISTRAL",
@@ -67,6 +70,7 @@ export class ModelRouter {
             supportsTools: true,
           },
           keyState,
+          disableTools,
         };
       } else {
         const groqModel = GROQ_MODEL_CATALOG[0]; // fallback to first Groq model
@@ -79,6 +83,7 @@ export class ModelRouter {
             supportsTools: false, // assuming Groq models might not support complex tools
           },
           keyState,
+          disableTools,
         };
       }
 
@@ -95,8 +100,9 @@ export class ModelRouter {
         console.warn(`[ModelRouter] Provider ${providerInstance.provider.name} failed:`, error?.message || error);
 
         if (error.name === 'NoSuchToolError' || error.message?.includes('tool')) {
-          console.error("[ModelRouter] Irrecoverable Tool Error — Aborting failover.");
-          throw error;
+          console.warn(`[ModelRouter] Tool error encountered with ${providerInstance.provider.name}. Disabling tools for retries.`);
+          disableTools = true;
+          // Don't throw — continue downgrade failover without tools
         }
 
         // Tier downgrade logic on failure
