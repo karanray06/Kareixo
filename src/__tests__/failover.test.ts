@@ -34,21 +34,22 @@ vi.mock("../lib/gemini-key-pool", () => {
   };
 });
 
-// Mock the NVIDIA NIM provider
-vi.mock("../lib/providers/nvidia-nim", () => ({
-  createNvidiaNimProvider: () => (modelId: string) => ({
-    specificationVersion: "v1",
-    provider: "mock-nvidia-nim",
-    modelId,
-    doGenerate: async () => {
-      return {
-        text: "reviewed",
-        finishReason: "stop",
-        usage: { promptTokens: 1, completionTokens: 1 },
-        rawCall: { rawPrompt: "", rawSettings: {} },
-      };
-    },
+// Mock the NVIDIA NIM providers (Kimi + Mistral)
+const mockNimModel = (modelId: string) => ({
+  specificationVersion: "v1",
+  provider: "mock-nvidia-nim",
+  modelId,
+  doGenerate: async () => ({
+    text: "reviewed",
+    finishReason: "stop",
+    usage: { promptTokens: 1, completionTokens: 1 },
+    rawCall: { rawPrompt: "", rawSettings: {} },
   }),
+});
+
+vi.mock("../lib/providers/nvidia-nim", () => ({
+  createKimiProvider: () => mockNimModel,
+  createMistralProvider: () => mockNimModel,
   NVIDIA_NIM_MODEL_CATALOG: [
     { modelId: "mistralai/mistral-nemotron", modelName: "NVIDIA NIM: Mistral-Nemotron", supportsTools: true },
     { modelId: "moonshotai/kimi-k3", modelName: "NVIDIA NIM: Kimi K3", supportsTools: true },
@@ -84,7 +85,7 @@ describe("Retry Logic", { timeout: 15000 }, () => {
     const testRouter = new ModelRouter();
 
     const { provider } = await testRouter.executeWithFailover(async (p) => {
-      await (p.model as any).doGenerate({
+      await (p.provider.model as any).doGenerate({
         inputFormat: "messages",
         prompt: [{ role: "user", content: [{ type: "text", text: "ping" }] }],
         mode: { type: "regular" },
@@ -92,7 +93,7 @@ describe("Retry Logic", { timeout: 15000 }, () => {
       return "success";
     }, "code", "deep");
 
-    expect(provider.name).toBe("NVIDIA_NIM");
+    expect(provider.name).toBe("NVIDIA_KIMI");
     expect(provider.modelId).toBe("moonshotai/kimi-k3"); // deep tier = kimi-k3
   });
 
@@ -101,7 +102,7 @@ describe("Retry Logic", { timeout: 15000 }, () => {
     const testRouter = new ModelRouter();
 
     const { provider } = await testRouter.executeWithFailover(async (p) => {
-      await (p.model as any).doGenerate({
+      await (p.provider.model as any).doGenerate({
         inputFormat: "messages",
         prompt: [{ role: "user", content: [{ type: "text", text: "ping" }] }],
         mode: { type: "regular" },
@@ -109,7 +110,7 @@ describe("Retry Logic", { timeout: 15000 }, () => {
       return "success";
     }, "chat", "fast");
 
-    expect(provider.name).toBe("NVIDIA_NIM");
+    expect(provider.name).toBe("NVIDIA_MISTRAL");
     expect(provider.modelId).toBe("mistralai/mistral-nemotron"); // fast tier = nemotron
   });
 });

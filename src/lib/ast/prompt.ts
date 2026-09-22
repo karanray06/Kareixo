@@ -102,7 +102,7 @@ function buildErrorFixPrompt(
 /**
  * Generate AST-bounded mutations from the LLM.
  *
- * Uses the multi-model router with failover (Groq → Gemini → Pollinations).
+ * Uses the multi-model router with failover (NVIDIA NIM → Groq).
  */
 export async function generateASTMutations(options: {
   source: string;

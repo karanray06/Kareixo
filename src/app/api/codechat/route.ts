@@ -19,7 +19,6 @@ export async function POST(req: Request) {
     }
 
     // Per-user rate limiting: 30 requests per minute
-    const user = session.user;
     const rateCheck = checkRateLimit(session.user.id);
     if (!rateCheck.allowed) {
       return rateLimitResponse(rateCheck.resetAt);
@@ -119,7 +118,7 @@ export async function POST(req: Request) {
         tools.listDirectory = tool({
           description: "List the contents of a directory in the repository. Use this to explore the file structure.",
           inputSchema: z.object({
-            path: z.string().describe("The directory path relative to repo root, e.g. 'src/lib' or '' for root").default(""),
+            path: z.string().describe("The directory path relative to repo root, e.g. 'src/lib' or '' for root"),
           }),
           execute: async ({ path: dirPath }) => {
             try {

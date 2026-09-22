@@ -97,7 +97,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error("Chat API error:", error);
     return NextResponse.json(
-      { error: error.message || "All Gemini API keys are currently exhausted. Please try again shortly." },
+      { error: error.message || "AI service unavailable. Please try again shortly." },
       { status: 503 }
     );
   }
