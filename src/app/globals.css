@@ -18,20 +18,55 @@
   vertical-align: middle;
 }
 
-@theme inline {
+:root {
   /* ═══ COLORS: Forest Code & Mint Fog (Light Default) ═══ */
-  --color-structural: #075E46;
-  --color-surface: #E8FFF2;
-  
-  --color-text-primary: #0A1F1A;
-  --color-text-secondary: #4A6B5F;
-  --color-border: rgba(7, 94, 70, 0.15);
-  --color-destructive: #D14343;
+  --app-structural: #075E46;
+  --app-surface: #E8FFF2;
+  --app-surface-dark: #D4F2E3; 
+  --app-text-primary: #0A1F1A;
+  --app-text-secondary: #4A6B5F;
+  --app-border: rgba(7, 94, 70, 0.15);
+  --app-canvas-inset: rgba(0, 0, 0, 0.04);
+  --app-destructive: #D14343;
+  --app-border-muted: rgba(7, 94, 70, 0.08);
+}
 
-  /* Aliasing old tokens to new tokens to prevent breaking changes in UI */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --app-surface: #0E1614;
+    --app-surface-dark: #14211D;
+    --app-text-primary: #E8FFF2;
+    --app-text-secondary: #90B6A7;
+    --app-border: rgba(255, 255, 255, 0.1);
+    --app-structural: #1AC294; 
+    --app-canvas-inset: rgba(255, 255, 255, 0.05);
+    --app-border-muted: rgba(255, 255, 255, 0.05);
+  }
+}
+
+.dark {
+  --app-surface: #0E1614;
+  --app-surface-dark: #14211D;
+  --app-text-primary: #E8FFF2;
+  --app-text-secondary: #90B6A7;
+  --app-border: rgba(255, 255, 255, 0.1);
+  --app-structural: #1AC294; 
+  --app-canvas-inset: rgba(255, 255, 255, 0.05);
+  --app-border-muted: rgba(255, 255, 255, 0.05);
+}
+
+@theme inline {
+  --color-structural: var(--app-structural);
+  --color-surface: var(--app-surface);
+  
+  --color-text-primary: var(--app-text-primary);
+  --color-text-secondary: var(--app-text-secondary);
+  --color-border: var(--app-border);
+  --color-destructive: var(--app-destructive);
+
   --color-canvas-default: var(--color-surface);
   --color-canvas-dark: #0E1614; /* Always dark */
-  --color-surface-dark: #D4F2E3; 
+  --color-surface-dark: var(--app-surface-dark); 
   --color-border-dark: rgba(255, 255, 255, 0.1);
   
   --color-text-primary-dark: #E8FFF2;
@@ -39,9 +74,8 @@
 
   --color-signal: var(--color-structural);
   
-  /* Fallbacks & Structural Surfaces */
   --color-canvas-subtle: var(--color-surface-dark);
-  --color-canvas-inset: rgba(0, 0, 0, 0.04); /* Neutral treatment for inputs/dropdowns */
+  --color-canvas-inset: var(--app-canvas-inset); 
   
   --color-surface-container: var(--color-surface-dark);
   --color-surface-container-high: rgba(0, 0, 0, 0.06);
@@ -54,7 +88,7 @@
   --color-fg-subtle: #6D8E81;
   
   --color-border-default: var(--color-border);
-  --color-border-muted: rgba(7, 94, 70, 0.08);
+  --color-border-muted: var(--app-border-muted);
 
   --color-error: var(--color-destructive);
   --color-diff-addition-text: #075E46;
@@ -142,54 +176,6 @@
   --text-code-gutter--font-weight: 400;
 }
 
-/* ═══════════════════════════════════════════
-   DARK MODE SCOPING 
-   ═══════════════════════════════════════════ */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-surface: #0E1614;
-    --color-surface-dark: #14211D;
-    
-    --color-text-primary: #E8FFF2;
-    --color-text-secondary: #90B6A7;
-    --color-border: rgba(255, 255, 255, 0.1);
-    --color-structural: #1AC294; /* Brighter forest code for contrast */
-
-    --color-canvas-default: var(--color-surface);
-    --color-canvas-subtle: var(--color-surface-dark);
-    --color-canvas-inset: rgba(255, 255, 255, 0.05);
-    
-    --color-surface-container: var(--color-surface-dark);
-    --color-surface-container-high: rgba(255, 255, 255, 0.08);
-    --color-surface-container-highest: rgba(255, 255, 255, 0.12);
-    --color-surface-container-low: var(--color-surface);
-    
-    --color-border-default: var(--color-border);
-    --color-border-muted: rgba(255, 255, 255, 0.05);
-  }
-}
-
-.dark {
-  --color-surface: #0E1614;
-  --color-surface-dark: #14211D;
-  
-  --color-text-primary: #E8FFF2;
-  --color-text-secondary: #90B6A7;
-  --color-border: rgba(255, 255, 255, 0.1);
-  --color-structural: #1AC294;
-  
-  --color-canvas-default: var(--color-surface);
-  --color-canvas-subtle: var(--color-surface-dark);
-  --color-canvas-inset: rgba(255, 255, 255, 0.05);
-  
-  --color-surface-container: var(--color-surface-dark);
-  --color-surface-container-high: rgba(255, 255, 255, 0.08);
-  --color-surface-container-highest: rgba(255, 255, 255, 0.12);
-  --color-surface-container-low: var(--color-surface);
-  
-  --color-border-default: var(--color-border);
-  --color-border-muted: rgba(255, 255, 255, 0.05);
-}
 
 /* ═══════════════════════════════════════════
    BASE STYLES 

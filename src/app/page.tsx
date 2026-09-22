@@ -64,8 +64,8 @@ export default function Home() {
             {/* Opaque Mint Fog panel for text to ensure legibility over dark background */}
             <div className="bg-surface p-8 sm:p-12 border border-border shadow-sm max-w-4xl stagger-children">
               
-              <h1 className="font-headline-hero text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.05] tracking-[-0.02em] text-text-primary font-bold">
-                Code review that can't hallucinate syntax.
+              <h1 className="font-headline-hero text-5xl sm:text-6xl lg:text-[72px] leading-[1.05] tracking-[-0.02em] text-text-primary font-bold">
+                Code review that can&apos;t hallucinate syntax.
               </h1>
 
               <p className="font-body-base text-[clamp(1.125rem,2vw,1.25rem)] text-text-secondary max-w-3xl mx-auto mt-6">
