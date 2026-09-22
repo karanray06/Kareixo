@@ -33,7 +33,21 @@ function FadeIn({
   );
 }
 
-
+/* ── Clean Hero Background ── */
+function HeroBackground() {
+  return (
+    <div className="absolute inset-0 z-0 overflow-hidden bg-canvas-dark pointer-events-none">
+      <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+            <circle cx="2" cy="2" r="1.5" fill="#E8FFF2" opacity="0.03" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#dot-grid)" />
+      </svg>
+    </div>
+  );
+}
 
 export default function Home() {
   return (
@@ -45,22 +59,23 @@ export default function Home() {
             HERO SECTION
             ═══════════════════════════════════════════ */}
         <section className="relative min-h-[90vh] flex flex-col items-center justify-center pt-24 pb-16">
+          <HeroBackground />
           <CloudBackground />
           
           <div className="relative z-10 max-w-[1024px] mx-auto w-full px-6 flex flex-col items-center text-center">
             {/* Text floating directly over the cloud background */}
             <div className="p-8 sm:p-12 max-w-4xl stagger-children flex flex-col items-center">
               
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/40 backdrop-blur-sm text-[#075E46] border border-[#075E46]/20 text-sm font-medium mb-6 shadow-sm">
-                <Star size={14} className="fill-[#075E46]" />
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 backdrop-blur-sm text-structural border border-structural/20 text-sm font-medium mb-6 shadow-sm">
+                <Star size={14} className="fill-structural" />
                 <span>Now analyzing 10,000+ PRs weekly</span>
               </div>
 
-              <h1 className="font-headline-hero text-5xl sm:text-6xl lg:text-[72px] leading-[1.05] tracking-[-0.02em] text-[#0A1F1A] font-bold">
+              <h1 className="font-headline-hero text-5xl sm:text-6xl lg:text-[72px] leading-[1.05] tracking-[-0.02em] text-text-primary-dark font-bold">
                 Code review that can&apos;t hallucinate syntax.
               </h1>
 
-              <p className="font-body-base text-[clamp(1.125rem,2vw,1.25rem)] text-[#4A6B5F] max-w-3xl mx-auto mt-6">
+              <p className="font-body-base text-[clamp(1.125rem,2vw,1.25rem)] text-text-secondary-dark max-w-3xl mx-auto mt-6">
                 Kareixo reviews every pull request, patches bugs it's certain about, and heals failing tests — every patch is generated inside your code's actual syntax tree and re-validated before it ships.
               </p>
 
@@ -73,7 +88,7 @@ export default function Home() {
                 </a>
                 <Link
                   href="#features"
-                  className="font-body-base text-[#4A6B5F] hover:text-[#0A1F1A] underline underline-offset-4 decoration-black/10 hover:decoration-black/30 transition-colors py-4 px-6"
+                  className="font-body-base text-text-secondary-dark hover:text-text-primary-dark underline underline-offset-4 decoration-border hover:decoration-text-primary transition-colors py-4 px-6"
                 >
                   See how it works
                 </Link>

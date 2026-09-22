@@ -208,7 +208,11 @@ export function CloudBackground() {
     <canvas
       ref={canvasRef}
       className="absolute inset-0 z-0 w-full h-full pointer-events-none"
-      style={{ imageRendering: "pixelated" }}
+      style={{ 
+        imageRendering: "pixelated",
+        maskImage: "radial-gradient(ellipse at center, transparent 40%, black 100%)",
+        WebkitMaskImage: "radial-gradient(ellipse at center, transparent 40%, black 100%)"
+      }}
     />
   );
 }
