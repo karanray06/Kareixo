@@ -222,7 +222,7 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
             type="button"
           >
             <Search size={18} />
-            <span className="hidden lg:inline font-body-sm text-body-sm text-fg-muted">
+            <span className="hidden 2xl:inline font-body-sm text-body-sm text-fg-muted">
               Type{" "}
               <kbd className="px-1.5 py-0.5 font-badge-mono text-badge-mono text-fg-muted border border-border-dark">
                 Cmd+K
@@ -244,7 +244,7 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
             ) : (
               <RefreshCw size={16} className={syncing ? "animate-spin" : ""} />
             )}
-            <span className="hidden xl:inline">
+            <span className="hidden 2xl:inline">
               {syncing
                 ? "Syncing..."
                 : syncStatus === "success"
