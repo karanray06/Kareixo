@@ -58,20 +58,22 @@ export default function Home() {
         {/* ═══════════════════════════════════════════
             HERO SECTION
             ═══════════════════════════════════════════ */}
-        <section className="relative min-h-[90vh] flex flex-col items-center justify-center pt-24 pb-16">
+        <section className="relative min-h-[90vh] flex flex-col items-center justify-center pt-24 pb-16 overflow-hidden">
           <HeroBackground />
           <CloudBackground />
           
+          {/* Massive Faded Background Text */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 opacity-5 select-none overflow-hidden">
+            <span className="font-headline-hero text-[18vw] font-bold text-text-primary-dark whitespace-nowrap tracking-tighter">
+              KAREIXO
+            </span>
+          </div>
+
           <div className="relative z-10 max-w-[1024px] mx-auto w-full px-6 flex flex-col items-center text-center">
             {/* Text floating directly over the cloud background */}
-            <div className="p-8 sm:p-12 max-w-4xl stagger-children flex flex-col items-center">
+            <div className="relative z-10 p-8 sm:p-12 max-w-4xl stagger-children flex flex-col items-center">
               
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 backdrop-blur-sm text-structural border border-structural/20 text-sm font-medium mb-6 shadow-sm">
-                <Star size={14} className="fill-structural" />
-                <span>Now analyzing 10,000+ PRs weekly</span>
-              </div>
-
-              <h1 className="font-headline-hero text-5xl sm:text-6xl lg:text-[72px] leading-[1.05] tracking-[-0.02em] text-text-primary-dark font-bold">
+              <h1 className="font-headline-hero text-5xl sm:text-6xl lg:text-[72px] leading-[1.05] tracking-[-0.02em] text-text-primary-dark font-bold relative z-10">
                 Code review that can&apos;t hallucinate syntax.
               </h1>
 

@@ -20,17 +20,6 @@ out vec4 outColor;
 const vec3 color1 = vec3(0.784, 0.953, 1.0); // #C8F3FF Ice Cream Blue
 const vec3 color2 = vec3(1.0, 0.973, 0.875); // #FFF8DF Vanilla Cloud
 
-int dither[64] = int[](
-  0, 32, 8, 40, 2, 34, 10, 42,
-  48, 16, 56, 24, 50, 18, 58, 26,
-  12, 44, 4, 36, 14, 46, 6, 38,
-  60, 28, 52, 20, 62, 30, 54, 22,
-  3, 35, 11, 43, 1, 33, 9, 41,
-  51, 19, 59, 27, 49, 17, 57, 25,
-  15, 47, 7, 39, 13, 45, 5, 37,
-  63, 31, 55, 23, 61, 29, 53, 21
-);
-
 float random(vec2 st) {
     return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
 }
@@ -51,11 +40,12 @@ float noise(vec2 st) {
             (d - b) * u.x * u.y;
 }
 
-#define OCTAVES 5
+#define OCTAVES 6
 float fbm(vec2 st) {
     float value = 0.0;
     float amplitude = 0.5;
     vec2 shift = vec2(100.0);
+    // Rotate to reduce axial bias
     mat2 rot = mat2(cos(0.5), sin(0.5), -sin(0.5), cos(0.5));
     for (int i = 0; i < OCTAVES; ++i) {
         value += amplitude * noise(st);
@@ -66,39 +56,35 @@ float fbm(vec2 st) {
 }
 
 void main() {
-    float pixelSize = 4.0;
-    vec2 fragCoord = floor(gl_FragCoord.xy / pixelSize) * pixelSize;
-    vec2 st = fragCoord / u_resolution.xy;
+    vec2 st = gl_FragCoord.xy / u_resolution.xy;
     st.x *= u_resolution.x / u_resolution.y;
-    st *= 3.0; // Zoom out a bit
+    
+    // Scale for wispy look
+    st *= 2.0;
 
     vec2 q = vec2(0.0);
-    q.x = fbm(st + 0.01 * u_time);
+    q.x = fbm(st + 0.02 * u_time);
     q.y = fbm(st + vec2(1.0));
 
     vec2 r = vec2(0.0);
-    r.x = fbm(st + 1.0 * q + vec2(1.7, 9.2) + 0.15 * u_time);
-    r.y = fbm(st + 1.0 * q + vec2(8.3, 2.8) + 0.126 * u_time);
+    r.x = fbm(st + 1.0 * q + vec2(1.7, 9.2) + 0.05 * u_time);
+    r.y = fbm(st + 1.0 * q + vec2(8.3, 2.8) + 0.05 * u_time);
 
     float f = fbm(st + r);
 
-    int x = int(mod(fragCoord.x / pixelSize, 8.0));
-    int y = int(mod(fragCoord.y / pixelSize, 8.0));
-    float ditherValue = float(dither[y * 8 + x]) / 64.0;
-
-    // Smoothstep to increase contrast
-    float mixValue = smoothstep(0.1, 0.9, f);
+    // Map f to a smooth mix value and alpha
+    // f tends to be between 0.0 and 1.0
+    float mixValue = smoothstep(0.2, 0.8, f);
     
-    // Add dither noise
-    float finalValue = mixValue + (ditherValue - 0.5) * 0.4;
+    // Blend the two colors
+    vec3 col = mix(color1, color2, mixValue);
     
-    // Threshold to force strict 2-color palette
-    if (finalValue > 0.5) {
-        outColor = vec4(color1, 1.0);
-    } else {
-        outColor = vec4(color2, 1.0);
-    }
-}
+    // Create soft, smokey alpha transitions
+    float alpha = smoothstep(0.3, 0.9, f);
+    
+    // Soften the smoke intensity a bit (max 60% opacity)
+    outColor = vec4(col, alpha * 0.6);
+};
 `;
 
 function createShader(gl: WebGL2RenderingContext, type: number, source: string) {
