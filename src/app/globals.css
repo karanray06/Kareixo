@@ -19,54 +19,57 @@
 }
 
 @theme inline {
-  /* ═══ COLORS: HIG Strict System ═══ */
-  --color-canvas: #FFFFFF;
-  --color-canvas-dark: #0A0A0B;
-  --color-surface: #F5F5F7;
-  --color-surface-dark: #151517;
-  --color-border-light: #E5E5EA;
-  --color-border-dark: #26262B;
+  /* ═══ COLORS: Forest Code & Mint Fog (Light Default) ═══ */
+  --color-structural: #075E46;
+  --color-surface: #E8FFF2;
+  --color-ambient: #C8F3FF;
   
-  --color-text-primary-light: #1D1D1F;
-  --color-text-primary-dark: #F5F5F7;
-  --color-text-secondary-light: #6E6E73;
-  --color-text-secondary-dark: #A1A1A6;
+  --color-text-primary: #0A1F1A;
+  --color-text-secondary: #4A6B5F;
+  --color-border: #C9E8DA;
+  --color-destructive: #D14343;
 
-  --color-structural: #1C2459;
-  --color-signal: #F5FF67;
+  /* Aliasing old tokens to new tokens to prevent breaking changes in UI */
+  --color-canvas-default: var(--color-surface);
+  --color-canvas-dark: var(--color-surface);
+  --color-surface-dark: #D4F2E3; /* Slightly darker mint for panels */
+  --color-border-dark: var(--color-border);
   
-  /* Fallbacks for existing Tailwind utilities referencing these, mapping them to HIG defaults where possible */
-  --color-canvas-default: var(--color-canvas-dark);
+  --color-text-primary-dark: var(--color-text-primary);
+  --color-text-secondary-dark: var(--color-text-secondary);
+
+  --color-signal: var(--color-structural);
+  
+  /* Fallbacks */
   --color-canvas-subtle: var(--color-surface-dark);
-  --color-canvas-inset: #000000;
+  --color-canvas-inset: #C4ECD7;
   
   --color-surface-container: var(--color-surface-dark);
-  --color-surface-container-high: #1E1E21;
-  --color-surface-container-highest: #26262B;
-  --color-surface-container-lowest: #050505;
-  --color-surface-container-low: #0F0F11;
+  --color-surface-container-high: #BDE4D0;
+  --color-surface-container-highest: #A8CFBA;
+  --color-surface-container-lowest: var(--color-surface);
+  --color-surface-container-low: var(--color-surface-dark);
 
-  --color-fg-default: var(--color-text-primary-dark);
-  --color-fg-muted: var(--color-text-secondary-dark);
-  --color-fg-subtle: #48484A;
+  --color-fg-default: var(--color-text-primary);
+  --color-fg-muted: var(--color-text-secondary);
+  --color-fg-subtle: #6D8E81;
   
-  --color-border-default: var(--color-border-dark);
-  --color-border-muted: #1C1C1E;
+  --color-border-default: var(--color-border);
+  --color-border-muted: #B4DFCB;
 
-  --color-error: #FF453A; /* HIG Red for destructive actions */
-  --color-diff-addition-text: #32D74B;
-  --color-diff-addition-line: rgba(50, 215, 75, 0.1);
-  --color-diff-deletion-text: #FF453A;
-  --color-diff-deletion-line: rgba(255, 69, 58, 0.1);
+  --color-error: var(--color-destructive);
+  --color-diff-addition-text: #075E46;
+  --color-diff-addition-line: rgba(7, 94, 70, 0.1);
+  --color-diff-deletion-text: #D14343;
+  --color-diff-deletion-line: rgba(209, 67, 67, 0.1);
 
-  /* Mapping old accents to Structural/Signal or neutral to avoid build errors temporarily */
   --color-accent-blue: var(--color-structural);
   --color-accent-purple: var(--color-structural);
   --color-accent-purple-light: var(--color-structural);
-  --color-accent-green-emphasis: var(--color-signal);
-  --color-accent-green-hover: #E3F13D;
-  --color-accent-amber: #FF9F0A;
-  --color-accent-red: #FF453A;
+  --color-accent-green-emphasis: var(--color-structural);
+  --color-accent-green-hover: #054836;
+  --color-accent-amber: #F0A000;
+  --color-accent-red: var(--color-destructive);
 
   /* ═══ SPACING (8px base) ═══ */
   --spacing-space-xs: 0.5rem;   /* 8px */
@@ -77,12 +80,12 @@
   --spacing-gutter: 1.5rem;     /* 24px */
 
   /* ═══ BORDER RADIUS ═══ */
-  --radius: 0px;          /* Inputs, dividers at rest */
+  --radius: 0px;
   --radius-lg: 0px;
-  --radius-xl: 12px;      /* Cards */
+  --radius-xl: 12px;
   --radius-2xl: 12px;
   --radius-3xl: 12px;
-  --radius-full: 9999px;  /* Pills, buttons only */
+  --radius-full: 9999px;
 
   /* ═══ FONT FAMILIES ═══ */
   --font-apple: -apple-system, "SF Pro Display", "SF Pro Text", "Inter", sans-serif;
@@ -92,6 +95,7 @@
   --font-title-card: var(--font-apple);
   --font-title-card-sm: var(--font-apple);
   --font-label-ui: var(--font-apple);
+  --font-display: var(--font-apple);
   
   --font-code-diff: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
   --font-code-gutter: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
@@ -140,6 +144,31 @@
 }
 
 /* ═══════════════════════════════════════════
+   DARK MODE SCOPING 
+   ═══════════════════════════════════════════ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-surface: #0E1614;
+    --color-surface-dark: #14211D;
+    
+    --color-text-primary: #E8FFF2;
+    --color-text-secondary: #90B6A7;
+    --color-border: #1C332A;
+    --color-structural: #1AC294; /* Brighter forest code for contrast */
+  }
+}
+
+.dark {
+  --color-surface: #0E1614;
+  --color-surface-dark: #14211D;
+  
+  --color-text-primary: #E8FFF2;
+  --color-text-secondary: #90B6A7;
+  --color-border: #1C332A;
+  --color-structural: #1AC294;
+}
+
+/* ═══════════════════════════════════════════
    BASE STYLES 
    ═══════════════════════════════════════════ */
 
@@ -149,8 +178,8 @@
 
 html {
   scroll-behavior: smooth;
-  background-color: var(--color-canvas-dark);
-  color: var(--color-text-primary-dark);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
 }
 
 body {
@@ -159,13 +188,13 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
-  background-color: var(--color-canvas-dark);
-  color: var(--color-text-primary-dark);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-apple);
-  color: var(--color-text-primary-dark);
+  color: var(--color-text-primary);
   letter-spacing: -0.02em;
 }
 
@@ -185,14 +214,14 @@ a:hover {
 
 ::selection {
   background: var(--color-structural);
-  color: var(--color-text-primary-dark);
+  color: var(--color-surface);
 }
 
 /* ── Scrollbar Styling ── */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--color-border-dark); border-radius: 9999px; }
-::-webkit-scrollbar-thumb:hover { background: var(--color-text-secondary-dark); }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-text-secondary); }
 
 /* ═══════════════════════════════════════════
    UTILITY CLASSES
@@ -216,13 +245,13 @@ a:hover {
 }
 
 .btn:focus-visible {
-  outline: 2px solid var(--color-signal);
+  outline: 2px solid var(--color-structural);
   outline-offset: 2px;
 }
 
 .btn-primary, .btn-signal {
-  background: var(--color-signal);
-  color: #000000;
+  background: var(--color-structural);
+  color: var(--color-surface);
 }
 .btn-primary:hover, .btn-signal:hover {
   opacity: 0.9;
@@ -230,21 +259,22 @@ a:hover {
 
 .btn-secondary {
   background: var(--color-surface-dark);
-  color: var(--color-text-primary-dark);
-  border-color: var(--color-border-dark);
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
 }
 .btn-secondary:hover {
   background: var(--color-structural);
+  color: var(--color-surface);
 }
 
 .btn-ghost {
   background: transparent;
-  color: var(--color-text-secondary-dark);
-  border: 1px solid var(--color-border-dark);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
 }
 .btn-ghost:hover {
   background: var(--color-surface-dark);
-  color: var(--color-text-primary-dark);
+  color: var(--color-text-primary);
 }
 
 .badge {
@@ -256,14 +286,14 @@ a:hover {
   font-family: var(--font-apple);
   font-size: 13px;
   font-weight: 500;
-  border: 1px solid var(--color-border-dark);
+  border: 1px solid var(--color-border);
   background: var(--color-surface-dark);
-  color: var(--color-text-secondary-dark);
+  color: var(--color-text-secondary);
 }
 
 .card {
   background: var(--color-surface-dark);
-  border: 1px solid var(--color-border-dark);
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 24px;
 }
@@ -272,17 +302,17 @@ a:hover {
   width: 100%;
   padding: 10px 16px;
   border-radius: 0px;
-  border: 1px solid var(--color-border-dark);
+  border: 1px solid var(--color-border);
   background: transparent;
-  color: var(--color-text-primary-dark);
+  color: var(--color-text-primary);
   font-family: var(--font-apple);
   font-size: 17px;
   transition: all 150ms ease;
 }
-.input::placeholder { color: var(--color-text-secondary-dark); }
+.input::placeholder { color: var(--color-text-secondary); }
 .input:focus {
   outline: none;
-  border-color: var(--color-signal);
+  border-color: var(--color-structural);
 }
 
 .section {
@@ -313,8 +343,8 @@ a:hover {
 
 /* Flat un-glowing terminal window for code demos only */
 .terminal-window {
-  background: #000000;
-  border: 1px solid var(--color-border-dark);
+  background: var(--color-text-primary);
+  border: 1px solid var(--color-border);
   border-radius: 0px;
   overflow: hidden;
 }
@@ -323,8 +353,8 @@ a:hover {
   align-items: center;
   gap: 8px;
   padding: 12px 16px;
-  background: var(--color-surface-dark);
-  border-bottom: 1px solid var(--color-border-dark);
+  background: var(--color-border);
+  border-bottom: 1px solid var(--color-border);
 }
 .terminal-dot {
   width: 12px;

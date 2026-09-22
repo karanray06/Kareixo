@@ -219,3 +219,13 @@ vercel --prod
 ## License
 
 MIT
+
+---
+
+## Design System
+
+Kareixo uses a strict Apple HIG-inspired design system with a retro-OS twist:
+- **Forest Code (#075E46) & Mint Fog (#E8FFF2)**: The dominant flat color scheme.
+- **Dithered Cloud Ambient Texture**: An Ice Cream Blue (#C8F3FF) retro ordered-dither pattern used exclusively on the hero landing page.
+- **Typography**: Strictly -apple-system, "SF Pro Display", "SF Pro Text", "Inter", sans-serif without gradient text.
+- **Glassmorphism**: Completely banned in favor of flat, opaque surfaces for clarity and depth.

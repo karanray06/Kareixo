@@ -16,10 +16,13 @@ interface DashboardHeaderProps {
   repos?: { fullName: string; defaultBranch?: string }[];
 }
 
-const NAV_LINKS = [
+const PRIMARY_LINKS = [
   { label: "Dashboard", path: "/dashboard" },
   { label: "Repositories", path: "/dashboard/repositories" },
   { label: "Live Review", path: "/dashboard/live-review" },
+];
+
+const SECONDARY_LINKS = [
   { label: "Heatmap", path: "/dashboard/heatmap" },
   { label: "CodeChat", path: "/codechat" },
   { label: "Incident Tracer", path: "/incident" },
@@ -31,6 +34,7 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
   const [showNotifications, setShowNotifications] = useState(false);
   const [showRepoSwitcher, setShowRepoSwitcher] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState<"idle" | "success" | "error">("idle");
 
@@ -143,7 +147,7 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
 
         {/* Center: Nav */}
         <nav className="hidden lg:flex items-center gap-space-xs">
-          {NAV_LINKS.map((link) => (
+          {PRIMARY_LINKS.map((link) => (
             <Link
               key={link.path}
               href={link.path}
@@ -158,6 +162,56 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
               {link.label}
             </Link>
           ))}
+
+          {/* Secondary links (inline on xl+) */}
+          <div className="hidden xl:flex items-center gap-space-xs">
+            {SECONDARY_LINKS.map((link) => (
+              <Link
+                key={link.path}
+                href={link.path}
+                aria-current={isActive(link.path) ? "page" : undefined}
+                data-path={link.path}
+                className={
+                  isActive(link.path)
+                    ? "relative px-3 py-1.5 text-fg-default font-semibold transition-colors after:absolute after:bottom-0 after:left-3 after:right-3 after:h-[2px] after:bg-signal after:rounded-full"
+                    : "px-3 py-1.5 text-fg-muted hover:text-fg-default transition-colors font-label-ui text-label-ui"
+                }
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* More dropdown (visible on lg, hidden on xl+) */}
+          <div className="relative flex xl:hidden">
+            <button
+              onClick={() => setShowMoreMenu(!showMoreMenu)}
+              className={`px-3 py-1.5 transition-colors font-label-ui text-label-ui flex items-center gap-1 ${
+                SECONDARY_LINKS.some(link => isActive(link.path)) 
+                  ? "text-fg-default font-semibold" 
+                  : "text-fg-muted hover:text-fg-default"
+              }`}
+            >
+              More
+              <ChevronDown size={14} className="opacity-70" />
+            </button>
+            {showMoreMenu && (
+              <div className="absolute top-full left-0 mt-2 w-48 bg-canvas-dark rounded-xl border border-border-default shadow-xl py-2 z-50">
+                {SECONDARY_LINKS.map((link) => (
+                  <Link
+                    key={link.path}
+                    href={link.path}
+                    onClick={() => setShowMoreMenu(false)}
+                    className={`block px-4 py-2 font-label-ui text-label-ui hover:bg-surface-container transition-colors ${
+                      isActive(link.path) ? "text-signal font-semibold" : "text-fg-default"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </nav>
 
         {/* Right: Actions */}

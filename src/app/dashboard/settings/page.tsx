@@ -143,7 +143,7 @@ export default function SettingsPage() {
                   Free
                 </span>
                 <p className="font-badge-mono text-[11px] text-fg-muted mt-1">
-                  Unlimited public &amp; private PR reviews
+                  50 reviews/month free, unlimited on Pro
                 </p>
               </div>
             </div>
