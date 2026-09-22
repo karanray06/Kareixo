@@ -37,7 +37,7 @@ export default function Navbar() {
         transition={{ duration: 0.5, ease: "easeOut" }}
         className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
           scrolled
-            ? "glass-nav shadow-lg py-3"
+            ? "bg-canvas-dark border-b border-border-dark py-3"
             : "bg-transparent py-5 border-b border-transparent"
         }`}
       >
@@ -67,7 +67,7 @@ export default function Navbar() {
                 className="relative px-3.5 py-2 text-sm font-medium text-fg-muted hover:text-fg-default transition-colors duration-200 rounded-lg group"
               >
                 {link.label}
-                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-accent-green-emphasis rounded-full transition-all duration-300 group-hover:w-[60%]" />
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-signal rounded-full transition-all duration-300 group-hover:w-[60%]" />
               </Link>
             ))}
             <a
@@ -78,7 +78,7 @@ export default function Navbar() {
             >
               <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
               GitHub
-              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-accent-green-emphasis rounded-full transition-all duration-300 group-hover:w-[60%]" />
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-signal rounded-full transition-all duration-300 group-hover:w-[60%]" />
             </a>
           </div>
 
@@ -92,7 +92,7 @@ export default function Navbar() {
             </Link>
             <a
               href="https://github.com/apps/kareixo-reviewer/installations/new"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-green-emphasis hover:bg-accent-green-hover text-white text-sm font-semibold transition-all duration-200 hover:shadow-[0_0_20px_rgba(35,134,54,0.4)]"
+              className="btn btn-signal inline-flex items-center gap-2 px-4 py-2"
             >
               <Plus size={16} />
               Get Started
@@ -179,7 +179,7 @@ export default function Navbar() {
             <div className="mt-auto flex flex-col gap-3">
               <a
                 href="https://github.com/apps/kareixo-reviewer/installations/new"
-                className="btn btn-primary w-full text-center justify-center py-3 text-base rounded-xl"
+                className="btn btn-signal w-full text-center justify-center py-3 text-base"
               >
                 <Plus size={18} />
                 Install on GitHub
@@ -188,7 +188,7 @@ export default function Navbar() {
                 href="https://github.com/karanray06/Kareixo"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-secondary w-full text-center justify-center py-3 text-base rounded-xl"
+                className="btn btn-secondary w-full text-center justify-center py-3 text-base"
               >
                 <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
                 View on GitHub

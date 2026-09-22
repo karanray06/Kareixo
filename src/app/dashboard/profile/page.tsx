@@ -22,7 +22,7 @@ export default function ProfilePage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-space-6">
           {/* Main Content */}
           <div className="lg:col-span-2 flex flex-col gap-space-6">
-            <div className="glass-card p-6 flex flex-col gap-6">
+            <div className="card p-6 flex flex-col gap-6">
               <div className="flex items-center gap-6">
                 {session?.user?.image ? (
                   <img

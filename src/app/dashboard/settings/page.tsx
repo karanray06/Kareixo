@@ -23,7 +23,7 @@ export default function SettingsPage() {
           {/* Main Content */}
           <div className="lg:col-span-2 flex flex-col gap-space-6">
             {/* Account */}
-            <div className="glass-card p-6 flex flex-col gap-4">
+            <div className="card p-6 flex flex-col gap-4">
               <div className="flex items-center gap-2 pb-3 border-b border-border-default">
                 <User size={18} className="text-fg-subtle" />
                 <h2 className="font-title-card-sm text-title-card-sm text-fg-default font-semibold">

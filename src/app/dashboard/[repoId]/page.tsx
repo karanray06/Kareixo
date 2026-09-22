@@ -108,7 +108,7 @@ export default function RepositoryDetails({ params }: { params: Promise<{ repoId
     <div className="flex flex-col w-full">
       <div className="w-full px-gutter py-space-md flex flex-col gap-space-lg max-w-[1720px] mx-auto">
         {/* Repository Header */}
-        <div className="flex flex-col gap-space-sm glass-card p-6">
+        <div className="flex flex-col gap-space-sm card p-6">
           <div className="flex flex-wrap items-center justify-between gap-space-md">
             <div className="flex items-center gap-space-sm flex-wrap">
               <GitBranch className="text-accent-blue" size={24} />

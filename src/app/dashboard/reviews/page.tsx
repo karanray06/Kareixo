@@ -140,7 +140,7 @@ export default function ReviewsPage() {
             {[...Array(5)].map((_, i) => (
               <div
                 key={i}
-                className="glass-card p-4 flex flex-col gap-3 animate-pulse"
+                className="card p-4 flex flex-col gap-3 animate-pulse"
               >
                 <div className="flex items-center gap-2">
                   <div className="h-4 w-20 bg-surface-container rounded"></div>

@@ -129,7 +129,7 @@ export default function IncidentClient({ repos }: { repos: RepoInfo[] }) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-space-lg">
           {/* Left: Stack Trace Input */}
           <div className="flex flex-col gap-space-md">
-            <div className="glass-card p-6 flex flex-col gap-space-md">
+            <div className="card p-6 flex flex-col gap-space-md">
               <div className="flex items-center gap-space-sm">
                 <div className="w-10 h-10 rounded-lg bg-surface-container-high border border-border-default flex items-center justify-center text-accent-red shadow-sm">
                   <Bug size={24} />

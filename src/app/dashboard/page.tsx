@@ -48,7 +48,7 @@ function timeAgo(dateStr: string): string {
 
 function SkeletonCard() {
   return (
-    <div className="glass-card p-6 flex flex-col justify-between animate-pulse">
+    <div className="card p-6 flex flex-col justify-between animate-pulse">
       <div className="flex items-center justify-between">
         <div className="h-3 w-24 bg-surface-container rounded" />
         <div className="h-5 w-5 bg-surface-container rounded" />
@@ -144,7 +144,7 @@ export default function DashboardOverview() {
           ) : (
             <>
               {/* Card 1: PRs Analyzed */}
-              <div className="glass-card p-6 flex flex-col gap-2">
+              <div className="card p-6 flex flex-col gap-2">
                 <span className="font-label-ui text-label-ui text-fg-muted uppercase tracking-wider">
                   PRs Analyzed
                 </span>
@@ -160,21 +160,27 @@ export default function DashboardOverview() {
                   )}
                 </div>
                 <div className="flex items-center justify-between text-fg-muted font-body-sm text-body-sm mt-2">
-                  <span>Pass rate</span>
-                  <span className="font-badge-mono text-badge-mono text-fg-default font-medium">
-                    {passRate}%
-                  </span>
+                  {totalReviews === 0 ? (
+                    <span>No PRs analyzed yet — open one to see results here</span>
+                  ) : (
+                    <>
+                      <span>Pass rate</span>
+                      <span className="font-badge-mono text-badge-mono text-fg-default font-medium">
+                        {passRate}%
+                      </span>
+                    </>
+                  )}
                 </div>
-                <div className="w-full bg-surface-container-highest h-1 rounded-full mt-2 overflow-hidden">
+                <div className="w-full bg-surface-container-highest h-[1px] rounded-full mt-2 overflow-hidden">
                   <div
-                    className="bg-accent-purple h-full rounded-full transition-all duration-500"
+                    className="bg-fg-default h-full rounded-full transition-all duration-500"
                     style={{ width: `${passRate}%` }}
                   />
                 </div>
               </div>
 
               {/* Card 2: Passed Clean */}
-              <div className="glass-card p-6 flex flex-col gap-2">
+              <div className="card p-6 flex flex-col gap-2">
                 <span className="font-label-ui text-label-ui text-fg-muted uppercase tracking-wider">
                   Passed Clean
                 </span>
@@ -184,21 +190,27 @@ export default function DashboardOverview() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-fg-muted font-body-sm text-body-sm mt-2">
-                  <span>Zero findings</span>
-                  <span className="font-badge-mono text-badge-mono text-fg-default">
-                    of {totalReviews} total
-                  </span>
+                  {totalReviews === 0 ? (
+                    <span>No data available yet</span>
+                  ) : (
+                    <>
+                      <span>Zero findings</span>
+                      <span className="font-badge-mono text-badge-mono text-fg-default">
+                        of {totalReviews} total
+                      </span>
+                    </>
+                  )}
                 </div>
-                <div className="w-full bg-surface-container-highest h-1 rounded-full mt-2 overflow-hidden">
+                <div className="w-full bg-surface-container-highest h-[1px] rounded-full mt-2 overflow-hidden">
                   <div
-                    className="bg-accent-green-emphasis h-full rounded-full transition-all duration-500"
+                    className="bg-fg-default h-full rounded-full transition-all duration-500"
                     style={{ width: `${passRate}%` }}
                   />
                 </div>
               </div>
 
               {/* Card 3: Active Findings */}
-              <div className="glass-card p-6 flex flex-col gap-2">
+              <div className="card p-6 flex flex-col gap-2">
                 <span className="font-label-ui text-label-ui text-fg-muted uppercase tracking-wider">
                   Active Findings
                 </span>
@@ -213,11 +225,15 @@ export default function DashboardOverview() {
                   )}
                 </div>
                 <div className="flex items-center justify-between text-fg-muted font-body-sm text-body-sm mt-2">
-                  <span>Across all repos</span>
+                  {totalReviews === 0 ? (
+                    <span>No active findings</span>
+                  ) : (
+                    <span>Across all repos</span>
+                  )}
                 </div>
-                <div className="w-full bg-surface-container-highest h-1 rounded-full mt-2 overflow-hidden">
+                <div className="w-full bg-surface-container-highest h-[1px] rounded-full mt-2 overflow-hidden">
                   <div
-                    className="bg-accent-amber h-full rounded-full transition-all duration-500"
+                    className="bg-fg-default h-full rounded-full transition-all duration-500"
                     style={{
                       width: `${totalReviews > 0 ? Math.min(100, Math.round((activeFindings / totalReviews) * 100)) : 0}%`,
                     }}
@@ -226,7 +242,7 @@ export default function DashboardOverview() {
               </div>
 
               {/* Card 4: Repositories */}
-              <div className="glass-card p-6 flex flex-col gap-2">
+              <div className="card p-6 flex flex-col gap-2">
                 <span className="font-label-ui text-label-ui text-fg-muted uppercase tracking-wider">
                   Repositories
                 </span>
@@ -244,8 +260,8 @@ export default function DashboardOverview() {
                     webhook active
                   </span>
                 </div>
-                <div className="w-full bg-surface-container-highest h-1 rounded-full mt-2 overflow-hidden">
-                  <div className="bg-accent-blue h-full rounded-full" style={{ width: "100%" }} />
+                <div className="w-full bg-surface-container-highest h-[1px] rounded-full mt-2 overflow-hidden">
+                  <div className="bg-fg-default h-full rounded-full" style={{ width: "100%" }} />
                 </div>
               </div>
             </>
@@ -253,7 +269,7 @@ export default function DashboardOverview() {
         </section>
 
         {/* Ground Truth System Banner */}
-        <section className="glass-card p-space-md flex flex-col lg:flex-row items-start lg:items-center justify-between gap-space-md relative overflow-hidden">
+        <section className="card p-space-md flex flex-col lg:flex-row items-start lg:items-center justify-between gap-space-md relative overflow-hidden">
           <div className="flex items-start gap-space-md z-10">
             <div className="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center flex-shrink-0 text-accent-blue shadow-inner">
               <ShieldCheck size={24} />
@@ -291,17 +307,17 @@ export default function DashboardOverview() {
 
         {/* Developer Tools / Quick Actions Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-space-4">
-          <div className="glass-card p-6 flex flex-col gap-4">
+          <div className="card p-6 flex flex-col gap-4">
             <h2 className="font-title-card text-title-card text-fg-default font-semibold mb-2">
               Developer Tools
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Link
                 href="/codechat"
-                className="flex items-start gap-3 p-4 rounded-xl bg-surface-container hover:bg-surface-container-high transition-all group"
+                className="flex items-start gap-3 p-4 rounded-xl border border-border-default hover:bg-surface-container-low transition-colors"
               >
-                <div className="w-10 h-10 rounded-lg bg-accent-purple/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                  <TerminalSquare size={20} className="text-accent-purple" />
+                <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center shrink-0">
+                  <TerminalSquare size={20} className="text-fg-default" />
                 </div>
                 <div>
                   <h3 className="font-label-ui text-label-ui text-fg-default font-medium">
@@ -315,10 +331,10 @@ export default function DashboardOverview() {
 
               <Link
                 href="/incident"
-                className="flex items-start gap-3 p-4 rounded-xl bg-surface-container hover:bg-surface-container-high transition-all group"
+                className="flex items-start gap-3 p-4 rounded-xl border border-border-default hover:bg-surface-container-low transition-colors"
               >
-                <div className="w-10 h-10 rounded-lg bg-accent-red/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                  <Activity size={20} className="text-accent-red" />
+                <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center shrink-0">
+                  <Activity size={20} className="text-fg-default" />
                 </div>
                 <div>
                   <h3 className="font-label-ui text-label-ui text-fg-default font-medium">
@@ -338,7 +354,7 @@ export default function DashboardOverview() {
           {/* Left: Repositories */}
           <div className="lg:col-span-8 flex flex-col gap-space-lg min-w-0">
             {/* Connected Repositories */}
-            <div className="glass-card rounded-lg shadow-sm flex flex-col overflow-hidden">
+            <div className="card rounded-lg shadow-sm flex flex-col overflow-hidden">
               <div className="p-space-md flex items-center justify-between bg-surface-container">
                 <div className="flex items-center gap-space-sm">
                   <ShieldCheck className="text-fg-muted" size={20} />
@@ -420,7 +436,7 @@ export default function DashboardOverview() {
 
           {/* Right: Verification Feed */}
           <div className="lg:col-span-4 flex flex-col gap-space-lg min-w-0">
-            <div className="glass-card rounded-lg shadow-sm flex flex-col overflow-hidden">
+            <div className="card rounded-lg shadow-sm flex flex-col overflow-hidden">
               <div className="p-space-md bg-surface-container flex flex-col gap-space-sm">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-space-xs">

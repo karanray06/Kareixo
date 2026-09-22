@@ -63,7 +63,7 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-canvas-subtle/95 backdrop-blur-md">
+    <header className="fixed top-0 left-0 w-full z-50 bg-canvas-dark border-b border-border-dark">
       <div className="h-16 w-full px-gutter flex items-center justify-between gap-space-md">
         {/* Left: Logo + Repo Switcher */}
         <div className="flex items-center gap-space-md min-w-0 flex-shrink-0">
@@ -79,7 +79,7 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
             <span className="font-title-card text-title-card text-fg-default tracking-tight hidden sm:inline-block">
               Kareixo
             </span>
-            <span className="font-badge-mono text-badge-mono px-space-xs py-0.5 rounded bg-surface-container text-fg-muted">
+            <span className="font-badge-mono text-badge-mono px-space-xs py-0.5 bg-transparent text-fg-muted">
               v2.4
             </span>
           </Link>
@@ -134,8 +134,8 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
 
           {/* GitHub App Status */}
           <div className="hidden xl:flex items-center gap-space-sm pl-space-xs">
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-diff-addition-line text-diff-addition-text font-badge-mono text-badge-mono">
-              <span className="w-2 h-2 rounded-full bg-accent-green-emphasis animate-pulse" />
+            <div className="flex items-center gap-1.5 px-2.5 py-1 text-fg-muted font-badge-mono text-badge-mono">
+              <span className="w-2 h-2 rounded-full bg-signal" />
               GitHub App: Active
             </div>
           </div>
@@ -151,8 +151,8 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
               data-path={link.path}
               className={
                 isActive(link.path)
-                  ? "px-3 py-1.5 transition-colors text-fg-default bg-surface-container font-semibold rounded-lg"
-                  : "px-3 py-1.5 text-on-surface-variant hover:text-fg-default hover:bg-surface-container-high rounded-lg transition-colors font-label-ui text-label-ui"
+                  ? "relative px-3 py-1.5 text-fg-default font-semibold transition-colors after:absolute after:bottom-0 after:left-3 after:right-3 after:h-[2px] after:bg-signal after:rounded-full"
+                  : "px-3 py-1.5 text-fg-muted hover:text-fg-default transition-colors font-label-ui text-label-ui"
               }
             >
               {link.label}
@@ -168,9 +168,9 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
             type="button"
           >
             <Search size={18} />
-            <span className="hidden md:inline font-body-sm text-body-sm text-fg-subtle">
+            <span className="hidden md:inline font-body-sm text-body-sm text-fg-muted">
               Type{" "}
-              <kbd className="px-1.5 py-0.5 rounded bg-surface-container font-badge-mono text-badge-mono text-fg-muted">
+              <kbd className="px-1.5 py-0.5 font-badge-mono text-badge-mono text-fg-muted border border-border-dark">
                 Cmd+K
               </kbd>{" "}
               to search
@@ -204,13 +204,13 @@ export default function DashboardHeader({ user, repos = [] }: DashboardHeaderPro
           {/* Notification bell */}
           <div className="relative">
             <button
-              className="relative p-1.5 text-fg-muted hover:text-fg-default rounded-lg hover:bg-surface-container transition-colors"
+              className="relative p-1.5 text-fg-muted hover:text-fg-default transition-colors"
               title="Notifications"
               type="button"
               onClick={() => setShowNotifications(!showNotifications)}
             >
               <Bell size={20} />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-accent-blue" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-signal" />
             </button>
 
             {showNotifications && (
