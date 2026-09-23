@@ -52,13 +52,17 @@ export default function Navbar() {
           <div className="flex items-center gap-4">
             <Link
               href="/"
-              className="text-text-primary-dark font-semibold text-lg tracking-tight flex items-center gap-3 group"
+              className="text-text-primary font-semibold text-xl tracking-tight flex items-center gap-2.5 group"
               onClick={() => setMobileMenuOpen(false)}
             >
-              <div className="w-[32px] h-[32px] bg-structural text-surface flex items-center justify-center font-mono font-bold text-[14px]">
-                K/
-              </div>
-              <span className="font-headline-hero tracking-tighter">Kareixo</span>
+              <Image
+                src="/logo-dark.svg"
+                alt="Kareixo Logo"
+                width={28}
+                height={28}
+                className="object-contain transition-transform duration-300 group-hover:scale-110"
+              />
+              <span className="font-headline-hero tracking-tighter mt-0.5">Kareixo</span>
             </Link>
             
             <a 
