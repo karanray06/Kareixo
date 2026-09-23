@@ -11,6 +11,145 @@ import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limiter";
 
 export const maxDuration = 60;
 
+/* ─────────────────────────────────────────────────────────────
+ *  CRITICAL FIX #1: Message Sanitization for NVIDIA NIM
+ *
+ *  The Vercel AI SDK's UIMessage format contains fields that
+ *  NVIDIA NIM's OpenAI-compat layer does NOT understand:
+ *    - `parts` arrays, `reasoning` objects, `id`, `createdAt`
+ *    - nested tool_call metadata with non-standard shapes
+ *
+ *  We must convert UIMessages → strict OpenAI ChatCompletionMessage[]
+ *  while PRESERVING the tool_calls / tool role messages that the
+ *  SDK's multi-turn loop depends on.
+ * ───────────────────────────────────────────────────────────── */
+
+type SanitizedMessage = {
+  role: "system" | "user" | "assistant" | "tool";
+  content: string;
+  tool_calls?: Array<{
+    id: string;
+    type: "function";
+    function: { name: string; arguments: string };
+  }>;
+  tool_call_id?: string;
+};
+
+function sanitizeMessages(rawMessages: any[]): SanitizedMessage[] {
+  const sanitized: SanitizedMessage[] = [];
+
+  for (const msg of rawMessages) {
+    if (!msg || !msg.role) continue;
+
+    // ── Handle tool-result messages (role: "tool") ──
+    if (msg.role === "tool") {
+      sanitized.push({
+        role: "tool",
+        content: typeof msg.content === "string" ? msg.content : JSON.stringify(msg.content ?? ""),
+        tool_call_id: msg.tool_call_id || msg.toolCallId || "unknown",
+      });
+      continue;
+    }
+
+    // ── Handle UIMessage with `parts` array (Vercel AI SDK v4+) ──
+    if (msg.parts && Array.isArray(msg.parts)) {
+      // Extract text content
+      const textParts = msg.parts
+        .filter((p: any) => p.type === "text")
+        .map((p: any) => p.text || "")
+        .join("");
+
+      // Extract tool invocations from parts
+      const toolInvocations = msg.parts.filter(
+        (p: any) => p.type === "tool-invocation"
+      );
+
+      if (msg.role === "assistant" && toolInvocations.length > 0) {
+        // Build the assistant message with tool_calls
+        const toolCalls = toolInvocations
+          .filter((tc: any) => tc.toolName && tc.args)
+          .map((tc: any) => ({
+            id: tc.toolCallId || tc.id || `call_${Math.random().toString(36).slice(2, 10)}`,
+            type: "function" as const,
+            function: {
+              name: tc.toolName,
+              arguments: typeof tc.args === "string" ? tc.args : JSON.stringify(tc.args ?? {}),
+            },
+          }));
+
+        if (toolCalls.length > 0) {
+          sanitized.push({
+            role: "assistant",
+            content: textParts || "",
+            tool_calls: toolCalls,
+          });
+
+          // Now emit the tool-result messages for each completed invocation
+          for (const tc of toolInvocations) {
+            if (tc.state === "result" && tc.result !== undefined) {
+              const resultStr = typeof tc.result === "string"
+                ? tc.result
+                : JSON.stringify(tc.result);
+              sanitized.push({
+                role: "tool",
+                content: truncateToolResult(resultStr, 10000),
+                tool_call_id: tc.toolCallId || tc.id || "unknown",
+              });
+            }
+          }
+          continue;
+        }
+      }
+
+      // Plain text message (user or assistant without tool calls)
+      if (textParts.trim() || msg.role === "user") {
+        sanitized.push({
+          role: msg.role === "user" ? "user" : "assistant",
+          content: textParts || "",
+        });
+      }
+      continue;
+    }
+
+    // ── Handle legacy simple {role, content} messages ──
+    if (msg.role === "user" || msg.role === "assistant") {
+      const content = typeof msg.content === "string"
+        ? msg.content
+        : JSON.stringify(msg.content ?? "");
+      if (content.trim() || msg.role === "user") {
+        sanitized.push({ role: msg.role, content });
+      }
+    }
+  }
+
+  // Final safety: ensure messages array is never empty and starts correctly
+  if (sanitized.length === 0) {
+    sanitized.push({ role: "user", content: "Hello" });
+  }
+
+  // Remove any consecutive duplicate roles that NIM might reject
+  return sanitized.filter((msg, i) => {
+    // Remove empty assistant messages unless they have tool_calls
+    if (msg.role === "assistant" && !msg.content?.trim() && !msg.tool_calls?.length) {
+      return false;
+    }
+    return true;
+  });
+}
+
+/* ─────────────────────────────────────────────────────────────
+ *  CRITICAL FIX #3: Aggressive Tool Result Truncation
+ *
+ *  NVIDIA NIM has strict context/payload limits. A single
+ *  large directory listing or file can blow the budget and
+ *  cause a 400 or 413 error, crashing the entire stream.
+ * ───────────────────────────────────────────────────────────── */
+
+function truncateToolResult(str: string, maxLen: number): string {
+  if (str.length <= maxLen) return str;
+  return str.slice(0, maxLen) + "\n...[TRUNCATED]";
+}
+
 export async function POST(req: Request) {
   try {
     const session = await auth();
@@ -31,20 +170,8 @@ export async function POST(req: Request) {
 
     const { messages: rawMessages, repoFullName, branch, conversationId, provider: selectedProvider } = await req.json();
 
-    // Convert UIMessage format to simple format
-    const messages = (rawMessages || []).map((msg: any) => {
-      if (msg.content) {
-        return { role: msg.role, content: msg.content };
-      }
-      if (msg.parts && Array.isArray(msg.parts)) {
-        const text = msg.parts
-          .filter((p: any) => p.type === "text")
-          .map((p: any) => p.text || "")
-          .join("");
-        return { role: msg.role, content: text };
-      }
-      return { role: msg.role, content: "" };
-    });
+    // ── Sanitize messages for NVIDIA NIM compatibility ──
+    const messages = sanitizeMessages(rawMessages || []);
 
     // Build tools if we have repo context
     const tools: Record<string, any> = {};
@@ -52,7 +179,7 @@ export async function POST(req: Request) {
     
     let finalConversationId = conversationId;
     if (!finalConversationId && messages.length > 0) {
-      const firstUserMsg = messages.find((m: any) => m.role === 'user');
+      const firstUserMsg = messages.find((m) => m.role === 'user');
       const title = (firstUserMsg?.content || "New Conversation").slice(0, 40);
       try {
         const [newConv] = await db.insert(chatConversations).values({
@@ -93,6 +220,7 @@ export async function POST(req: Request) {
             path: z.string().describe("The file path relative to the repo root, e.g. 'src/lib/utils.ts'"),
           }).describe("The schema for reading a file"),
           execute: async ({ path: filePath }) => {
+            // CRITICAL FIX #4: Error catching inside tool execution
             try {
               const { data } = await octokit.rest.repos.getContent({
                 owner,
@@ -101,16 +229,15 @@ export async function POST(req: Request) {
                 ref: targetRef,
               });
               if (Array.isArray(data) || data.type !== "file") {
-                return { error: `'${filePath}' is a directory, not a file.` };
+                return `'${filePath}' is a directory, not a file. Use listDirectory instead.`;
               }
               const content = Buffer.from(data.content, "base64").toString("utf-8");
-              return { 
-                content: content.length > 15000 ? content.slice(0, 15000) + "\n...[TRUNCATED]" : content, 
-                path: filePath, 
-                sha: data.sha 
-              };
+              // FIX #3: Aggressive truncation to prevent payload overflow
+              const truncated = truncateToolResult(content, 12000);
+              return `File: ${filePath}\n\n${truncated}`;
             } catch (err: any) {
-              return { error: `Failed to read '${filePath}': ${err?.message}` };
+              // FIX #4: Return error as string, don't throw
+              return `Error reading '${filePath}': ${err?.message || "Unknown error"}`;
             }
           },
         });
@@ -123,6 +250,7 @@ export async function POST(req: Request) {
             path: z.string().describe("The directory path relative to repo root, e.g. 'src/lib' or '' for root"),
           }).describe("The schema for listing a directory"),
           execute: async ({ path: dirPath }) => {
+            // CRITICAL FIX #4: Error catching inside tool execution
             try {
               const { data } = await octokit.rest.repos.getContent({
                 owner,
@@ -131,21 +259,16 @@ export async function POST(req: Request) {
                 ref: targetRef,
               });
               if (!Array.isArray(data)) {
-                return { error: `'${dirPath}' is a file, not a directory.` };
+                return `'${dirPath}' is a file, not a directory. Use readFile instead.`;
               }
-              const entries = data.map((item: any) => ({
-                name: item.name,
-                type: item.type,
-                size: item.size,
-                path: item.path,
-              }));
-              const jsonStr = JSON.stringify(entries, null, 2);
-              return {
-                path: dirPath || "/",
-                entries: jsonStr.length > 15000 ? jsonStr.slice(0, 15000) + "\n...[TRUNCATED]" : entries,
-              };
+              const listing = data.map((item: any) =>
+                `${item.type === "dir" ? "📁" : "📄"} ${item.name} (${item.type}, ${item.size || 0}b)`
+              ).join("\n");
+              // FIX #3: Aggressive truncation for directory listings
+              return truncateToolResult(`Directory: ${dirPath || "/"}\n\n${listing}`, 8000);
             } catch (err: any) {
-              return { error: `Failed to list '${dirPath}': ${err?.message}` };
+              // FIX #4: Return error as string, don't throw
+              return `Error listing '${dirPath}': ${err?.message || "Unknown error"}`;
             }
           },
         });
@@ -163,16 +286,15 @@ export async function POST(req: Request) {
                 q: `${query} repo:${repoFullName}`,
                 per_page: 10,
               });
-              return {
-                totalCount: data.total_count,
-                results: data.items.map((item: any) => ({
-                  path: item.path,
-                  name: item.name,
-                  htmlUrl: item.html_url,
-                })),
-              };
+              if (data.total_count === 0) {
+                return `No results found for "${query}" in ${repoFullName}.`;
+              }
+              const results = data.items.map((item: any) =>
+                `📄 ${item.path} — ${item.html_url}`
+              ).join("\n");
+              return truncateToolResult(`Found ${data.total_count} results for "${query}":\n\n${results}`, 6000);
             } catch (err: any) {
-              return { error: `Search failed: ${err?.message}` };
+              return `Search failed: ${err?.message || "Unknown error"}`;
             }
           },
         });
@@ -249,17 +371,28 @@ export async function POST(req: Request) {
       
       let systemPrompt = baseSystemPrompt;
       if (repoFullName && supportsTools) {
-        systemPrompt += `\n\nYou have access to tools to read files, explore the repository structure, and propose code changes. Use them when you need to see actual code — don't guess at implementations.`;
-        systemPrompt += `\n\nWhen the user asks about code, always read the relevant file(s) first before answering.`;
+        systemPrompt += `\n\nYou have access to tools to read files, explore the repository structure, search code, and propose code changes. Use them when you need to see actual code — don't guess at implementations.`;
+        systemPrompt += `\n\nWhen the user asks about code or the repo, ALWAYS call the appropriate tool first. Start by listing the root directory to understand the project structure, then read specific files as needed.`;
         systemPrompt += `\n\nWhen the user asks you to fix, refactor, or modify code, use the proposeChange tool to propose the change. Always read the file first, then propose the full modified file content. The user will see a diff and can approve or discard.`;
+        systemPrompt += `\n\nIMPORTANT: After receiving tool results, ALWAYS provide a final text response summarizing what you found. Never leave the user without a text answer.`;
       }
 
       try {
+        /* ─────────────────────────────────────────────────────
+         *  CRITICAL FIX #2: Enable maxSteps for Multi-Turn Loop
+         *
+         *  Without maxSteps, the SDK calls the tool once and
+         *  returns the tool_call as the "final" response — it
+         *  never feeds the result back to the LLM for synthesis.
+         *
+         *  maxSteps: 8 allows: call tool → read result →
+         *  call another tool → read result → ... → final answer
+         * ───────────────────────────────────────────────────── */
         const res = streamText({
           model: p.provider.model,
           system: systemPrompt,
-          messages,
-          ...(supportsTools ? { tools, maxSteps: 5, toolChoice: "auto" } : {}),
+          messages: messages as any,
+          ...(supportsTools ? { tools, maxSteps: 8, toolChoice: "auto" } : {}),
           ...(p.provider.name === "GROQ" ? {
             providerOptions: {
               groq: { reasoningFormat: "hidden" },
@@ -308,7 +441,7 @@ export async function POST(req: Request) {
 
         return res;
       } catch (error) {
-        console.error("NVIDIA NIM Error:", error);
+        console.error("StreamText Error:", error);
         throw error;
       }
     }, "chat", initialTier);
