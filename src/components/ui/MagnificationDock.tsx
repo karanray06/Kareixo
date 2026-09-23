@@ -83,7 +83,8 @@ function DockItem({
       ref={ref}
       style={{
         width: size,
-        height: size
+        height: size,
+        willChange: "width, height"
       }}
       onHoverStart={() => isHovered.set(1)}
       onHoverEnd={() => isHovered.set(0)}
@@ -164,12 +165,10 @@ export function MagnificationDock({
   const isHovered = useMotionValue(0);
 
   const maxHeight = useMemo(() => Math.max(dockHeight, magnification + magnification / 2 + 4), [magnification, dockHeight]);
-  const heightRow = useTransform(isHovered, [0, 1], [panelHeight, maxHeight]);
-  const height = useSpring(heightRow, spring);
 
   return (
-    <motion.div style={{ height, scrollbarWidth: 'none' }} className="flex max-w-full items-center justify-center pointer-events-none">
-      <motion.div
+    <div className="flex max-w-full items-end justify-center pointer-events-none" style={{ height: maxHeight }}>
+      <div
         onMouseMove={({ pageX }) => {
           isHovered.set(1);
           mouseX.set(pageX);
@@ -178,11 +177,16 @@ export function MagnificationDock({
           isHovered.set(0);
           mouseX.set(Infinity);
         }}
-        className={cn("flex items-end w-fit gap-3 rounded-sm border-border border bg-surface-dark pb-2 px-4 pointer-events-auto", className)}
-        style={{ height: panelHeight }}
+        className={cn("relative flex items-end w-fit gap-3 pb-2 px-4 pointer-events-auto", className)}
         role="toolbar"
         aria-label="Application dock"
       >
+        {/* Background panel */}
+        <div 
+          className="absolute bottom-0 left-0 right-0 rounded-sm border-border border bg-surface-dark" 
+          style={{ height: panelHeight }}
+        />
+        
         {items.map((item, index) => (
           <DockItem
             key={index}
@@ -198,8 +202,8 @@ export function MagnificationDock({
             <DockLabel>{item.label}</DockLabel>
           </DockItem>
         ))}
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
 
