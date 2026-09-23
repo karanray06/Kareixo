@@ -7,6 +7,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import Navbar from "@/components/landing/Navbar";
 import { GitMerge, LayoutDashboard, Code2, AlertTriangle, ArrowRight, Activity, TerminalSquare, Search, Flame, Server, Network, Star } from "lucide-react";
+import { LuminousCard } from "@/components/ui/LuminousCard";
 
 /* ── Animation helpers ── */
 function FadeIn({
@@ -33,74 +34,78 @@ function FadeIn({
   );
 }
 
-/* ── Clean Hero Background ── */
-function HeroBackground() {
+/* ── Technical Minimalist Mosaic Background ── */
+function MosaicBackground() {
   return (
-    <div className="absolute inset-0 z-0 overflow-hidden bg-canvas-dark pointer-events-none">
-      <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <pattern id="dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
-            <circle cx="2" cy="2" r="1.5" fill="#E8FFF2" opacity="0.03" />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#dot-grid)" />
-      </svg>
+    <div className="absolute inset-0 z-0 overflow-hidden bg-surface pointer-events-none">
+      <div 
+        className="absolute inset-0 opacity-[0.4]"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, var(--color-border) 1px, transparent 1px),
+            linear-gradient(to bottom, var(--color-border) 1px, transparent 1px)
+          `,
+          backgroundSize: '4rem 4rem',
+        }}
+      />
+      {/* Decorative Structural Blocks */}
+      <div className="absolute top-12 left-12 w-[16rem] h-[16rem] border border-border bg-surface-dark" />
+      <div className="absolute top-12 right-12 w-[8rem] h-[24rem] border border-border bg-surface-dark" />
+      <div className="absolute bottom-12 left-1/4 w-[24rem] h-[8rem] border border-border bg-surface-dark" />
     </div>
   );
 }
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-surface text-text-primary font-body-base overflow-x-hidden">
+    <div className="min-h-screen bg-surface text-text-primary font-body-base overflow-x-hidden selection:bg-structural selection:text-surface">
       <Navbar />
 
-      <main className="relative">
+      <main className="relative pt-20">
         {/* ═══════════════════════════════════════════
             HERO SECTION
             ═══════════════════════════════════════════ */}
-        <section className="relative min-h-[90vh] flex flex-col items-center justify-center pt-24 pb-16 overflow-hidden">
-          <HeroBackground />
-          <CloudBackground />
+        <section className="relative min-h-[90vh] flex flex-col items-center justify-center py-16 overflow-hidden">
+          <MosaicBackground />
           
-          {/* Massive Faded Background Text */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 opacity-5 select-none overflow-hidden">
-            <span className="font-headline-hero text-[18vw] font-bold text-text-primary-dark whitespace-nowrap tracking-tighter">
-              KAREIXO
-            </span>
-          </div>
-
-          <div className="relative z-10 max-w-[1024px] mx-auto w-full px-6 flex flex-col items-center text-center">
-            {/* Text floating directly over the cloud background */}
-            <div className="relative z-10 p-8 sm:p-12 max-w-4xl stagger-children flex flex-col items-center">
-              
-              <h1 className="font-headline-hero text-5xl sm:text-6xl lg:text-[72px] leading-[1.05] tracking-[-0.02em] text-text-primary-dark font-bold relative z-10">
-                Code review that can&apos;t hallucinate syntax.
+          <div className="relative z-10 max-w-[1280px] mx-auto w-full px-6 flex flex-col items-center text-center">
+            {/* Minimalist Hero */}
+            <div className="relative z-10 max-w-5xl stagger-children flex flex-col items-center">
+              <div className="border border-border bg-surface-dark px-3 py-1 font-badge-mono text-[11px] text-text-secondary uppercase tracking-widest mb-8">
+                Version 2.0 / Precision Engineering
+              </div>
+              <h1 className="font-headline-hero text-[12vw] sm:text-[10vw] md:text-8xl lg:text-[112px] leading-[0.85] tracking-tighter text-text-primary font-bold uppercase mix-blend-multiply opacity-90">
+                Code <br/> Review <br/>
+                <span className="text-structural border-b-8 border-structural pb-2">Redefined.</span>
               </h1>
 
-              <p className="font-body-base text-[clamp(1.125rem,2vw,1.25rem)] text-text-secondary-dark max-w-3xl mx-auto mt-6">
-                Kareixo reviews every pull request, patches bugs it's certain about, and heals failing tests — every patch is generated inside your code's actual syntax tree and re-validated before it ships.
+              <p className="font-body-base text-lg md:text-xl text-text-secondary max-w-2xl mx-auto mt-12 bg-surface p-4 border border-border">
+                Kareixo evaluates pull requests without hallucinating syntax. 
+                Our agentic architecture parses your code, tests fixes in a microVM, 
+                and ships flawless patches.
               </p>
 
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-0 mt-12 border border-border bg-surface p-1">
                 <a
                   href="https://github.com/apps/kareixo-reviewer/installations/new"
-                  className="btn btn-primary text-lg px-8 py-4"
+                  className="btn btn-signal text-sm uppercase tracking-widest font-badge-mono px-8 py-4 rounded-none"
                 >
-                  Connect a repository
+                  Connect Repository
                 </a>
                 <Link
                   href="#features"
-                  className="font-body-base text-text-secondary-dark hover:text-text-primary-dark underline underline-offset-4 decoration-border hover:decoration-text-primary transition-colors py-4 px-6"
+                  className="btn btn-ghost text-sm uppercase tracking-widest font-badge-mono px-8 py-4 rounded-none border-none"
                 >
-                  See how it works
+                  System Architecture
                 </Link>
               </div>
             </div>
             
-            {/* Infrastructure line */}
-            <p className="mt-16 text-text-secondary font-label-ui uppercase tracking-widest text-xs bg-surface px-4 py-2 border border-border shadow-sm">
-              Routed across Gemini, Groq, NVIDIA NIM, and Pollinations with automatic failover
-            </p>
+            {/* Status Bar */}
+            <div className="absolute bottom-6 left-6 right-6 border-t border-border pt-4 flex justify-between items-center font-badge-mono text-[10px] text-text-secondary uppercase">
+              <span className="flex items-center gap-2"><span className="w-2 h-2 bg-structural block" /> All Systems Nominal</span>
+              <span>Routed via Global Network</span>
+            </div>
           </div>
         </section>
 
@@ -367,6 +372,24 @@ export default function Home() {
                   {/* Connective lines */}
                   <div className="absolute top-[138px] left-1/2 -translate-x-1/2 w-48 h-0.5 bg-border z-0" />
                 </div>
+              </div>
+            </FadeIn>
+
+            {/* 7. Luminous Experience */}
+            <FadeIn className="flex flex-col md:flex-row items-center gap-12 md:gap-24" delay={0.1}>
+              <div className="flex-1 space-y-6">
+                <div className="w-12 h-12 bg-structural text-surface flex items-center justify-center mb-2">
+                  <Star size={24} />
+                </div>
+                <h2 className="font-headline-section text-headline-section text-text-primary font-semibold tracking-tight">
+                  Luminous Developer Experience
+                </h2>
+                <p className="font-body-base text-body-base text-text-secondary leading-relaxed">
+                  A premium, minimalist design system tailored for technical users. Light folds around form, revealing layers of depth only when needed.
+                </p>
+              </div>
+              <div className="flex-1 w-full flex items-center justify-center p-6">
+                <LuminousCard />
               </div>
             </FadeIn>
 

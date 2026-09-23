@@ -5,6 +5,7 @@ import { getDb } from "@/db";
 import { repositories, github_installations } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import Providers from "@/components/Providers";
+import GlobalDock from "@/components/dashboard/GlobalDock";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -37,9 +38,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <div className="min-h-screen bg-canvas-default text-on-surface font-body-base antialiased selection:bg-accent-blue selection:text-canvas-inset">
       <Providers>
         <DashboardHeader user={session.user} repos={repos} />
-        <main className="w-full pt-16 flex-1 bg-canvas-default">
+        <main className="w-full pt-16 flex-1 bg-canvas-default relative">
           {children}
         </main>
+        <GlobalDock />
       </Providers>
     </div>
   );

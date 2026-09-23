@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { Plus, ArrowRight, TrendingUp, AlertTriangle, CheckCircle2, ShieldCheck, Activity, TerminalSquare, AlertCircle } from "lucide-react";
+import { Plus, ArrowRight, TrendingUp, AlertTriangle, CheckCircle2, ShieldCheck, Activity, TerminalSquare, AlertCircle, Settings, Network } from "lucide-react";
+import InteractiveFolder from "@/components/ui/InteractiveFolder";
 
 interface RepoData {
   id: string;
@@ -376,58 +377,42 @@ export default function DashboardOverview() {
                 </a>
               </div>
 
-              <div className="p-space-md flex flex-col gap-space-md">
+              <div className="p-space-md flex flex-wrap gap-12 justify-start mt-4">
                 {loading ? (
-                  <div className="space-y-3">
+                  <div className="flex gap-12">
                     {[1, 2, 3].map((i) => (
                       <div
                         key={i}
-                        className="bg-canvas-default rounded-lg p-space-md animate-pulse flex items-center gap-4"
-                      >
-                        <div className="w-6 h-6 bg-surface-container rounded" />
-                        <div className="flex-1 space-y-2">
-                          <div className="h-4 w-48 bg-surface-container rounded" />
-                          <div className="h-3 w-32 bg-surface-container rounded" />
-                        </div>
-                      </div>
+                        className="w-[120px] h-[100px] bg-canvas-inset animate-pulse rounded-b-[2px] rounded-tr-[2px]"
+                      />
                     ))}
                   </div>
                 ) : (
                   data?.repositories?.map((repo) => (
-                    <Link
-                      key={repo.id}
-                      href={`/dashboard/${repo.id}`}
-                      className="bg-canvas-default rounded-lg p-space-md flex flex-col sm:flex-row sm:items-center justify-between gap-space-md shadow-sm hover:bg-surface-container-low transition-colors"
-                    >
-                      <div className="flex items-center gap-space-sm">
-                        <ShieldCheck className="text-accent-blue" size={22} />
-                        <div className="flex flex-col">
-                          <div className="flex items-center gap-space-xs">
-                            <span className="font-title-card text-title-card text-fg-default hover:text-accent-blue font-semibold">
-                              {repo.fullName}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-space-xs text-fg-muted font-code-diff text-code-diff mt-0.5">
-                            <span>
-                              Categories:{" "}
-                              {repo.enabledCategories?.length > 0
-                                ? repo.enabledCategories.join(", ")
-                                : "all"}
-                            </span>
-                            <span>•</span>
-                            <span>
-                              Tier: <span className="text-fg-default">{repo.preferredTier}</span>
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-space-sm">
-                        <span className="font-badge-mono text-badge-mono px-2 py-1 rounded bg-diff-addition-line text-diff-addition-text flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-accent-green-emphasis" />
-                          Active
-                        </span>
-                      </div>
-                    </Link>
+                    <div key={repo.id} className="flex flex-col items-center gap-4">
+                      <InteractiveFolder
+                        label={repo.fullName.split('/')[1]?.toUpperCase() || repo.fullName.toUpperCase()}
+                        color="#1A3C2B"
+                        size={1.1}
+                        items={[
+                          <Link href={`/dashboard/${repo.id}`} key="1" className="w-full h-full p-2 flex flex-col gap-1 items-center justify-center text-text-primary hover:text-accent-blue transition-colors group">
+                            <Activity className="w-6 h-6 opacity-60 group-hover:opacity-100" />
+                            <span className="text-[8px] font-mono tracking-widest font-bold">ANALYZE</span>
+                          </Link>,
+                          <div key="2" className="w-full h-full p-2 flex flex-col gap-1 items-center justify-center text-text-secondary">
+                            <Network className="w-6 h-6 opacity-60" />
+                            <span className="text-[8px] font-mono tracking-widest">{repo.preferredTier}</span>
+                          </div>,
+                          <Link href={`/dashboard/${repo.id}/settings`} key="3" className="w-full h-full p-2 flex flex-col gap-1 items-center justify-center text-text-secondary hover:text-accent-blue transition-colors group">
+                            <Settings className="w-6 h-6 opacity-60 group-hover:opacity-100" />
+                            <span className="text-[8px] font-mono tracking-widest font-bold">CONFIG</span>
+                          </Link>
+                        ]}
+                      />
+                      <span className="font-label-ui text-label-ui text-text-primary text-center max-w-[120px] truncate">
+                        {repo.fullName}
+                      </span>
+                    </div>
                   ))
                 )}
               </div>

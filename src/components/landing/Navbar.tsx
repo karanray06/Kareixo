@@ -52,57 +52,54 @@ export default function Navbar() {
           <div className="flex items-center gap-4">
             <Link
               href="/"
-              className="text-text-primary-dark font-semibold text-lg tracking-tight flex items-center gap-2.5 group"
+              className="text-text-primary-dark font-semibold text-lg tracking-tight flex items-center gap-3 group"
               onClick={() => setMobileMenuOpen(false)}
             >
-              <Image
-                src="/logo-dark.svg"
-                alt="Kareixo Logo"
-                width={30}
-                height={30}
-                className="rounded-lg object-contain transition-transform duration-300 group-hover:scale-110"
-              />
-              <span className="font-headline-hero">Kareixo</span>
+              <div className="w-[32px] h-[32px] bg-structural text-surface flex items-center justify-center font-mono font-bold text-[14px]">
+                K/
+              </div>
+              <span className="font-headline-hero tracking-tighter">Kareixo</span>
             </Link>
             
             <a 
               href="https://github.com/elixpo"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden md:flex items-center gap-1.5 px-2 py-1 bg-surface-container/50 hover:bg-surface-container border border-border-default/50 rounded-md transition-colors"
+              className="hidden md:flex items-center gap-2 px-2.5 py-1.5 bg-surface border border-border transition-colors hover:border-structural"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-signal shadow-[0_0_8px_rgba(26,194,148,0.8)]" />
-              <span className="font-label-ui text-[10px] text-text-secondary-dark uppercase tracking-wider">Elixpo Ecosystem</span>
+              <span className="w-[6px] h-[6px] bg-accent-mint" />
+              <span className="font-badge-mono text-[10px] text-text-secondary uppercase tracking-wider">Elixpo Ecosystem</span>
             </a>
           </div>
 
           {/* Center: Nav Links */}
-          <div className="hidden md:flex items-center gap-1">
-            {NAV_LINKS.map((link) => (
+          <div className="hidden md:flex items-center gap-6">
+            {NAV_LINKS.map((link, i) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="relative px-3.5 py-2 text-sm font-medium text-fg-muted hover:text-fg-default transition-colors duration-200 rounded-lg group"
+                className="group flex items-center gap-1.5 font-badge-mono text-xs text-text-secondary hover:text-text-primary transition-colors"
               >
-                {link.label}
-                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-signal rounded-full transition-all duration-300 group-hover:w-[60%]" />
+                <span className="text-structural/50">0{i + 1}.</span>
+                <span className="uppercase tracking-widest">{link.label}</span>
               </Link>
             ))}
             <a
               href="https://github.com/karanray06/Kareixo"
               target="_blank"
               rel="noopener noreferrer"
-              className="relative px-3.5 py-2 text-sm font-medium text-text-secondary-dark hover:text-text-primary-dark transition-colors duration-200 rounded-lg group flex items-center gap-1.5"
+              className="group flex items-center gap-1.5 font-badge-mono text-xs text-text-secondary hover:text-text-primary transition-colors"
             >
-              <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-              GitHub
-              {stars !== null && (
-                <span className="flex items-center gap-1 ml-1 text-[11px] bg-surface-container-dark/50 px-1.5 py-0.5 rounded font-badge-mono text-text-secondary-dark border border-border-dark/50">
-                  <Star size={10} className="fill-text-secondary-dark" />
-                  {stars}
-                </span>
-              )}
-              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-signal rounded-full transition-all duration-300 group-hover:w-[60%]" />
+              <span className="text-structural/50">0{NAV_LINKS.length + 1}.</span>
+              <span className="uppercase tracking-widest flex items-center gap-2">
+                GitHub
+                {stars !== null && (
+                  <span className="flex items-center gap-1 bg-surface-dark px-1.5 py-0.5 border border-border">
+                    <Star size={10} />
+                    {stars}
+                  </span>
+                )}
+              </span>
             </a>
           </div>
 
@@ -110,16 +107,16 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-3">
             <Link
               href="/dashboard"
-              className="text-sm font-medium text-text-secondary-dark hover:text-text-primary-dark transition-colors px-3 py-2"
+              className="font-badge-mono text-xs uppercase tracking-widest text-text-secondary hover:text-text-primary transition-colors px-4 py-2 border border-transparent hover:border-border"
             >
               Sign in
             </Link>
             <a
               href="https://github.com/apps/kareixo-reviewer/installations/new"
-              className="btn btn-signal inline-flex items-center gap-2 px-4 py-2"
+              className="btn btn-signal inline-flex items-center gap-2 px-6 py-2"
             >
               <Plus size={16} />
-              Get Started
+              Install
             </a>
           </div>
 

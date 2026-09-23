@@ -19,40 +19,46 @@
 }
 
 :root {
-  /* ═══ COLORS: Forest Code & Mint Fog (Light Default) ═══ */
-  --app-structural: #075E46;
-  --app-surface: #E8FFF2;
-  --app-surface-dark: #D4F2E3; 
-  --app-text-primary: #0A1F1A;
-  --app-text-secondary: #4A6B5F;
-  --app-border: rgba(7, 94, 70, 0.15);
-  --app-canvas-inset: rgba(0, 0, 0, 0.04);
-  --app-destructive: #D14343;
-  --app-border-muted: rgba(7, 94, 70, 0.08);
+  /* ═══ COLORS: Technical Minimalist ═══ */
+  --app-structural: #1A3C2B; /* Forest */
+  --app-surface: #F7F7F5; /* Paper */
+  --app-surface-dark: #EBEBE9; 
+  --app-text-primary: #1A3C2B;
+  --app-text-secondary: #3A3A38;
+  --app-border: rgba(58, 58, 56, 0.2); /* Grid */
+  --app-canvas-inset: rgba(58, 58, 56, 0.04);
+  --app-destructive: #FF8C69; /* Coral */
+  --app-border-muted: rgba(58, 58, 56, 0.1);
+  --app-accent-mint: #9EFFBF;
+  --app-accent-gold: #F4D35E;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --app-surface: #0E1614;
-    --app-surface-dark: #14211D;
-    --app-text-primary: #E8FFF2;
-    --app-text-secondary: #90B6A7;
-    --app-border: rgba(255, 255, 255, 0.1);
-    --app-structural: #1AC294; 
-    --app-canvas-inset: rgba(255, 255, 255, 0.05);
-    --app-border-muted: rgba(255, 255, 255, 0.05);
+    /* Technical Minimalist uses a strict flat palette, enforcing Light mode aesthetics */
+    --app-structural: #1A3C2B; 
+    --app-surface: #F7F7F5; 
+    --app-surface-dark: #EBEBE9;
+    --app-text-primary: #1A3C2B;
+    --app-text-secondary: #3A3A38;
+    --app-border: rgba(58, 58, 56, 0.2);
+    --app-canvas-inset: rgba(58, 58, 56, 0.04);
+    --app-border-muted: rgba(58, 58, 56, 0.1);
+    --app-destructive: #FF8C69;
+    --app-accent-mint: #9EFFBF;
+    --app-accent-gold: #F4D35E;
   }
 }
 
 .dark {
-  --app-surface: #0E1614;
-  --app-surface-dark: #14211D;
-  --app-text-primary: #E8FFF2;
-  --app-text-secondary: #90B6A7;
-  --app-border: rgba(255, 255, 255, 0.1);
-  --app-structural: #1AC294; 
-  --app-canvas-inset: rgba(255, 255, 255, 0.05);
-  --app-border-muted: rgba(255, 255, 255, 0.05);
+  --app-structural: #1A3C2B; 
+  --app-surface: #F7F7F5; 
+  --app-surface-dark: #EBEBE9;
+  --app-text-primary: #1A3C2B;
+  --app-text-secondary: #3A3A38;
+  --app-border: rgba(58, 58, 56, 0.2);
+  --app-canvas-inset: rgba(58, 58, 56, 0.04);
+  --app-border-muted: rgba(58, 58, 56, 0.1);
 }
 
 @theme inline {
@@ -65,12 +71,12 @@
   --color-destructive: var(--app-destructive);
 
   --color-canvas-default: var(--color-surface);
-  --color-canvas-dark: #0E1614; /* Always dark */
+  --color-canvas-dark: var(--color-surface-dark);
   --color-surface-dark: var(--app-surface-dark); 
-  --color-border-dark: rgba(255, 255, 255, 0.1);
+  --color-border-dark: var(--app-border);
   
-  --color-text-primary-dark: #E8FFF2;
-  --color-text-secondary-dark: #90B6A7;
+  --color-text-primary-dark: var(--app-text-primary);
+  --color-text-secondary-dark: var(--app-text-secondary);
 
   --color-signal: var(--color-structural);
   
@@ -78,30 +84,30 @@
   --color-canvas-inset: var(--app-canvas-inset); 
   
   --color-surface-container: var(--color-surface-dark);
-  --color-surface-container-high: rgba(0, 0, 0, 0.06);
-  --color-surface-container-highest: rgba(0, 0, 0, 0.08);
+  --color-surface-container-high: rgba(58, 58, 56, 0.06);
+  --color-surface-container-highest: rgba(58, 58, 56, 0.08);
   --color-surface-container-lowest: var(--color-surface);
   --color-surface-container-low: var(--color-surface);
 
   --color-fg-default: var(--color-text-primary);
   --color-fg-muted: var(--color-text-secondary);
-  --color-fg-subtle: #6D8E81;
+  --color-fg-subtle: rgba(58, 58, 56, 0.6);
   
   --color-border-default: var(--color-border);
   --color-border-muted: var(--app-border-muted);
 
   --color-error: var(--color-destructive);
-  --color-diff-addition-text: #075E46;
-  --color-diff-addition-line: rgba(7, 94, 70, 0.1);
-  --color-diff-deletion-text: #D14343;
-  --color-diff-deletion-line: rgba(209, 67, 67, 0.1);
+  --color-diff-addition-text: var(--app-structural);
+  --color-diff-addition-line: rgba(26, 60, 43, 0.1);
+  --color-diff-deletion-text: var(--app-destructive);
+  --color-diff-deletion-line: rgba(255, 140, 105, 0.1);
 
-  --color-accent-blue: var(--color-structural);
-  --color-accent-purple: var(--color-structural);
-  --color-accent-purple-light: var(--color-structural);
-  --color-accent-green-emphasis: var(--color-structural);
-  --color-accent-green-hover: #054836;
-  --color-accent-amber: #F0A000;
+  --color-accent-blue: var(--app-structural);
+  --color-accent-purple: var(--app-structural);
+  --color-accent-purple-light: var(--app-structural);
+  --color-accent-green-emphasis: var(--app-accent-mint);
+  --color-accent-green-hover: var(--app-structural);
+  --color-accent-amber: var(--app-accent-gold);
   --color-accent-red: var(--color-destructive);
 
   /* ═══ SPACING (8px base) ═══ */
@@ -112,66 +118,68 @@
   --spacing-space-xl: 4rem;     /* 64px */
   --spacing-gutter: 1.5rem;     /* 24px */
 
-  /* ═══ BORDER RADIUS ═══ */
+  /* ═══ BORDER RADIUS (Technical Minimalist = 0px or 2px max) ═══ */
   --radius: 0px;
   --radius-lg: 0px;
-  --radius-xl: 12px;
-  --radius-2xl: 12px;
-  --radius-3xl: 12px;
-  --radius-full: 9999px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-full: 2px; /* Changed from 9999px for technical feel */
 
   /* ═══ FONT FAMILIES ═══ */
-  --font-apple: -apple-system, "SF Pro Display", "SF Pro Text", "Inter", sans-serif;
+  --font-apple: var(--font-body, "Inter", sans-serif);
   --font-body-base: var(--font-apple);
-  --font-headline-hero: var(--font-apple);
-  --font-headline-section: var(--font-apple);
-  --font-title-card: var(--font-apple);
-  --font-title-card-sm: var(--font-apple);
-  --font-label-ui: var(--font-apple);
-  --font-display: var(--font-apple);
+  --font-headline-hero: var(--font-display, "Space Grotesk", sans-serif);
+  --font-headline-section: var(--font-display, "Space Grotesk", sans-serif);
+  --font-title-card: var(--font-display, "Space Grotesk", sans-serif);
+  --font-title-card-sm: var(--font-display, "Space Grotesk", sans-serif);
+  --font-label-ui: var(--font-mono, "JetBrains Mono", monospace);
+  --font-display: var(--font-display, "Space Grotesk", sans-serif);
   
-  --font-code-diff: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
-  --font-code-gutter: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
-  --font-badge-mono: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+  --font-code-diff: var(--font-mono, "JetBrains Mono", monospace);
+  --font-code-gutter: var(--font-mono, "JetBrains Mono", monospace);
+  --font-badge-mono: var(--font-mono, "JetBrains Mono", monospace);
 
-  /* ═══ FONT SIZES (HIG Typography Scale) ═══ */
-  --text-headline-hero: 56px;
-  --text-headline-hero--line-height: 1.05;
+  /* ═══ FONT SIZES ═══ */
+  --text-headline-hero: 80px;
+  --text-headline-hero--line-height: 0.9;
   --text-headline-hero--font-weight: 700;
   
-  --text-headline-section: 32px;
-  --text-headline-section--line-height: 1.15;
+  --text-headline-section: 48px;
+  --text-headline-section--line-height: 1;
   --text-headline-section--font-weight: 600;
 
   --text-title-card: 32px;
-  --text-title-card--line-height: 1.15;
+  --text-title-card--line-height: 1.1;
   --text-title-card--font-weight: 600;
 
-  --text-title-card-sm: 17px;
-  --text-title-card-sm--line-height: 1.5;
+  --text-title-card-sm: 20px;
+  --text-title-card-sm--line-height: 1.2;
   --text-title-card-sm--font-weight: 600;
 
-  --text-body-base: 17px;
+  --text-body-base: 16px;
   --text-body-base--line-height: 1.5;
   --text-body-base--font-weight: 400;
 
-  --text-body-sm: 13px;
-  --text-body-sm--line-height: 1.4;
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 1.5;
   --text-body-sm--font-weight: 500;
 
-  --text-label-ui: 13px;
+  --text-label-ui: 11px;
   --text-label-ui--line-height: 1.4;
   --text-label-ui--font-weight: 500;
+  --text-label-ui--letter-spacing: 0.1em;
 
-  --text-badge-mono: 12px;
+  --text-badge-mono: 10px;
   --text-badge-mono--line-height: 1.4;
   --text-badge-mono--font-weight: 500;
+  --text-badge-mono--letter-spacing: 0.1em;
 
-  --text-code-diff: 13px;
+  --text-code-diff: 12px;
   --text-code-diff--line-height: 1.5;
   --text-code-diff--font-weight: 400;
 
-  --text-code-gutter: 13px;
+  --text-code-gutter: 12px;
   --text-code-gutter--line-height: 1.5;
   --text-code-gutter--font-weight: 400;
 }
@@ -242,13 +250,13 @@ a:hover {
   justify-content: center;
   gap: 8px;
   padding: 12px 24px;
-  border-radius: 9999px;
+  border-radius: 2px;
   font-family: var(--font-apple);
   font-weight: 500;
-  font-size: 17px;
+  font-size: 16px;
   line-height: 1.5;
   cursor: pointer;
-  transition: all 200ms ease;
+  transition: all 150ms ease-out;
   border: 1px solid transparent;
   outline: none;
 }
@@ -263,7 +271,7 @@ a:hover {
   color: var(--color-surface);
 }
 .btn-primary:hover, .btn-signal:hover {
-  opacity: 0.9;
+  background: var(--color-text-primary);
 }
 
 .btn-secondary {
@@ -291,9 +299,11 @@ a:hover {
   align-items: center;
   gap: 4px;
   padding: 4px 12px;
-  border-radius: 9999px;
-  font-family: var(--font-apple);
-  font-size: 13px;
+  border-radius: 2px;
+  font-family: var(--font-badge-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
   font-weight: 500;
   border: 1px solid var(--color-border);
   background: var(--color-surface-dark);
@@ -303,7 +313,7 @@ a:hover {
 .card {
   background: var(--color-surface-dark);
   border: 1px solid var(--color-border);
-  border-radius: 12px;
+  border-radius: 2px;
   padding: 24px;
 }
 
