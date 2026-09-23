@@ -633,7 +633,11 @@ function CodeChatClientContent({ repos }: { repos: RepoInfo[] }) {
                                       ? `Listing ${tc.args?.path || "/"}`
                                       : tc.toolName === "proposeChange"
                                         ? `Proposing change to ${tc.args?.path}`
-                                        : `Searching: ${tc.args?.query}`}
+                                        : tc.toolName === "updateFile"
+                                          ? `Updating ${tc.args?.path}`
+                                          : tc.toolName === "searchCode"
+                                            ? `Searching: ${tc.args?.query}`
+                                            : `Tool: ${tc.toolName}`}
                                 </span>
                                 {tc.state === "result" && (
                                   <span className="text-diff-addition-text ml-auto">✓</span>

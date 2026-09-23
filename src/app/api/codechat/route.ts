@@ -12,7 +12,7 @@ import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limiter";
 export const maxDuration = 60;
 
 /* ─────────────────────────────────────────────────────────────
- *  CRITICAL FIX #1: Message Sanitization for NVIDIA NIM
+ *  Message Sanitization for NVIDIA NIM
  *
  *  The Vercel AI SDK's UIMessage format contains fields that
  *  NVIDIA NIM's OpenAI-compat layer does NOT understand:
@@ -53,19 +53,16 @@ function sanitizeMessages(rawMessages: any[]): SanitizedMessage[] {
 
     // ── Handle UIMessage with `parts` array (Vercel AI SDK v4+) ──
     if (msg.parts && Array.isArray(msg.parts)) {
-      // Extract text content
       const textParts = msg.parts
         .filter((p: any) => p.type === "text")
         .map((p: any) => p.text || "")
         .join("");
 
-      // Extract tool invocations from parts
       const toolInvocations = msg.parts.filter(
         (p: any) => p.type === "tool-invocation"
       );
 
       if (msg.role === "assistant" && toolInvocations.length > 0) {
-        // Build the assistant message with tool_calls
         const toolCalls = toolInvocations
           .filter((tc: any) => tc.toolName && tc.args)
           .map((tc: any) => ({
@@ -84,7 +81,7 @@ function sanitizeMessages(rawMessages: any[]): SanitizedMessage[] {
             tool_calls: toolCalls,
           });
 
-          // Now emit the tool-result messages for each completed invocation
+          // Emit the tool-result messages for each completed invocation
           for (const tc of toolInvocations) {
             if (tc.state === "result" && tc.result !== undefined) {
               const resultStr = typeof tc.result === "string"
@@ -92,7 +89,7 @@ function sanitizeMessages(rawMessages: any[]): SanitizedMessage[] {
                 : JSON.stringify(tc.result);
               sanitized.push({
                 role: "tool",
-                content: truncateToolResult(resultStr, 10000),
+                content: truncate(resultStr, 10000),
                 tool_call_id: tc.toolCallId || tc.id || "unknown",
               });
             }
@@ -122,14 +119,11 @@ function sanitizeMessages(rawMessages: any[]): SanitizedMessage[] {
     }
   }
 
-  // Final safety: ensure messages array is never empty and starts correctly
   if (sanitized.length === 0) {
     sanitized.push({ role: "user", content: "Hello" });
   }
 
-  // Remove any consecutive duplicate roles that NIM might reject
-  return sanitized.filter((msg, i) => {
-    // Remove empty assistant messages unless they have tool_calls
+  return sanitized.filter((msg) => {
     if (msg.role === "assistant" && !msg.content?.trim() && !msg.tool_calls?.length) {
       return false;
     }
@@ -137,15 +131,8 @@ function sanitizeMessages(rawMessages: any[]): SanitizedMessage[] {
   });
 }
 
-/* ─────────────────────────────────────────────────────────────
- *  CRITICAL FIX #3: Aggressive Tool Result Truncation
- *
- *  NVIDIA NIM has strict context/payload limits. A single
- *  large directory listing or file can blow the budget and
- *  cause a 400 or 413 error, crashing the entire stream.
- * ───────────────────────────────────────────────────────────── */
-
-function truncateToolResult(str: string, maxLen: number): string {
+/* ── Truncation Helper ── */
+function truncate(str: string, maxLen: number): string {
   if (str.length <= maxLen) return str;
   return str.slice(0, maxLen) + "\n...[TRUNCATED]";
 }
@@ -162,7 +149,6 @@ export async function POST(req: Request) {
       }
     }
 
-    // Per-user rate limiting: 30 requests per minute
     const rateCheck = checkRateLimit(userId);
     if (!rateCheck.allowed) {
       return rateLimitResponse(rateCheck.resetAt);
@@ -170,10 +156,8 @@ export async function POST(req: Request) {
 
     const { messages: rawMessages, repoFullName, branch, conversationId, provider: selectedProvider } = await req.json();
 
-    // ── Sanitize messages for NVIDIA NIM compatibility ──
     const messages = sanitizeMessages(rawMessages || []);
 
-    // Build tools if we have repo context
     const tools: Record<string, any> = {};
     const db = getDb();
     
@@ -197,7 +181,6 @@ export async function POST(req: Request) {
     if (repoFullName) {
       const [owner, repo] = repoFullName.split("/");
       
-      // Find the installation for this repo to get an authenticated Octokit
       const [repoRecord] = await db.select({ repo: repositories, inst: github_installations })
         .from(repositories)
         .innerJoin(github_installations, eq(repositories.installationId, github_installations.installationId))
@@ -210,18 +193,20 @@ export async function POST(req: Request) {
 
       if (repoRecord) {
         const octokit = await getInstallationOctokit(repoRecord.inst.installationId);
-        const targetRef = branch || "HEAD";
+        const targetRef = branch || "main";
 
-        // NOTE: must be "inputSchema", not "parameters" — ai@7 requirement, has regressed before
-        // Tool: Read a specific file from the repo
+        /* ═══════════════════════════════════════════
+         *  TOOL 1: read_file
+         *  Reads a single file and returns its decoded content.
+         * ═══════════════════════════════════════════ */
         tools.readFile = tool({
-          description: "Read a file from the repository. Use this to examine source code when you need to see the actual implementation.",
+          description: "Read a file from the repository. Returns the decoded UTF-8 file content. Use this when you need to examine source code, configs, or any text file.",
           inputSchema: z.object({
-            path: z.string().describe("The file path relative to the repo root, e.g. 'src/lib/utils.ts'"),
-          }).describe("The schema for reading a file"),
+            path: z.string().describe("File path relative to repo root, e.g. 'src/lib/utils.ts' or 'README.md'"),
+          }).describe("Parameters for reading a file"),
           execute: async ({ path: filePath }) => {
-            // CRITICAL FIX #4: Error catching inside tool execution
             try {
+              console.log(`[Tool:readFile] Reading ${owner}/${repo}/${filePath} @ ${targetRef}`);
               const { data } = await octokit.rest.repos.getContent({
                 owner,
                 repo,
@@ -229,59 +214,65 @@ export async function POST(req: Request) {
                 ref: targetRef,
               });
               if (Array.isArray(data) || data.type !== "file") {
-                return `'${filePath}' is a directory, not a file. Use listDirectory instead.`;
+                return `Error: '${filePath}' is a directory, not a file. Use the listDirectory tool instead.`;
               }
               const content = Buffer.from(data.content, "base64").toString("utf-8");
-              // FIX #3: Aggressive truncation to prevent payload overflow
-              const truncated = truncateToolResult(content, 12000);
-              return `File: ${filePath}\n\n${truncated}`;
+              const result = truncate(content, 12000);
+              console.log(`[Tool:readFile] Success: ${filePath} (${content.length} chars)`);
+              return `=== File: ${filePath} ===\n\n${result}`;
             } catch (err: any) {
-              // FIX #4: Return error as string, don't throw
-              return `Error reading '${filePath}': ${err?.message || "Unknown error"}`;
+              console.error(`[Tool:readFile] Error: ${filePath}`, err?.message);
+              return `Error: Could not read file '${filePath}' (${err?.message || "Unknown error"})`;
             }
           },
         });
 
-        // NOTE: must be "inputSchema", not "parameters" — ai@7 requirement, has regressed before
-        // Tool: List directory contents
+        /* ═══════════════════════════════════════════
+         *  TOOL 2: list_directory
+         *  Lists the contents of a directory.
+         * ═══════════════════════════════════════════ */
         tools.listDirectory = tool({
-          description: "List the contents of a directory in the repository. Use this to explore the file structure.",
+          description: "List files and subdirectories in a repository directory. Returns name, type (file/dir), and size for each entry. Use '' or '.' for the root directory.",
           inputSchema: z.object({
-            path: z.string().describe("The directory path relative to repo root, e.g. 'src/lib' or '' for root"),
-          }).describe("The schema for listing a directory"),
+            path: z.string().describe("Directory path relative to repo root. Use '' or '.' for the root directory."),
+          }).describe("Parameters for listing a directory"),
           execute: async ({ path: dirPath }) => {
-            // CRITICAL FIX #4: Error catching inside tool execution
             try {
+              const normalizedPath = (!dirPath || dirPath === ".") ? "" : dirPath;
+              console.log(`[Tool:listDirectory] Listing ${owner}/${repo}/${normalizedPath || "/"} @ ${targetRef}`);
               const { data } = await octokit.rest.repos.getContent({
                 owner,
                 repo,
-                path: dirPath || "",
+                path: normalizedPath,
                 ref: targetRef,
               });
               if (!Array.isArray(data)) {
-                return `'${dirPath}' is a file, not a directory. Use readFile instead.`;
+                return `Error: '${dirPath}' is a file, not a directory. Use the readFile tool instead.`;
               }
               const listing = data.map((item: any) =>
-                `${item.type === "dir" ? "📁" : "📄"} ${item.name} (${item.type}, ${item.size || 0}b)`
+                `${item.type === "dir" ? "📁" : "📄"} ${item.name}  (${item.type}, ${item.size || 0} bytes)`
               ).join("\n");
-              // FIX #3: Aggressive truncation for directory listings
-              return truncateToolResult(`Directory: ${dirPath || "/"}\n\n${listing}`, 8000);
+              console.log(`[Tool:listDirectory] Success: ${data.length} entries`);
+              return truncate(`=== Directory: ${normalizedPath || "/"} ===\n\n${listing}`, 8000);
             } catch (err: any) {
-              // FIX #4: Return error as string, don't throw
-              return `Error listing '${dirPath}': ${err?.message || "Unknown error"}`;
+              console.error(`[Tool:listDirectory] Error: ${dirPath}`, err?.message);
+              return `Error: Could not list directory '${dirPath}' (${err?.message || "Unknown error"})`;
             }
           },
         });
 
-        // NOTE: must be "inputSchema", not "parameters" — ai@7 requirement, has regressed before
-        // Tool: Search for code in the repo
+        /* ═══════════════════════════════════════════
+         *  TOOL 3: search_code
+         *  Searches for code patterns across the repo.
+         * ═══════════════════════════════════════════ */
         tools.searchCode = tool({
-          description: "Search for code in the repository using GitHub's code search.",
+          description: "Search for code in the repository using GitHub's code search. Returns matching file paths.",
           inputSchema: z.object({
             query: z.string().describe("The search query, e.g. 'function handleSubmit' or 'import router'"),
-          }).describe("The schema for searching code"),
+          }).describe("Parameters for searching code"),
           execute: async ({ query }) => {
             try {
+              console.log(`[Tool:searchCode] Searching: "${query}" in ${repoFullName}`);
               const { data } = await octokit.rest.search.code({
                 q: `${query} repo:${repoFullName}`,
                 per_page: 10,
@@ -290,29 +281,91 @@ export async function POST(req: Request) {
                 return `No results found for "${query}" in ${repoFullName}.`;
               }
               const results = data.items.map((item: any) =>
-                `📄 ${item.path} — ${item.html_url}`
+                `📄 ${item.path}`
               ).join("\n");
-              return truncateToolResult(`Found ${data.total_count} results for "${query}":\n\n${results}`, 6000);
+              console.log(`[Tool:searchCode] Found ${data.total_count} results`);
+              return truncate(`Found ${data.total_count} results for "${query}":\n\n${results}`, 6000);
             } catch (err: any) {
-              return `Search failed: ${err?.message || "Unknown error"}`;
+              console.error(`[Tool:searchCode] Error:`, err?.message);
+              return `Error: Search failed (${err?.message || "Unknown error"})`;
             }
           },
         });
 
-        // NOTE: must be "inputSchema", not "parameters" — ai@7 requirement, has regressed before
-        // Tool: Propose a code change (read-only — does NOT write to GitHub)
+        /* ═══════════════════════════════════════════
+         *  TOOL 4: update_file (NEW — Commit Changes)
+         *  Writes content to a file and commits it.
+         * ═══════════════════════════════════════════ */
+        tools.updateFile = tool({
+          description:
+            "Update (or create) a file in the repository and commit the change. " +
+            "ALWAYS read the file first with readFile before updating it. " +
+            "Provide the COMPLETE new file content, not just the changed lines.",
+          inputSchema: z.object({
+            path: z.string().describe("File path relative to repo root, e.g. 'src/lib/utils.ts'"),
+            content: z.string().describe("The complete new file content (entire file, not a diff)"),
+            commitMessage: z.string().describe("A concise, descriptive commit message for this change"),
+          }).describe("Parameters for updating a file and committing"),
+          execute: async ({ path: filePath, content: newContent, commitMessage }) => {
+            try {
+              console.log(`[Tool:updateFile] Updating ${owner}/${repo}/${filePath} @ ${targetRef}`);
+
+              // Step 1: Get the current file SHA (required for updates)
+              let currentSha: string | undefined;
+              try {
+                const { data: existing } = await octokit.rest.repos.getContent({
+                  owner,
+                  repo,
+                  path: filePath,
+                  ref: targetRef,
+                });
+                if (!Array.isArray(existing) && existing.type === "file") {
+                  currentSha = existing.sha;
+                }
+              } catch (err: any) {
+                if (err?.status !== 404) {
+                  return `Error: Could not fetch current file SHA for '${filePath}' (${err?.message})`;
+                }
+                // 404 means new file — no SHA needed
+              }
+
+              // Step 2: Create or update the file
+              const { data: commitData } = await octokit.rest.repos.createOrUpdateFileContents({
+                owner,
+                repo,
+                path: filePath,
+                message: commitMessage,
+                content: Buffer.from(newContent).toString("base64"),
+                branch: targetRef,
+                ...(currentSha ? { sha: currentSha } : {}),
+              });
+
+              const commitUrl = commitData.commit?.html_url || "";
+              console.log(`[Tool:updateFile] Success: ${commitUrl}`);
+              return `✅ File '${filePath}' updated successfully!\nCommit: ${commitMessage}\nURL: ${commitUrl}`;
+            } catch (err: any) {
+              console.error(`[Tool:updateFile] Error:`, err?.message);
+              return `Error: Could not update file '${filePath}' (${err?.message || "Unknown error"})`;
+            }
+          },
+        });
+
+        /* ═══════════════════════════════════════════
+         *  TOOL 5: propose_change (Read-only diff preview)
+         *  For the DiffViewer UI — does NOT commit.
+         * ═══════════════════════════════════════════ */
         tools.proposeChange = tool({
           description:
-            "Propose a code change to a file in the repository. Read the current file, then return the modified version. " +
-            "The user will see a diff and can approve/discard. Use this when the user asks you to fix, refactor, or modify code.",
+            "Propose a code change that the user can review as a diff before applying. " +
+            "Use this when the user asks to see a proposed change before committing. " +
+            "The user will see a side-by-side diff and can approve or discard.",
           inputSchema: z.object({
-            path: z.string().describe("The file path relative to the repo root, e.g. 'src/lib/utils.ts'"),
+            path: z.string().describe("File path relative to repo root, e.g. 'src/lib/utils.ts'"),
             newContent: z.string().describe("The complete new file content after your changes"),
             explanation: z.string().describe("A brief explanation of what the change does and why"),
-          }).describe("The schema for proposing a code change"),
+          }).describe("Parameters for proposing a code change"),
           execute: async ({ path: filePath, newContent, explanation }) => {
             try {
-              // Read the current file to get oldContent and SHA
               const { data } = await octokit.rest.repos.getContent({
                 owner,
                 repo,
@@ -323,7 +376,6 @@ export async function POST(req: Request) {
                 return { error: `'${filePath}' is a directory, not a file.` };
               }
               const oldContent = Buffer.from(data.content, "base64").toString("utf-8");
-
               return {
                 type: "propose_change",
                 path: filePath,
@@ -335,7 +387,6 @@ export async function POST(req: Request) {
               };
             } catch (err: any) {
               if (err?.status === 404) {
-                // New file — no old content
                 return {
                   type: "propose_change",
                   path: filePath,
@@ -353,41 +404,44 @@ export async function POST(req: Request) {
       }
     }
 
-    // Build system prompt
-    let baseSystemPrompt = `You are Kareixo CodeChat — an expert AI coding assistant. You help developers understand, debug, and improve their code.`;
-    
+    /* ─────────────────────────────────────────────────────────
+     *  System Prompt — Autonomous Agent Behavior
+     * ───────────────────────────────────────────────────────── */
+    const hasTools = Object.keys(tools).length > 0;
+
+    let systemPrompt = `You are Kareixo, an autonomous AI engineering agent.`;
+
     if (repoFullName) {
-      baseSystemPrompt += `\n\nYou are working with the repository: ${repoFullName}`;
-      if (branch) baseSystemPrompt += ` (branch: ${branch})`;
+      systemPrompt += ` You are connected to GitHub repository "${repoFullName}"`;
+      if (branch) systemPrompt += ` on branch "${branch}"`;
+      systemPrompt += `.`;
     }
 
-    const hasTools = Object.keys(tools).length > 0;
+    if (hasTools) {
+      systemPrompt += `
+
+You have access to the following tools:
+- readFile: Read a file's contents from the repository.
+- listDirectory: List files and subdirectories.
+- searchCode: Search for code patterns across the repo.
+- updateFile: Update a file and commit the change to GitHub.
+- proposeChange: Propose a code change as a reviewable diff.
+
+RULES — follow these strictly:
+1. When the user asks about a file, the codebase, or repository structure, IMMEDIATELY call the appropriate tool (readFile or listDirectory). Do NOT guess or fabricate file contents.
+2. After receiving tool results, you MUST provide a thorough text response. Quote key code sections, explain what you found, and directly answer the user's question. NEVER stop after just calling a tool — always follow up with analysis.
+3. When asked to fix a bug or apply code changes: first readFile to get the current content, then use updateFile to commit the fix. Report the commit URL when done.
+4. For complex changes where the user should review first, use proposeChange instead of updateFile.
+5. If a tool returns an error, tell the user what happened and suggest an alternative approach.
+6. Keep responses focused and technical. Use code blocks with language tags for any code you show.`;
+    }
 
     const initialTier = selectedProvider === "NVIDIA_NIM_KIMI" ? "deep" : selectedProvider === "GROQ" ? "fallback" : "fast";
 
     const { result, provider } = await router.executeWithFailover(async (p) => {
-      // All current providers (NVIDIA NIM + Groq) support tool calling (conditionally based on router)
       const supportsTools = hasTools && p.provider.supportsTools && !p.disableTools;
-      
-      let systemPrompt = baseSystemPrompt;
-      if (repoFullName && supportsTools) {
-        systemPrompt += `\n\nYou have access to tools to read files, explore the repository structure, search code, and propose code changes. Use them when you need to see actual code — don't guess at implementations.`;
-        systemPrompt += `\n\nWhen the user asks about code or the repo, ALWAYS call the appropriate tool first. Start by listing the root directory to understand the project structure, then read specific files as needed.`;
-        systemPrompt += `\n\nWhen the user asks you to fix, refactor, or modify code, use the proposeChange tool to propose the change. Always read the file first, then propose the full modified file content. The user will see a diff and can approve or discard.`;
-        systemPrompt += `\n\nIMPORTANT: After receiving tool results, ALWAYS provide a final text response summarizing what you found. Never leave the user without a text answer.`;
-      }
 
       try {
-        /* ─────────────────────────────────────────────────────
-         *  CRITICAL FIX #2: Enable maxSteps for Multi-Turn Loop
-         *
-         *  Without maxSteps, the SDK calls the tool once and
-         *  returns the tool_call as the "final" response — it
-         *  never feeds the result back to the LLM for synthesis.
-         *
-         *  maxSteps: 8 allows: call tool → read result →
-         *  call another tool → read result → ... → final answer
-         * ───────────────────────────────────────────────────── */
         const res = streamText({
           model: p.provider.model,
           system: systemPrompt,
@@ -398,13 +452,16 @@ export async function POST(req: Request) {
               groq: { reasoningFormat: "hidden" },
             },
           } : {}),
+          onError: (error) => {
+            console.error(`[CodeChat] Stream error from ${p.provider.name}:`, error);
+          },
           onFinish: async (event) => {
+            // Persist conversation to DB
             if (finalConversationId) {
               try {
                 const lastUserMsg = rawMessages[rawMessages.length - 1];
                 
                 if (lastUserMsg) {
-                  // Determine content based on format
                   let userContent = "";
                   if (typeof lastUserMsg.content === "string") userContent = lastUserMsg.content;
                   else if (Array.isArray(lastUserMsg.parts)) {
@@ -434,14 +491,14 @@ export async function POST(req: Request) {
             }
 
             if (event.finishReason !== "stop" && event.finishReason !== "tool-calls") {
-              console.log(`[CodeChat] Stream finished with reason: ${event.finishReason}`);
+              console.log(`[CodeChat] Finished: reason=${event.finishReason}, steps=${event.steps?.length || 0}, text=${(event.text || "").length} chars`);
             }
           },
         });
 
         return res;
       } catch (error) {
-        console.error("StreamText Error:", error);
+        console.error(`[CodeChat] StreamText error (${p.provider.name}):`, error);
         throw error;
       }
     }, "chat", initialTier);
