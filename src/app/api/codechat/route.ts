@@ -310,7 +310,7 @@ export async function POST(req: Request) {
             try {
               console.log(`[Tool:updateFile] Updating ${owner}/${repo}/${filePath} @ ${targetRef}`);
 
-              // Step 1: Get the current file SHA (required for updates)
+              // Step A: Fetch current SHA
               let currentSha: string | undefined;
               try {
                 const { data: existing } = await octokit.rest.repos.getContent({
@@ -324,17 +324,20 @@ export async function POST(req: Request) {
                 }
               } catch (err: any) {
                 if (err?.status !== 404) {
-                  return `Error: Could not fetch current file SHA for '${filePath}' (${err?.message})`;
+                  return JSON.stringify({
+                    success: false,
+                    error: `Failed to fetch existing file SHA: ${err?.message}`
+                  });
                 }
-                // 404 means new file — no SHA needed
+                // 404 means new file
               }
 
-              // Step 2: Create or update the file
+              // Step B: Send Commit
               const { data: commitData } = await octokit.rest.repos.createOrUpdateFileContents({
                 owner,
                 repo,
                 path: filePath,
-                message: commitMessage,
+                message: commitMessage || "fix: updated file via Kareixo Agent",
                 content: Buffer.from(newContent).toString("base64"),
                 branch: targetRef,
                 ...(currentSha ? { sha: currentSha } : {}),
@@ -345,7 +348,11 @@ export async function POST(req: Request) {
               return `✅ File '${filePath}' updated successfully!\nCommit: ${commitMessage}\nURL: ${commitUrl}`;
             } catch (err: any) {
               console.error(`[Tool:updateFile] Error:`, err?.message);
-              return `Error: Could not update file '${filePath}' (${err?.message || "Unknown error"})`;
+              // Step C: Ironclad Try/Catch
+              return JSON.stringify({
+                success: false,
+                error: `GitHub Commit Failed: ${err.message}. If this is a 403, please verify that your GitHub App or Token has 'Contents: Read and Write' permissions.`
+              });
             }
           },
         });
@@ -430,7 +437,10 @@ You have access to the following tools:
 RULES — follow these strictly:
 1. When the user asks about a file, the codebase, or repository structure, IMMEDIATELY call the appropriate tool (readFile or listDirectory). Do NOT guess or fabricate file contents.
 2. After receiving tool results, you MUST provide a thorough text response. Quote key code sections, explain what you found, and directly answer the user's question. NEVER stop after just calling a tool — always follow up with analysis.
-3. When asked to fix a bug or apply code changes: first readFile to get the current content, then use updateFile to commit the fix. Report the commit URL when done.
+3. When asked to fix code or make edits:
+   - Do NOT print out "Action: Call readFile" or describe your internal steps in plain text.
+   - Silently invoke the tools directly.
+   - After the 'updateFile' tool completes, confirm to the user what was changed and provide the commit URL.
 4. For complex changes where the user should review first, use proposeChange instead of updateFile.
 5. If a tool returns an error, tell the user what happened and suggest an alternative approach.
 6. Keep responses focused and technical. Use code blocks with language tags for any code you show.`;
