@@ -200,15 +200,23 @@ export async function POST(req: Request) {
 
         tools.listDirectory = tool({
           description: "List files and subdirectories. Use '' or '.' for the root directory.",
-          inputSchema: z.object({ path: z.string() }),
-          execute: async ({ path: dirPath }) => {
+          inputSchema: z.object({
+            path: z.string().describe("The path to list. Use an empty string '' for the root directory. NEVER use '.'")
+          }),
+          execute: async ({ path }) => {
             try {
-              const normalizedPath = (!dirPath || dirPath === ".") ? "" : dirPath;
-              const { data } = await octokit.rest.repos.getContent({ owner, repo, path: normalizedPath, ref: targetRef });
-              if (!Array.isArray(data)) return `Error: '${dirPath}' is a file.`;
+              const safePath = path === "." || path === "./" ? "" : path;
+              const { data } = await octokit.rest.repos.getContent({ owner, repo, path: safePath, ref: targetRef });
+              
+              if (!Array.isArray(data)) {
+                return JSON.stringify({ error: "Failed to list directory. GitHub API returned: " + ((data as any).message || "Unknown error") });
+              }
+              
               const listing = data.map((item: any) => `${item.type === "dir" ? "📁" : "📄"} ${item.name} (${item.size || 0} bytes)`).join("\n");
-              return truncate(`=== Directory: ${normalizedPath || "/"} ===\n\n${listing}`, 8000);
-            } catch (err: any) { return `Error listing '${dirPath}' (${err?.message})`; }
+              return truncate(`=== Directory: ${safePath || "/"} ===\n\n${listing}`, 8000);
+            } catch (err: any) {
+              return JSON.stringify({ error: `Error listing '${path}' (${err?.message})` });
+            }
           }
         });
 
@@ -410,7 +418,8 @@ RULES — follow these strictly:
 2. After receiving tool results, you MUST provide a thorough text response. Quote key code sections, explain what you found, and directly answer the user's question. NEVER stop after just calling a tool — always follow up with analysis.
 3. Every file change results in a pull request. After creating one, always reply with the PR URL and a one-line summary of what changed — never claim a change was made without that URL attached, and never claim you lack file access when tools are present in your context.
 4. Keep responses focused and technical. Use code blocks with language tags for any code you show.
-5. You have a budget of up to 20 internal steps. If you are examining a folder or fixing multiple issues, use tools heavily and batch actions or prioritize appropriately rather than running out of steps silently.`;
+5. You have a budget of up to 20 internal steps. If you are examining a folder or fixing multiple issues, use tools heavily and batch actions or prioritize appropriately rather than running out of steps silently.
+6. When you need to read a file or list a directory, you MUST use the provided native tools. NEVER output tool calls as markdown code blocks (e.g., no \`\`\`bash listDirectory\`\`\`).`;
     }
 
     let initialTier: "deep" | "fallback" | "fast" = selectedProvider === "NVIDIA_NIM_KIMI" ? "deep" : selectedProvider === "GROQ" ? "fallback" : "fast";
