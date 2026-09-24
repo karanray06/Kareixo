@@ -419,7 +419,7 @@ RULES — follow these strictly:
 3. Every file change results in a pull request. After creating one, always reply with the PR URL and a one-line summary of what changed — never claim a change was made without that URL attached, and never claim you lack file access when tools are present in your context.
 4. Keep responses focused and technical. Use code blocks with language tags for any code you show.
 5. You have a budget of up to 20 internal steps. If you are examining a folder or fixing multiple issues, use tools heavily and batch actions or prioritize appropriately rather than running out of steps silently.
-6. When you need to read a file or list a directory, you MUST use the provided native tools. NEVER output tool calls as markdown code blocks (e.g., no \`\`\`bash listDirectory\`\`\`).`;
+6. When you need to read a file or list a directory, you MUST use the provided native tools. NEVER output tool calls as markdown code blocks (e.g., no \`\`\`bash listDirectory\`\`\`). DO NOT attempt to call or invent any tool names that are not explicitly provided to you (e.g., do not call 'checkRepo', 'gitStatus', etc). If you lack a tool for a task, inform the user directly.`;
     }
 
     let initialTier: "deep" | "fallback" | "fast" = selectedProvider === "NVIDIA_NIM_KIMI" ? "deep" : selectedProvider === "GROQ" ? "fallback" : "fast";
