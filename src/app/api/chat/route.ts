@@ -46,43 +46,6 @@ export async function POST(req: Request) {
         messages,
       });
 
-      // Intercept the stream to catch immediate failures (e.g. 401/429) before streaming
-      const reader = res.fullStream.getReader();
-      const buffered: any[] = [];
-      let streamError: any = null;
-
-      for (let i = 0; i < 2; i++) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        if (value.type === "error") {
-          streamError = value.error;
-          break;
-        }
-        buffered.push(value);
-      }
-
-      if (streamError) {
-        throw streamError;
-      }
-
-      // It's a valid stream. Reconstruct fullStream so the start chunks aren't lost.
-      const customFullStream = new ReadableStream({
-        start(controller) {
-          for (const chunk of buffered) controller.enqueue(chunk);
-        },
-        async pull(controller) {
-          const { done, value } = await reader.read();
-          if (done) controller.close();
-          else controller.enqueue(value);
-        },
-        cancel() {
-          reader.cancel();
-        }
-      });
-
-      // Override fullStream property bypass readonly
-      Object.defineProperty(res, "fullStream", { value: customFullStream, configurable: true });
-
       return res;
     }, taskType as "code" | "chat");
 

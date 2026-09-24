@@ -199,9 +199,9 @@ export async function POST(req: Request) {
         });
 
         tools.listDirectory = tool({
-          description: "List files and subdirectories. Use '' or '.' for the root directory.",
+          description: "List files and subdirectories. Use an empty string '' for the root directory.",
           inputSchema: z.object({
-            path: z.string().describe("The path to list. Use an empty string '' for the root directory. NEVER use '.'")
+            path: z.string().describe("The path to list. Use an empty string '' for the root directory.")
           }),
           execute: async ({ path }) => {
             try {
@@ -476,41 +476,6 @@ RULES — follow these strictly:
             }
           },
         });
-
-        // Intercept the stream to catch immediate failures (e.g. 401/429) before streaming
-        const reader = res.fullStream.getReader();
-        const buffered: any[] = [];
-        let streamError: any = null;
-
-        for (let i = 0; i < 2; i++) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          if (value.type === "error") {
-            streamError = value.error;
-            break;
-          }
-          buffered.push(value);
-        }
-
-        if (streamError) {
-          throw streamError;
-        }
-
-        const customFullStream = new ReadableStream({
-          start(controller) {
-            for (const chunk of buffered) controller.enqueue(chunk);
-          },
-          async pull(controller) {
-            const { done, value } = await reader.read();
-            if (done) controller.close();
-            else controller.enqueue(value);
-          },
-          cancel() {
-            reader.cancel();
-          }
-        });
-
-        Object.defineProperty(res, "fullStream", { value: customFullStream, configurable: true });
 
         return res;
       } catch (error) {
