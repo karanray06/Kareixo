@@ -489,6 +489,10 @@ RULES — follow these strictly:
     });
   } catch (error: any) {
     console.error("CodeChat API error:", error);
-    return NextResponse.json({ error: error.message || "CodeChat service unavailable." }, { status: 503 });
+    let errorMsg = error.message || "CodeChat service unavailable.";
+    if (errorMsg.includes("exhausted all retries")) {
+      errorMsg = "API Configuration Error: All providers failed. Please ensure your Vercel Environment Variables (NVIDIA_NIM_KIMI_API_KEY, NVIDIA_NIM_MISTRAL_API_KEY, GROQ_API_KEY) are configured and valid.";
+    }
+    return NextResponse.json({ error: errorMsg }, { status: 503 });
   }
 }

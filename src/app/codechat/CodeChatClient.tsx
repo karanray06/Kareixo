@@ -50,6 +50,7 @@ function CodeChatClientContent({ repos }: { repos: RepoInfo[] }) {
   const initialConversationId = searchParams.get("conversation");
   const [conversationId, setConversationId] = useState<string | null>(initialConversationId);
   const [conversations, setConversations] = useState<any[]>([]);
+  const [localError, setLocalError] = useState<string | null>(null);
 
   const fetchConversations = useCallback(async (repoFullName: string) => {
     try {
@@ -188,10 +189,12 @@ function CodeChatClientContent({ repos }: { repos: RepoInfo[] }) {
     if (!input.trim() || isLoading) return;
     const currentInput = input;
     setInput("");
+    setLocalError(null);
     try {
       await sendMessage({ role: "user", parts: [{ type: "text", text: currentInput }] });
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      setLocalError(err.message || "Failed to send message.");
     }
   };
 
@@ -684,9 +687,9 @@ function CodeChatClientContent({ repos }: { repos: RepoInfo[] }) {
                 );
               })
             )}
-            {error && (
+            {(error || localError) && (
               <div className="bg-diff-deletion-line text-diff-deletion-text p-3 rounded-lg font-body-sm text-body-sm border border-accent-red/20 max-w-4xl">
-                {error.message || "An error occurred."}
+                {error?.message || localError || "An error occurred."}
               </div>
             )}
             <div ref={messagesEndRef} />
