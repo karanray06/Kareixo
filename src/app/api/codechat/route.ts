@@ -409,7 +409,8 @@ RULES — follow these strictly:
 1. When the user asks about a file, the codebase, or repository structure, IMMEDIATELY call the appropriate tool (readFile or listDirectory). Do NOT guess or fabricate file contents.
 2. After receiving tool results, you MUST provide a thorough text response. Quote key code sections, explain what you found, and directly answer the user's question. NEVER stop after just calling a tool — always follow up with analysis.
 3. Every file change results in a pull request. After creating one, always reply with the PR URL and a one-line summary of what changed — never claim a change was made without that URL attached, and never claim you lack file access when tools are present in your context.
-4. Keep responses focused and technical. Use code blocks with language tags for any code you show.`;
+4. Keep responses focused and technical. Use code blocks with language tags for any code you show.
+5. You have a budget of up to 20 internal steps. If you are examining a folder or fixing multiple issues, use tools heavily and batch actions or prioritize appropriately rather than running out of steps silently.`;
     }
 
     let initialTier: "deep" | "fallback" | "fast" = selectedProvider === "NVIDIA_NIM_KIMI" ? "deep" : selectedProvider === "GROQ" ? "fallback" : "fast";
@@ -426,7 +427,7 @@ RULES — follow these strictly:
         tier: initialTier,
         provider: p.provider.name,
         isEditIntent,
-        toolChoice: supportsTools ? (isEditIntent ? "required" : "auto") : "none"
+        toolChoice: supportsTools ? (isEditIntent ? "required (first step only)" : "auto") : "none"
       });
 
       try {
@@ -434,7 +435,15 @@ RULES — follow these strictly:
           model: p.provider.model,
           system: systemPrompt,
           messages: messages as any,
-          ...(supportsTools ? { tools, stopWhen: stepCountIs(10), toolChoice: (isEditIntent ? "required" : "auto") as any } : {}),
+          ...(supportsTools ? {
+            tools,
+            stopWhen: stepCountIs(20),
+            prepareStep: ({ stepNumber }) => {
+              return {
+                toolChoice: stepNumber === 0 && isEditIntent ? "required" : "auto",
+              };
+            }
+          } : {}),
           ...(p.provider.name === "GROQ" ? { providerOptions: { groq: { reasoningFormat: "hidden" } } } : {}),
           onError: (error) => { console.error(`[CodeChat] Stream error from ${p.provider.name}:`, error); },
           onFinish: async (event) => {
@@ -450,7 +459,7 @@ RULES — follow these strictly:
                   await db.insert(chatMessages).values({ conversationId: finalConversationId, role: "user", content: userContent });
                 }
                 await db.insert(chatMessages).values({ conversationId: finalConversationId, role: "assistant", content: event.text || "", model: provider.modelId });
-                await db.update(chatConversations).set({ updatedAt: new Date() }).where({ id: finalConversationId } as any);
+                await db.update(chatConversations).set({ updatedAt: new Date() }).where(eq(chatConversations.id, finalConversationId));
               } catch (err) { console.error("[CodeChat persistence error]:", err); }
             }
             if (event.finishReason !== "stop" && event.finishReason !== "tool-calls") {
