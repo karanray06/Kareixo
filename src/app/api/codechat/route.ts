@@ -1,4 +1,4 @@
-import { streamText, tool } from "ai";
+import { streamText, tool, stepCountIs } from "ai";
 import { z } from "zod";
 import { router } from "@/lib/model-router";
 import { auth } from "@/auth";
@@ -8,20 +8,13 @@ import { repositories, github_installations, chatConversations, chatMessages } f
 import { eq, and } from "drizzle-orm";
 import { getInstallationOctokit } from "@/lib/github-app";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limiter";
+import { createBranchAndPR } from "@/lib/github-writer";
+import { Sandbox } from "e2b";
 
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 /* ─────────────────────────────────────────────────────────────
  *  Message Sanitization for NVIDIA NIM
- *
- *  The Vercel AI SDK's UIMessage format contains fields that
- *  NVIDIA NIM's OpenAI-compat layer does NOT understand:
- *    - `parts` arrays, `reasoning` objects, `id`, `createdAt`
- *    - nested tool_call metadata with non-standard shapes
- *
- *  We must convert UIMessages → strict OpenAI ChatCompletionMessage[]
- *  while PRESERVING the tool_calls / tool role messages that the
- *  SDK's multi-turn loop depends on.
  * ───────────────────────────────────────────────────────────── */
 
 type SanitizedMessage = {
@@ -41,7 +34,6 @@ function sanitizeMessages(rawMessages: any[]): SanitizedMessage[] {
   for (const msg of rawMessages) {
     if (!msg || !msg.role) continue;
 
-    // ── Handle tool-result messages (role: "tool") ──
     if (msg.role === "tool") {
       sanitized.push({
         role: "tool",
@@ -51,7 +43,6 @@ function sanitizeMessages(rawMessages: any[]): SanitizedMessage[] {
       continue;
     }
 
-    // ── Handle UIMessage with `parts` array (Vercel AI SDK v4+) ──
     if (msg.parts && Array.isArray(msg.parts)) {
       const textParts = msg.parts
         .filter((p: any) => p.type === "text")
@@ -81,7 +72,6 @@ function sanitizeMessages(rawMessages: any[]): SanitizedMessage[] {
             tool_calls: toolCalls,
           });
 
-          // Emit the tool-result messages for each completed invocation
           for (const tc of toolInvocations) {
             if (tc.state === "result" && tc.result !== undefined) {
               const resultStr = typeof tc.result === "string"
@@ -98,7 +88,6 @@ function sanitizeMessages(rawMessages: any[]): SanitizedMessage[] {
         }
       }
 
-      // Plain text message (user or assistant without tool calls)
       if (textParts.trim() || msg.role === "user") {
         sanitized.push({
           role: msg.role === "user" ? "user" : "assistant",
@@ -108,7 +97,6 @@ function sanitizeMessages(rawMessages: any[]): SanitizedMessage[] {
       continue;
     }
 
-    // ── Handle legacy simple {role, content} messages ──
     if (msg.role === "user" || msg.role === "assistant") {
       const content = typeof msg.content === "string"
         ? msg.content
@@ -131,7 +119,6 @@ function sanitizeMessages(rawMessages: any[]): SanitizedMessage[] {
   });
 }
 
-/* ── Truncation Helper ── */
 function truncate(str: string, maxLen: number): string {
   if (str.length <= maxLen) return str;
   return str.slice(0, maxLen) + "\n...[TRUNCATED]";
@@ -155,8 +142,12 @@ export async function POST(req: Request) {
     }
 
     const { messages: rawMessages, repoFullName, branch, conversationId, provider: selectedProvider } = await req.json();
-
     const messages = sanitizeMessages(rawMessages || []);
+
+    const lastUserMsg = messages.filter(m => m.role === 'user').pop();
+    const lastUserContent = lastUserMsg?.content || "";
+    const editKeywords = ["edit", "fix", "add", "update", "create", "delete", "refactor", "commit", "change"];
+    const isEditIntent = editKeywords.some(k => lastUserContent.toLowerCase().includes(k));
 
     const tools: Record<string, any> = {};
     const db = getDb();
@@ -195,229 +186,206 @@ export async function POST(req: Request) {
         const octokit = await getInstallationOctokit(repoRecord.inst.installationId);
         const targetRef = branch || "main";
 
-        /* ═══════════════════════════════════════════
-         *  TOOL 1: read_file
-         *  Reads a single file and returns its decoded content.
-         * ═══════════════════════════════════════════ */
         tools.readFile = tool({
-          description: "Read a file from the repository. Returns the decoded UTF-8 file content. Use this when you need to examine source code, configs, or any text file.",
-          inputSchema: z.object({
-            path: z.string().describe("File path relative to repo root, e.g. 'src/lib/utils.ts' or 'README.md'"),
-          }).describe("Parameters for reading a file"),
+          description: "Read a file from the repository.",
+          inputSchema: z.object({ path: z.string() }),
           execute: async ({ path: filePath }) => {
             try {
-              console.log(`[Tool:readFile] Reading ${owner}/${repo}/${filePath} @ ${targetRef}`);
-              const { data } = await octokit.rest.repos.getContent({
-                owner,
-                repo,
-                path: filePath,
-                ref: targetRef,
-              });
-              if (Array.isArray(data) || data.type !== "file") {
-                return `Error: '${filePath}' is a directory, not a file. Use the listDirectory tool instead.`;
-              }
-              const content = Buffer.from(data.content, "base64").toString("utf-8");
-              const result = truncate(content, 12000);
-              console.log(`[Tool:readFile] Success: ${filePath} (${content.length} chars)`);
-              return `=== File: ${filePath} ===\n\n${result}`;
-            } catch (err: any) {
-              console.error(`[Tool:readFile] Error: ${filePath}`, err?.message);
-              return `Error: Could not read file '${filePath}' (${err?.message || "Unknown error"})`;
-            }
-          },
+              const { data } = await octokit.rest.repos.getContent({ owner, repo, path: filePath, ref: targetRef });
+              if (Array.isArray(data) || data.type !== "file") return `Error: '${filePath}' is a directory.`;
+              return `=== File: ${filePath} ===\n\n${truncate(Buffer.from(data.content, "base64").toString("utf-8"), 12000)}`;
+            } catch (err: any) { return `Error reading '${filePath}' (${err?.message})`; }
+          }
         });
 
-        /* ═══════════════════════════════════════════
-         *  TOOL 2: list_directory
-         *  Lists the contents of a directory.
-         * ═══════════════════════════════════════════ */
         tools.listDirectory = tool({
-          description: "List files and subdirectories in a repository directory. Returns name, type (file/dir), and size for each entry. Use '' or '.' for the root directory.",
-          inputSchema: z.object({
-            path: z.string().describe("Directory path relative to repo root. Use '' or '.' for the root directory."),
-          }).describe("Parameters for listing a directory"),
+          description: "List files and subdirectories. Use '' or '.' for the root directory.",
+          inputSchema: z.object({ path: z.string() }),
           execute: async ({ path: dirPath }) => {
             try {
               const normalizedPath = (!dirPath || dirPath === ".") ? "" : dirPath;
-              console.log(`[Tool:listDirectory] Listing ${owner}/${repo}/${normalizedPath || "/"} @ ${targetRef}`);
-              const { data } = await octokit.rest.repos.getContent({
-                owner,
-                repo,
-                path: normalizedPath,
-                ref: targetRef,
-              });
-              if (!Array.isArray(data)) {
-                return `Error: '${dirPath}' is a file, not a directory. Use the readFile tool instead.`;
-              }
-              const listing = data.map((item: any) =>
-                `${item.type === "dir" ? "📁" : "📄"} ${item.name}  (${item.type}, ${item.size || 0} bytes)`
-              ).join("\n");
-              console.log(`[Tool:listDirectory] Success: ${data.length} entries`);
+              const { data } = await octokit.rest.repos.getContent({ owner, repo, path: normalizedPath, ref: targetRef });
+              if (!Array.isArray(data)) return `Error: '${dirPath}' is a file.`;
+              const listing = data.map((item: any) => `${item.type === "dir" ? "📁" : "📄"} ${item.name} (${item.size || 0} bytes)`).join("\n");
               return truncate(`=== Directory: ${normalizedPath || "/"} ===\n\n${listing}`, 8000);
-            } catch (err: any) {
-              console.error(`[Tool:listDirectory] Error: ${dirPath}`, err?.message);
-              return `Error: Could not list directory '${dirPath}' (${err?.message || "Unknown error"})`;
-            }
-          },
+            } catch (err: any) { return `Error listing '${dirPath}' (${err?.message})`; }
+          }
         });
 
-        /* ═══════════════════════════════════════════
-         *  TOOL 3: search_code
-         *  Searches for code patterns across the repo.
-         * ═══════════════════════════════════════════ */
         tools.searchCode = tool({
-          description: "Search for code in the repository using GitHub's code search. Returns matching file paths.",
-          inputSchema: z.object({
-            query: z.string().describe("The search query, e.g. 'function handleSubmit' or 'import router'"),
-          }).describe("Parameters for searching code"),
+          description: "Search for code across the repo.",
+          inputSchema: z.object({ query: z.string() }),
           execute: async ({ query }) => {
             try {
-              console.log(`[Tool:searchCode] Searching: "${query}" in ${repoFullName}`);
-              const { data } = await octokit.rest.search.code({
-                q: `${query} repo:${repoFullName}`,
-                per_page: 10,
-              });
-              if (data.total_count === 0) {
-                return `No results found for "${query}" in ${repoFullName}.`;
-              }
-              const results = data.items.map((item: any) =>
-                `📄 ${item.path}`
-              ).join("\n");
-              console.log(`[Tool:searchCode] Found ${data.total_count} results`);
-              return truncate(`Found ${data.total_count} results for "${query}":\n\n${results}`, 6000);
-            } catch (err: any) {
-              console.error(`[Tool:searchCode] Error:`, err?.message);
-              return `Error: Search failed (${err?.message || "Unknown error"})`;
-            }
-          },
+              const { data } = await octokit.rest.search.code({ q: `${query} repo:${repoFullName}`, per_page: 10 });
+              if (data.total_count === 0) return `No results found for "${query}".`;
+              return truncate(`Found ${data.total_count} results:\n\n${data.items.map((item: any) => `📄 ${item.path}`).join("\n")}`, 6000);
+            } catch (err: any) { return `Error: Search failed (${err?.message})`; }
+          }
         });
 
-        /* ═══════════════════════════════════════════
-         *  TOOL 4: update_file (NEW — Commit Changes)
-         *  Writes content to a file and commits it.
-         * ═══════════════════════════════════════════ */
         tools.updateFile = tool({
-          description:
-            "Update (or create) a file in the repository and commit the change. " +
-            "ALWAYS read the file first with readFile before updating it. " +
-            "Provide the COMPLETE new file content, not just the changed lines.",
+          description: "Update an existing file in the repository. This creates a branch and opens a Pull Request.",
           inputSchema: z.object({
             path: z.string().describe("File path relative to repo root, e.g. 'src/lib/utils.ts'"),
-            content: z.string().describe("The complete new file content (entire file, not a diff)"),
-            commitMessage: z.string().describe("A concise, descriptive commit message for this change"),
-          }).describe("Parameters for updating a file and committing"),
-          execute: async ({ path: filePath, content: newContent, commitMessage }) => {
+            content: z.string().describe("The COMPLETE new file content"),
+            commitMessage: z.string().describe("Commit message for this change"),
+            explanation: z.string().describe("Explanation of changes for the PR body")
+          }),
+          execute: async ({ path: filePath, content: newContent, commitMessage, explanation }) => {
             try {
-              console.log(`[Tool:updateFile] Updating ${owner}/${repo}/${filePath} @ ${targetRef}`);
-
-              // Step A: Fetch current SHA
               let currentSha: string | undefined;
               try {
-                const { data: existing } = await octokit.rest.repos.getContent({
-                  owner,
-                  repo,
-                  path: filePath,
-                  ref: targetRef,
-                });
-                if (!Array.isArray(existing) && existing.type === "file") {
-                  currentSha = existing.sha;
-                }
+                const { data: existing } = await octokit.rest.repos.getContent({ owner, repo, path: filePath, ref: targetRef });
+                if (!Array.isArray(existing) && existing.type === "file") currentSha = existing.sha;
               } catch (err: any) {
-                if (err?.status !== 404) {
-                  return JSON.stringify({
-                    success: false,
-                    error: `Failed to fetch existing file SHA: ${err?.message}`
-                  });
-                }
-                // 404 means new file
+                if (err?.status !== 404) return JSON.stringify({ success: false, error: err?.message });
               }
-
-              // Step B: Send Commit
-              const { data: commitData } = await octokit.rest.repos.createOrUpdateFileContents({
-                owner,
-                repo,
-                path: filePath,
-                message: commitMessage || "fix: updated file via Kareixo Agent",
-                content: Buffer.from(newContent).toString("base64"),
-                branch: targetRef,
-                ...(currentSha ? { sha: currentSha } : {}),
+              if (!currentSha) return JSON.stringify({ success: false, error: "File not found. Use createFile instead." });
+              
+              const prResult = await createBranchAndPR({
+                octokit, owner, repo, path: filePath, content: newContent,
+                baseSha: currentSha, message: commitMessage, explanation: explanation || commitMessage, defaultBranch: targetRef
               });
-
-              const commitUrl = commitData.commit?.html_url || "";
-              console.log(`[Tool:updateFile] Success: ${commitUrl}`);
-              return `✅ File '${filePath}' updated successfully!\nCommit: ${commitMessage}\nURL: ${commitUrl}`;
-            } catch (err: any) {
-              console.error(`[Tool:updateFile] Error:`, err?.message);
-              // Step C: Ironclad Try/Catch
-              return JSON.stringify({
-                success: false,
-                error: `GitHub Commit Failed: ${err.message}. If this is a 403, please verify that your GitHub App or Token has 'Contents: Read and Write' permissions.`
-              });
-            }
-          },
+              return JSON.stringify({ success: true, url: prResult.prUrl, message: `PR opened at ${prResult.prUrl}` });
+            } catch (err: any) { return JSON.stringify({ success: false, error: err.message }); }
+          }
         });
 
-        /* ═══════════════════════════════════════════
-         *  TOOL 5: propose_change (Read-only diff preview)
-         *  For the DiffViewer UI — does NOT commit.
-         * ═══════════════════════════════════════════ */
-        tools.proposeChange = tool({
-          description:
-            "Propose a code change that the user can review as a diff before applying. " +
-            "Use this when the user asks to see a proposed change before committing. " +
-            "The user will see a side-by-side diff and can approve or discard.",
+        tools.createFile = tool({
+          description: "Create a NEW file in the repository. This creates a branch and opens a Pull Request.",
           inputSchema: z.object({
-            path: z.string().describe("File path relative to repo root, e.g. 'src/lib/utils.ts'"),
-            newContent: z.string().describe("The complete new file content after your changes"),
-            explanation: z.string().describe("A brief explanation of what the change does and why"),
-          }).describe("Parameters for proposing a code change"),
-          execute: async ({ path: filePath, newContent, explanation }) => {
+            path: z.string().describe("File path relative to repo root"),
+            content: z.string().describe("The COMPLETE new file content"),
+            commitMessage: z.string().describe("Commit message for this change"),
+            explanation: z.string().describe("Explanation of changes for the PR body")
+          }),
+          execute: async ({ path: filePath, content: newContent, commitMessage, explanation }) => {
             try {
-              const { data } = await octokit.rest.repos.getContent({
-                owner,
-                repo,
-                path: filePath,
-                ref: targetRef,
+              // Verify file does not exist
+              try {
+                await octokit.rest.repos.getContent({ owner, repo, path: filePath, ref: targetRef });
+                return JSON.stringify({ success: false, error: "File already exists. Use updateFile instead." });
+              } catch (err: any) {
+                if (err?.status !== 404) return JSON.stringify({ success: false, error: err?.message });
+              }
+              
+              const prResult = await createBranchAndPR({
+                octokit, owner, repo, path: filePath, content: newContent,
+                baseSha: "", message: commitMessage, explanation: explanation || commitMessage, defaultBranch: targetRef
               });
-              if (Array.isArray(data) || data.type !== "file") {
-                return { error: `'${filePath}' is a directory, not a file.` };
+              return JSON.stringify({ success: true, url: prResult.prUrl, message: `PR opened at ${prResult.prUrl}` });
+            } catch (err: any) { return JSON.stringify({ success: false, error: err.message }); }
+          }
+        });
+
+        tools.deleteFile = tool({
+          description: "Delete an existing file in the repository. This creates a branch and opens a Pull Request.",
+          inputSchema: z.object({
+            path: z.string().describe("File path relative to repo root"),
+            commitMessage: z.string().describe("Commit message for this change"),
+            explanation: z.string().describe("Explanation of changes for the PR body")
+          }),
+          execute: async ({ path: filePath, commitMessage, explanation }) => {
+            try {
+              let currentSha: string | undefined;
+              try {
+                const { data: existing } = await octokit.rest.repos.getContent({ owner, repo, path: filePath, ref: targetRef });
+                if (!Array.isArray(existing) && existing.type === "file") currentSha = existing.sha;
+              } catch (err: any) {
+                return JSON.stringify({ success: false, error: `Failed to fetch file: ${err?.message}` });
               }
-              const oldContent = Buffer.from(data.content, "base64").toString("utf-8");
-              return {
-                type: "propose_change",
-                path: filePath,
-                oldContent,
-                newContent,
-                sha: data.sha,
-                explanation,
-                repoFullName,
-              };
+              if (!currentSha) return JSON.stringify({ success: false, error: "File not found." });
+              
+              const timestamp = Date.now();
+              const branchName = `kareixo/delete-${timestamp}`;
+              
+              const { data: refData } = await octokit.rest.git.getRef({ owner, repo, ref: `heads/${targetRef}` });
+              const baseCommitSha = refData.object.sha;
+              await octokit.rest.git.createRef({ owner, repo, ref: `refs/heads/${branchName}`, sha: baseCommitSha });
+              
+              await octokit.rest.repos.deleteFile({
+                owner, repo, path: filePath, message: commitMessage, sha: currentSha, branch: branchName
+              });
+              
+              const { data: pr } = await octokit.rest.pulls.create({
+                owner, repo, title: `[Kareixo CodeChat] ${commitMessage}`,
+                head: branchName, base: targetRef, body: `## CodeChat Proposed Deletion\n\n${explanation}\n\n---\n\n*This PR was created by Kareixo CodeChat.*`
+              });
+              
+              return JSON.stringify({ success: true, url: pr.html_url, message: `PR opened at ${pr.html_url}` });
+            } catch (err: any) { return JSON.stringify({ success: false, error: err.message }); }
+          }
+        });
+
+        tools.proposeChange = tools.updateFile; // Alias for backward compatibility if the model uses it
+
+        tools.runCommand = tool({
+          description: "Run a shell command (e.g. npm test, tsc, lint) in an isolated sandbox clone of the repo to verify changes before committing.",
+          inputSchema: z.object({ command: z.string() }),
+          execute: async ({ command }) => {
+            if (!process.env.E2B_API_KEY) return JSON.stringify({ success: false, error: "E2B_API_KEY not configured" });
+            
+            let sandbox: Sandbox | null = null;
+            try {
+              sandbox = await Sandbox.create({ apiKey: process.env.E2B_API_KEY, timeoutMs: 120_000 });
+              
+              let cloneUrl = `https://github.com/${owner}/${repo}.git`;
+              try {
+                const { data: { token } } = await octokit.rest.apps.createInstallationAccessToken({ installation_id: repoRecord.inst.installationId });
+                cloneUrl = `https://x-access-token:${token}@github.com/${owner}/${repo}.git`;
+              } catch (e) {}
+              
+              const cloneResult = await sandbox.commands.run(`git clone --depth 1 --branch ${targetRef} ${cloneUrl} /home/user/repo`, { timeoutMs: 60_000 });
+              if (cloneResult.exitCode !== 0) return JSON.stringify({ success: false, error: "Failed to clone repository" });
+              
+              const lsResult = await sandbox.commands.run("ls /home/user/repo", { timeoutMs: 5_000 });
+              const files = lsResult.stdout;
+              let installCmd = "npm install --legacy-peer-deps";
+              if (files.includes("yarn.lock")) installCmd = "yarn install --frozen-lockfile";
+              else if (files.includes("pnpm-lock.yaml")) installCmd = "pnpm install --frozen-lockfile";
+              
+              const installResult = await sandbox.commands.run(installCmd, { cwd: "/home/user/repo", timeoutMs: 90_000 });
+              if (installResult.exitCode !== 0) return JSON.stringify({ success: false, error: "Failed to install dependencies:\n" + installResult.stderr });
+              
+              const cmdResult = await sandbox.commands.run(command, { cwd: "/home/user/repo", timeoutMs: 90_000 });
+              return JSON.stringify({ success: cmdResult.exitCode === 0, exitCode: cmdResult.exitCode, stdout: truncate(cmdResult.stdout, 10000), stderr: truncate(cmdResult.stderr, 10000) });
             } catch (err: any) {
-              if (err?.status === 404) {
-                return {
-                  type: "propose_change",
-                  path: filePath,
-                  oldContent: "",
-                  newContent,
-                  sha: null,
-                  explanation,
-                  repoFullName,
-                };
+              return JSON.stringify({ success: false, error: err.message });
+            } finally {
+              if (sandbox) {
+                try { await sandbox.kill(); } catch (e) {}
               }
-              return { error: `Failed to read '${filePath}': ${err?.message}` };
             }
-          },
+          }
+        });
+
+        tools.listOpenPRs = tool({
+          description: "List open pull requests for the repository.",
+          inputSchema: z.object({}),
+          execute: async () => {
+            try {
+              const { data } = await octokit.rest.pulls.list({ owner, repo, state: "open" });
+              return JSON.stringify(data.map((pr: any) => ({ number: pr.number, title: pr.title, url: pr.html_url, status: pr.state })));
+            } catch (err: any) { return JSON.stringify({ error: err.message }); }
+          }
+        });
+
+        tools.getPRStatus = tool({
+          description: "Get the status of a specific pull request.",
+          inputSchema: z.object({ prNumber: z.number() }),
+          execute: async ({ prNumber }) => {
+            try {
+              const { data } = await octokit.rest.pulls.get({ owner, repo, pull_number: prNumber });
+              return JSON.stringify({ number: data.number, title: data.title, url: data.html_url, state: data.state, merged: data.merged });
+            } catch (err: any) { return JSON.stringify({ error: err.message }); }
+          }
         });
       }
     }
 
-    /* ─────────────────────────────────────────────────────────
-     *  System Prompt — Autonomous Agent Behavior
-     * ───────────────────────────────────────────────────────── */
     const hasTools = Object.keys(tools).length > 0;
-
     let systemPrompt = `You are Kareixo, an autonomous AI engineering agent.`;
-
     if (repoFullName) {
       systemPrompt += ` You are connected to GitHub repository "${repoFullName}"`;
       if (branch) systemPrompt += ` on branch "${branch}"`;
@@ -431,81 +399,65 @@ You have access to the following tools:
 - readFile: Read a file's contents from the repository.
 - listDirectory: List files and subdirectories.
 - searchCode: Search for code patterns across the repo.
-- updateFile: Update a file and commit the change to GitHub.
-- proposeChange: Propose a code change as a reviewable diff.
+- updateFile: Update an existing file (creates a branch and opens a PR).
+- createFile: Create a new file (creates a branch and opens a PR).
+- deleteFile: Delete a file (creates a branch and opens a PR).
+- runCommand: Run a shell command in a sandbox to verify code (e.g. npm test).
+- listOpenPRs / getPRStatus: Check the status of work.
 
 RULES — follow these strictly:
 1. When the user asks about a file, the codebase, or repository structure, IMMEDIATELY call the appropriate tool (readFile or listDirectory). Do NOT guess or fabricate file contents.
 2. After receiving tool results, you MUST provide a thorough text response. Quote key code sections, explain what you found, and directly answer the user's question. NEVER stop after just calling a tool — always follow up with analysis.
-3. When asked to fix code or make edits:
-   - Do NOT print out "Action: Call readFile" or describe your internal steps in plain text.
-   - Silently invoke the tools directly.
-   - After the 'updateFile' tool completes, confirm to the user what was changed and provide the commit URL.
-4. For complex changes where the user should review first, use proposeChange instead of updateFile.
-5. If a tool returns an error, tell the user what happened and suggest an alternative approach.
-6. Keep responses focused and technical. Use code blocks with language tags for any code you show.`;
+3. Every file change results in a pull request. After creating one, always reply with the PR URL and a one-line summary of what changed — never claim a change was made without that URL attached, and never claim you lack file access when tools are present in your context.
+4. Keep responses focused and technical. Use code blocks with language tags for any code you show.`;
     }
 
-    const initialTier = selectedProvider === "NVIDIA_NIM_KIMI" ? "deep" : selectedProvider === "GROQ" ? "fallback" : "fast";
+    let initialTier: "deep" | "fallback" | "fast" = selectedProvider === "NVIDIA_NIM_KIMI" ? "deep" : selectedProvider === "GROQ" ? "fallback" : "fast";
+    if (isEditIntent && repoFullName) {
+      initialTier = selectedProvider === "NVIDIA_NIM_KIMI" ? "deep" : "fallback";
+    }
 
-    const { result, provider } = await router.executeWithFailover(async (p) => {
+    const { result, provider } = await router.executeWithFailover<any>(async (p) => {
       const supportsTools = hasTools && p.provider.supportsTools && !p.disableTools;
+
+      console.log(`[CodeChat Debug] Executing Stream:`, {
+        hasTools,
+        toolNames: Object.keys(tools),
+        tier: initialTier,
+        provider: p.provider.name,
+        isEditIntent,
+        toolChoice: supportsTools ? (isEditIntent ? "required" : "auto") : "none"
+      });
 
       try {
         const res = streamText({
           model: p.provider.model,
           system: systemPrompt,
           messages: messages as any,
-          ...(supportsTools ? { tools, maxSteps: 8, toolChoice: "auto" } : {}),
-          ...(p.provider.name === "GROQ" ? {
-            providerOptions: {
-              groq: { reasoningFormat: "hidden" },
-            },
-          } : {}),
-          onError: (error) => {
-            console.error(`[CodeChat] Stream error from ${p.provider.name}:`, error);
-          },
+          ...(supportsTools ? { tools, stopWhen: stepCountIs(10), toolChoice: (isEditIntent ? "required" : "auto") as any } : {}),
+          ...(p.provider.name === "GROQ" ? { providerOptions: { groq: { reasoningFormat: "hidden" } } } : {}),
+          onError: (error) => { console.error(`[CodeChat] Stream error from ${p.provider.name}:`, error); },
           onFinish: async (event) => {
-            // Persist conversation to DB
             if (finalConversationId) {
               try {
                 const lastUserMsg = rawMessages[rawMessages.length - 1];
-                
                 if (lastUserMsg) {
                   let userContent = "";
                   if (typeof lastUserMsg.content === "string") userContent = lastUserMsg.content;
                   else if (Array.isArray(lastUserMsg.parts)) {
                     userContent = lastUserMsg.parts.filter((p: any) => p.type === "text").map((p: any) => p.text).join("");
                   }
-
-                  await db.insert(chatMessages).values({
-                    conversationId: finalConversationId,
-                    role: "user",
-                    content: userContent,
-                  });
+                  await db.insert(chatMessages).values({ conversationId: finalConversationId, role: "user", content: userContent });
                 }
-
-                await db.insert(chatMessages).values({
-                  conversationId: finalConversationId,
-                  role: "assistant",
-                  content: event.text || "",
-                  model: provider.modelId,
-                });
-
-                await db.update(chatConversations)
-                  .set({ updatedAt: new Date() })
-                  .where(eq(chatConversations.id, finalConversationId));
-              } catch (err) {
-                console.error("[CodeChat persistence error]:", err);
-              }
+                await db.insert(chatMessages).values({ conversationId: finalConversationId, role: "assistant", content: event.text || "", model: provider.modelId });
+                await db.update(chatConversations).set({ updatedAt: new Date() }).where({ id: finalConversationId } as any);
+              } catch (err) { console.error("[CodeChat persistence error]:", err); }
             }
-
             if (event.finishReason !== "stop" && event.finishReason !== "tool-calls") {
               console.log(`[CodeChat] Finished: reason=${event.finishReason}, steps=${event.steps?.length || 0}, text=${(event.text || "").length} chars`);
             }
           },
         });
-
         return res;
       } catch (error) {
         console.error(`[CodeChat] StreamText error (${p.provider.name}):`, error);
@@ -514,17 +466,10 @@ RULES — follow these strictly:
     }, "chat", initialTier);
 
     return result.toUIMessageStreamResponse({
-      headers: {
-        "x-ai-provider": provider.name,
-        ...(finalConversationId ? { "X-Conversation-Id": finalConversationId } : {}),
-      },
+      headers: { "x-ai-provider": provider.name, ...(finalConversationId ? { "X-Conversation-Id": finalConversationId } : {}) },
     });
-
   } catch (error: any) {
     console.error("CodeChat API error:", error);
-    return NextResponse.json(
-      { error: error.message || "CodeChat service unavailable. Please try again." },
-      { status: 503 }
-    );
+    return NextResponse.json({ error: error.message || "CodeChat service unavailable." }, { status: 503 });
   }
 }
