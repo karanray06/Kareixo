@@ -1,4 +1,4 @@
-import { streamText, tool } from "ai";
+import { streamText, tool, stepCountIs } from "ai";
 import { z } from "zod";
 import { router } from "@/lib/model-router";
 import { auth } from "@/auth";
@@ -446,7 +446,7 @@ RULES — follow these strictly:
           messages: messages as any,
           ...(supportsTools ? {
             tools,
-            maxSteps: 20,
+            stopWhen: stepCountIs(20),
             prepareStep: ({ stepNumber }) => {
               return {
                 toolChoice: stepNumber === 0 && isEditIntent ? "required" : "auto",
