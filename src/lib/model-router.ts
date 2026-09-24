@@ -45,51 +45,51 @@ export class ModelRouter {
 
       const keyState = keyPool.getKeyForTask(providerKey);
 
-      let providerInstance: RoutedProvider;
-      if (providerKey === "nvidia-kimi") {
-        const kimiModel = NVIDIA_NIM_MODEL_CATALOG.find((m) => m.modelId === "moonshotai/kimi-k3")!;
-        const nimProvider = createKimiProvider(keyState.key);
-        providerInstance = {
-          provider: {
-            name: "NVIDIA_KIMI",
-            modelId: kimiModel.modelId,
-            model: nimProvider(kimiModel.modelId),
-            supportsTools: true,
-          },
-          keyState,
-          disableTools,
-        };
-      } else if (providerKey === "nvidia-mistral") {
-        const mistralModel = NVIDIA_NIM_MODEL_CATALOG.find((m) => m.modelId === "mistralai/mistral-nemotron")!;
-        const nimProvider = createMistralProvider(keyState.key);
-        providerInstance = {
-          provider: {
-            name: "NVIDIA_MISTRAL",
-            modelId: mistralModel.modelId,
-            model: nimProvider(mistralModel.modelId),
-            supportsTools: true,
-          },
-          keyState,
-          disableTools,
-        };
-      } else {
-        const groqModel = GROQ_MODEL_CATALOG[0]; // fallback to first Groq model
-        const groqProvider = createGroqProvider();
-        providerInstance = {
-          provider: {
-            name: "GROQ",
-            modelId: groqModel.modelId,
-            model: groqProvider(groqModel.modelId),
-            supportsTools: true, // Enable tools for Groq since it handles streaming tool calls perfectly
-          },
-          keyState,
-          disableTools,
-        };
-      }
-
-      console.log(`[ModelRouter] Attempt ${attempt}/${MAX_RETRIES}: model=${providerInstance.provider.modelId}, task=${task}`);
-
+      let providerInstance: RoutedProvider | null = null;
+      
       try {
+        if (providerKey === "nvidia-kimi") {
+          const kimiModel = NVIDIA_NIM_MODEL_CATALOG.find((m) => m.modelId === "moonshotai/kimi-k3")!;
+          const nimProvider = createKimiProvider(keyState.key);
+          providerInstance = {
+            provider: {
+              name: "NVIDIA_KIMI",
+              modelId: kimiModel.modelId,
+              model: nimProvider(kimiModel.modelId),
+              supportsTools: true,
+            },
+            keyState,
+            disableTools,
+          };
+        } else if (providerKey === "nvidia-mistral") {
+          const mistralModel = NVIDIA_NIM_MODEL_CATALOG.find((m) => m.modelId === "mistralai/mistral-nemotron")!;
+          const nimProvider = createMistralProvider(keyState.key);
+          providerInstance = {
+            provider: {
+              name: "NVIDIA_MISTRAL",
+              modelId: mistralModel.modelId,
+              model: nimProvider(mistralModel.modelId),
+              supportsTools: true,
+            },
+            keyState,
+            disableTools,
+          };
+        } else {
+          const groqModel = GROQ_MODEL_CATALOG[0]; // fallback to first Groq model
+          const groqProvider = createGroqProvider();
+          providerInstance = {
+            provider: {
+              name: "GROQ",
+              modelId: groqModel.modelId,
+              model: groqProvider(groqModel.modelId),
+              supportsTools: true, // Enable tools for Groq since it handles streaming tool calls perfectly
+            },
+            keyState,
+            disableTools,
+          };
+        }
+
+        console.log(`[ModelRouter] Attempt ${attempt}/${MAX_RETRIES}: model=${providerInstance.provider.modelId}, task=${task}`);
         // Pre-flight health check to ensure provider is responsive (especially for streams)
         const baseUrl = providerKey === "groq" 
           ? "https://api.groq.com/openai/v1/models" 
@@ -111,10 +111,10 @@ export class ModelRouter {
         lastError = error;
         keyPool.reportFailure(keyState, error?.statusCode);
 
-        console.warn(`[ModelRouter] Provider ${providerInstance.provider.name} failed:`, error?.message || error);
+        console.warn(`[ModelRouter] Provider ${providerInstance?.provider.name || providerKey} failed:`, error?.message || error);
 
         if (error.name === 'NoSuchToolError' || error.message?.includes('tool')) {
-          console.warn(`[ModelRouter] Tool error encountered with ${providerInstance.provider.name}. Disabling tools for retries.`);
+          console.warn(`[ModelRouter] Tool error encountered with ${providerInstance?.provider.name || providerKey}. Disabling tools for retries.`);
           disableTools = true;
           // Don't throw — continue downgrade failover without tools
         }
