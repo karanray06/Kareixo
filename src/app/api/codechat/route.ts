@@ -111,12 +111,24 @@ function sanitizeMessages(rawMessages: any[]): SanitizedMessage[] {
     sanitized.push({ role: "user", content: "Hello" });
   }
 
-  return sanitized.filter((msg) => {
+  const filtered = sanitized.filter((msg) => {
     if (msg.role === "assistant" && !msg.content?.trim() && !msg.tool_calls?.length) {
       return false;
     }
     return true;
   });
+
+  const merged: SanitizedMessage[] = [];
+  for (const msg of filtered) {
+    const last = merged[merged.length - 1];
+    if (last && last.role === msg.role && (msg.role === "user" || msg.role === "assistant") && !msg.tool_calls && !last.tool_calls) {
+      last.content += "\n\n" + msg.content;
+    } else {
+      merged.push(msg);
+    }
+  }
+
+  return merged;
 }
 
 function truncate(str: string, maxLen: number): string {
