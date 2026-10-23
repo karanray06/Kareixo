@@ -456,6 +456,7 @@ RULES — follow these strictly:
           model: p.provider.model,
           system: systemPrompt,
           messages: messages as any,
+          maxOutputTokens: 4096,
           ...(supportsTools ? {
             tools,
             stopWhen: stepCountIs(20),

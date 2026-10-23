@@ -76,6 +76,7 @@ SCORING GUIDE:
       system: systemPrompt,
       prompt: userPrompt,
       schema: HeatmapResultSchema,
+      maxOutputTokens: 4096,
     });
     return response.object;
   }, "code", "fast");

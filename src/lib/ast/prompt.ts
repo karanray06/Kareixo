@@ -126,6 +126,7 @@ export async function generateASTMutations(options: {
       system: systemPrompt,
       prompt: userPrompt,
       schema: NodeMutationSchema,
+      maxOutputTokens: 4096,
     });
     return response.object;
   }, "code", tier);
@@ -170,6 +171,7 @@ export async function generateTestFixMutations(options: {
       system: systemPrompt,
       prompt: userPrompt,
       schema: NodeMutationSchema,
+      maxOutputTokens: 4096,
     });
     return response.object;
   }, "code", "deep"); // Always use deep tier for test fixes

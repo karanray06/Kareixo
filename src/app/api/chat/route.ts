@@ -44,6 +44,7 @@ export async function POST(req: Request) {
       const res = streamText({
         model: p.provider.model,
         messages,
+        maxOutputTokens: 4096,
       });
 
       return res;

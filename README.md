@@ -179,11 +179,8 @@ src/
 | `GITHUB_APP_ID` | ✅ | GitHub App ID |
 | `GITHUB_APP_PRIVATE_KEY` | ✅ | GitHub App private key (PEM format) |
 | `GITHUB_WEBHOOK_SECRET` | ✅ | GitHub webhook signature secret |
-| `GEMINI_API_KEY_CHAT` | ✅ | Gemini API key for chat tasks |
-| `GEMINI_API_KEY_CODE` | ✅ | Gemini API key for code tasks |
-| `POLLINATIONS_API_KEY` | ✅ | Pollinations API key (fallback provider) |
-| `GROQ_API_KEY` | ⚡ | Groq API key (optional provider) |
-| `NVIDIA_NIM_API_KEY` | ⚡ | NVIDIA NIM API key for GLM-5.3 |
+| `NVIDIA_NIM_API_KEY` | ✅ | NVIDIA NIM API key (used for Mistral-Nemotron and Kimi K3) |
+| `GROQ_API_KEY` | ✅ | Groq API key (fallback provider) |
 | `E2B_API_KEY` | ⚡ | E2B API key for sandbox execution |
 | `FIGRANIUM_API_URL` | ⚡ | Figranium base URL (default: `http://localhost:3001`) |
 | `FIGRANIUM_API_KEY` | ⚡ | Figranium API key |

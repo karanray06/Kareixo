@@ -233,6 +233,7 @@ export async function queueReview(installationId: number, repoFullName: string, 
         system: systemPrompt,
         prompt,
         schema: ReviewOutputSchema,
+        maxOutputTokens: 4096,
       });
       return response.object;
     }, "chat", tier);

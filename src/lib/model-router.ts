@@ -55,8 +55,8 @@ export class ModelRouter {
             provider: {
               name: "NVIDIA_KIMI",
               modelId: kimiModel.modelId,
-              model: nimProvider(kimiModel.modelId),
-              supportsTools: true,
+              model: nimProvider.chatModel(kimiModel.modelId),
+              supportsTools: false,
             },
             keyState,
             disableTools,
@@ -68,8 +68,8 @@ export class ModelRouter {
             provider: {
               name: "NVIDIA_MISTRAL",
               modelId: mistralModel.modelId,
-              model: nimProvider(mistralModel.modelId),
-              supportsTools: true,
+              model: nimProvider.chatModel(mistralModel.modelId),
+              supportsTools: false,
             },
             keyState,
             disableTools,
@@ -90,20 +90,6 @@ export class ModelRouter {
         }
 
         console.log(`[ModelRouter] Attempt ${attempt}/${MAX_RETRIES}: model=${providerInstance.provider.modelId}, task=${task}`);
-        // Pre-flight health check to ensure provider is responsive (especially for streams)
-        const baseUrl = providerKey === "groq" 
-          ? "https://api.groq.com/openai/v1/models" 
-          : "https://integrate.api.nvidia.com/v1/models";
-          
-        const ping = await fetch(baseUrl, {
-          headers: { Authorization: `Bearer ${keyState.key}` },
-          signal: AbortSignal.timeout(3500) // 3.5s timeout for health check
-        });
-
-        if (!ping.ok) {
-          throw new Error(`Health check failed with status ${ping.status}`);
-        }
-
         const result = await operation(providerInstance);
         keyPool.reportSuccess(keyState);
         return { result, provider: providerInstance.provider };

@@ -305,6 +305,7 @@ ANALYSIS RULES:
       system: systemPrompt,
       prompt: userPrompt,
       schema: VisualRegressionSchema,
+      maxOutputTokens: 4096,
     });
     return response.object;
   }, "code", "fast");
