@@ -51,11 +51,12 @@ export class ModelRouter {
         if (providerKey === "nvidia-kimi") {
           const kimiModel = NVIDIA_NIM_MODEL_CATALOG.find((m) => m.modelId === "moonshotai/kimi-k3")!;
           const nimProvider = createKimiProvider(keyState.key);
+          const resolveModel = (p: any, id: string) => typeof p.chatModel === "function" ? p.chatModel(id) : p(id);
           providerInstance = {
             provider: {
               name: "NVIDIA_KIMI",
               modelId: kimiModel.modelId,
-              model: nimProvider.chatModel(kimiModel.modelId),
+              model: resolveModel(nimProvider, kimiModel.modelId),
               supportsTools: false,
             },
             keyState,
@@ -64,11 +65,12 @@ export class ModelRouter {
         } else if (providerKey === "nvidia-mistral") {
           const mistralModel = NVIDIA_NIM_MODEL_CATALOG.find((m) => m.modelId === "mistralai/mistral-nemotron")!;
           const nimProvider = createMistralProvider(keyState.key);
+          const resolveModel = (p: any, id: string) => typeof p.chatModel === "function" ? p.chatModel(id) : p(id);
           providerInstance = {
             provider: {
               name: "NVIDIA_MISTRAL",
               modelId: mistralModel.modelId,
-              model: nimProvider.chatModel(mistralModel.modelId),
+              model: resolveModel(nimProvider, mistralModel.modelId),
               supportsTools: false,
             },
             keyState,
