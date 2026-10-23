@@ -5,6 +5,7 @@ export const createKimiProvider = (apiKey: string) => {
   return createOpenAICompatible({
     name: "nvidia-nim-kimi",
     baseURL: "https://integrate.api.nvidia.com/v1",
+    apiKey,
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },
@@ -16,6 +17,7 @@ export const createMistralProvider = (apiKey: string) => {
   return createOpenAICompatible({
     name: "nvidia-nim-mistral",
     baseURL: "https://integrate.api.nvidia.com/v1",
+    apiKey,
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },

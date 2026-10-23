@@ -43,11 +43,12 @@ export class ModelRouter {
       if (currentTier === "deep") providerKey = "nvidia-kimi";
       else if (currentTier === "fallback") providerKey = "groq";
 
-      const keyState = keyPool.getKeyForTask(providerKey);
-
       let providerInstance: RoutedProvider | null = null;
+      let keyState: any = null;
       
       try {
+        keyState = keyPool.getKeyForTask(providerKey);
+
         if (providerKey === "nvidia-kimi") {
           const kimiModel = NVIDIA_NIM_MODEL_CATALOG.find((m) => m.modelId === "moonshotai/kimi-k3")!;
           const nimProvider = createKimiProvider(keyState.key);
@@ -93,11 +94,11 @@ export class ModelRouter {
 
         console.log(`[ModelRouter] Attempt ${attempt}/${MAX_RETRIES}: model=${providerInstance.provider.modelId}, task=${task}`);
         const result = await operation(providerInstance);
-        keyPool.reportSuccess(keyState);
+        if (keyState) keyPool.reportSuccess(keyState);
         return { result, provider: providerInstance.provider };
       } catch (error: any) {
         lastError = error;
-        keyPool.reportFailure(keyState, error?.statusCode);
+        if (keyState) keyPool.reportFailure(keyState, error?.statusCode);
 
         console.warn(`[ModelRouter] Provider ${providerInstance?.provider.name || providerKey} failed:`, error?.message || error);
 

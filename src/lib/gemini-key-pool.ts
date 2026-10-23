@@ -33,9 +33,19 @@ class KeyPool {
   }
 
   private loadKeys(): void {
-    const nvidiaKey = process.env.NVIDIA_NIM_API_KEY;
-    const kimiKey = process.env.NVIDIA_NIM_KIMI_API_KEY || nvidiaKey;
-    const mistralKey = process.env.NVIDIA_NIM_MISTRAL_API_KEY || nvidiaKey;
+    const nvidiaKey =
+      process.env.NVIDIA_API_KEY ||
+      process.env.NVIDIA_NIM_API_KEY ||
+      process.env.NVIDIA_KEY ||
+      process.env.NV_API_KEY;
+    const kimiKey =
+      process.env.NVIDIA_NIM_KIMI_API_KEY ||
+      process.env.NVIDIA_KIMI_API_KEY ||
+      nvidiaKey;
+    const mistralKey =
+      process.env.NVIDIA_NIM_MISTRAL_API_KEY ||
+      process.env.NVIDIA_MISTRAL_API_KEY ||
+      nvidiaKey;
     const groqKey = process.env.GROQ_API_KEY;
 
     if (kimiKey) {
@@ -73,7 +83,19 @@ class KeyPool {
     let candidates = provider === "groq" ? this.groqKeys : provider === "nvidia-kimi" ? this.kimiKeys : this.mistralKeys;
 
     if (candidates.length === 0) {
-      throw new Error(`[KeyPool] No API keys configured for provider: ${provider}. Check your environment variables (NVIDIA_NIM_API_KEY or GROQ_API_KEY).`);
+      // Graceful fallback to whichever provider has keys configured
+      if (provider !== "groq" && this.groqKeys.length > 0) {
+        console.warn(`[KeyPool] No keys for ${provider}, falling back to Groq.`);
+        candidates = this.groqKeys;
+      } else if (this.mistralKeys.length > 0) {
+        candidates = this.mistralKeys;
+      } else if (this.kimiKeys.length > 0) {
+        candidates = this.kimiKeys;
+      }
+    }
+
+    if (candidates.length === 0) {
+      throw new Error(`[KeyPool] No API keys configured. Please configure NVIDIA_API_KEY (or NVIDIA_NIM_API_KEY) or GROQ_API_KEY in your environment.`);
     }
 
     const now = Date.now();

@@ -89,11 +89,16 @@ function CodeChatClientContent({ repos }: { repos: RepoInfo[] }) {
     fetch: async (url: string | URL | globalThis.Request, options?: RequestInit) => {
       const response = await fetch(url, options);
       if (!response.ok) {
-        let errorMessage = "An error occurred";
+        let errorMessage = `Server error (${response.status})`;
         try {
           const data = await response.clone().json();
           if (data.error) errorMessage = data.error;
-        } catch (e) {}
+        } catch (_) {
+          try {
+            const text = await response.clone().text();
+            if (text) errorMessage = text.slice(0, 300);
+          } catch (_) {}
+        }
         throw new Error(errorMessage);
       }
       const newId = response.headers.get("X-Conversation-Id");
